@@ -1,0 +1,84 @@
+---
+# https://cirrus-ci.org/guide/writing-tasks/
+# https://cirrus-ci.org/examples/
+
+container:
+  cpu: 1
+  memory: "2G"
+
+lint_markdown_task:
+  name: "Lint Markdown"
+  container:
+    image: "docker.io/library/node:alpine3.16"
+  install_script: "npm install -g markdownlint-cli"
+  lint_script: "markdownlint *.md docs/*.md"
+
+lint_yaml_task:
+  name: "Lint YAML"
+  container:
+    image: "docker.io/pipelinecomponents/yamllint:0.20.6"
+  script: "yamllint ."
+
+lint_python_task:
+  name: "Lint Python"
+  container:
+    image: "docker.io/alpine/flake8:5.0.4"
+  lint_script: "flake8"
+
+format_python_task:
+  name: "Format Python"
+  container:
+    image: "docker.io/pipelinecomponents/black:0.14.1"
+  script: "black ."
+
+sort_python_task:
+  name: "Sort Python"
+  container:
+    image: "docker.io/library/python:3.9-alpine"
+  install_script: "pip install isort"
+  script: "isort ."
+
+lint_containerfile_task:
+  name: "Lint Containerfile"
+  container:
+    image: "docker.io/hadolint/hadolint:latest-alpine"
+  test_script: "hadolint Dockerfile"
+
+scan_containerfile_task:
+  name: "Scan Containerfile"
+  container:
+    image: "docker.io/aquasec/trivy:0.31.3"
+  scan_script: "trivy config
+                --severity CRITICAL
+                --exit-code 1
+                Dockerfile"
+
+# pytest_task:
+#   name:
+#     "Test App"
+#   container:
+#     image: "docker.io/library/python:3.9-slim"
+#   only_if:
+#     "$CIRRUS_ENVIRONMENT != 'CLI'"
+#   env:
+#     PIP_CACHE: "${HOME}/.cache/pip"
+#     REQS_PATH: "./requirements"
+#   pip_cache:
+#     folder: "${PIP_CACHE}"
+#     # reupload_on_changes: "false" # since there is a fingerprint script
+#     # fingerprint_script:
+#     #   - "echo ${CIRRUS_OS}"
+#     #   - "python --version"
+#     #   # - "cat ${REQS_FILE}"
+#     populate_script:
+#       # - "python3 -m pip install -r ${REQS_FILE}"
+#       - "python3 -m pip install --no-cache-dir --user
+#           -r ${REQS_PATH}/app-reqs.txt
+#           -r ${REQS_PATH}/test-reqs.txt
+#           -r ${REQS_PATH}/mlds-reqs.txt
+#           -r ${REQS_PATH}/hf-reqs.txt
+#           -r ${REQS_PATH}/torch-reqs.txt"
+#   test_script:
+#     # - "coverage run python3 -m pytest"
+#     - "python3 -m pytest"
+...
