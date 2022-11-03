@@ -1,8 +1,91 @@
+# ignores for building the README dir tree
+.git
+
 # app
 results/
 
-# python
-__pycache__/
+# editors
+.vscode/
+.idea/
 
-# Pipenv
-Pipfile.lock
+# check
+.pre-commit-config.yaml
+
+# test
+.pytest_cache/
+
+# linter, formatter
+.mypy_cache/
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+Pipfile
+# exclude .lock to avoid os specifics
+poetry.lock
+pipfile.lock
+.Python
+env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+whl/
+wheel/
+
+# PyInstaller
+#  Usually these files are written by a python script from a template
+#  before PyInstaller builds the exe, so as to inject date/other infos into it.
+*.manifest
+*.spec
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*,cover
+.hypothesis/
+6.3.1
+
+# Translations
+*.mo
+*.pot
+
+# Django stuff:
+*.log
+
+# Sphinx documentation
+docs/_build/
+
+# PyBuilder
+target/
+
+# pyenv python configuration file
+.python-version
+
+# python importtime and tuna visualizer
+importtime/

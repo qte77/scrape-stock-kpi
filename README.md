@@ -3,9 +3,7 @@ RPA Stock KPI
 
 [![Cirrus CI - Base Branch Build Status](https://img.shields.io/cirrus/github/qte77/scrape-stock-kpi?logo=Cirrus-ci)](https://cirrus-ci.com/github/gte77/scrape-stock-kpi)
 [![CodeFactor](https://www.codefactor.io/repository/github/qte77/scrape-stock-kpi/badge)](https://www.codefactor.io/repository/github/qte77/scrape-stock-kpi)
-<!--
 [![Links (Fail Fast)](https://github.com/qte77/scrape-stock-kpi/actions/workflows/links-fail-fast.yml/badge.svg)](https://github.com/qte77/scrape-stock-kpi/actions/workflows/links-fail-fast.yml)
--->
 ![version](https://img.shields.io/badge/version-3.2.0-blue)
 ![semver](https://img.shields.io/badge/semver-2.0.0-blue)
 [![wakatime](https://wakatime.com/badge/user/2955a10c-2c10-4666-a24d-1313cab9be94/project/6b092b0b-c3b5-4b4c-8907-b30732336290.svg)](https://wakatime.com/badge/user/2955a10c-2c10-4666-a24d-1313cab9be94/project/6b092b0b-c3b5-4b4c-8907-b30732336290)
