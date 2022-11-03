@@ -1,0 +1,27 @@
+---
+# https://github.com/lycheeverse/lychee-action
+# https://github.com/marketplace/actions/lychee-broken-link-checker
+name: "Links (Fail Fast)"
+
+on:
+  # push:
+  # pull_request:
+  # repository_dispatch:
+  # workflow_dispatch:
+  schedule:
+    - cron: "0 0 * * 0"
+  workflow_dispatch:
+
+jobs:
+  linkChecker:
+    runs-on: "ubuntu-latest"
+    steps:
+      - uses: "actions/checkout@v3"
+
+      - name: "Link Checker"
+        uses: "lycheeverse/lychee-action@v1.4.1"
+        with:
+          fail: true
+        env:
+          GITHUB_TOKEN: "${{secrets.GITHUB_TOKEN}}"
+...

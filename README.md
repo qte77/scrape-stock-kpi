@@ -8,16 +8,16 @@ RPA Stock KPI
 -->
 ![version](https://img.shields.io/badge/version-3.2.0-blue)
 ![semver](https://img.shields.io/badge/semver-2.0.0-blue)
-[![wakatime](https://wakatime.com/badge/github/qte77/scrape-stock-kpi.svg)](https://wakatime.com/badge/github/qte77/scrape-stock-kpi)
+[![wakatime](https://wakatime.com/badge/user/2955a10c-2c10-4666-a24d-1313cab9be94/project/6b092b0b-c3b5-4b4c-8907-b30732336290.svg)](https://wakatime.com/badge/user/2955a10c-2c10-4666-a24d-1313cab9be94/project/6b092b0b-c3b5-4b4c-8907-b30732336290)
 
-[DESC]
+Scrape the web for stock KPI without API-keys.
 
 Status
 ---
 
 **[DRAFT]** **[WIP]** **----> Not fully implemented yet**
 
-The current version is <0.2.0>. For version history have a look at [CHANGELOG.md](./CHANGELOG.md).
+The current version is <0.0.0>. For version history have a look at [CHANGELOG.md](./CHANGELOG.md).
 
 Quickstart
 ---

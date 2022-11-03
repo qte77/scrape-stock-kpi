@@ -29,3 +29,4 @@ Types of changes:
 - Shuffling of input assets and alpha sort of output results
 - `rich` for color print and table
 - Performance measuring includes delay
+- Github action `dependabot.yml` and workflow `links-fail-fast.yml`
