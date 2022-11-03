@@ -26,7 +26,9 @@ Types of changes:
   - [Portfolio Visualizer Optim](https://www.portfoliovisualizer.com/optimize-portfolio)
 - `tqdm`for progress bar
 - `time.perf_counter()` for time tracing
-- Shuffling of input assets and alpha sort of output results
 - `rich` for color print and table
-- Performance measuring includes delay
 - Github action `dependabot.yml` and workflow `links-fail-fast.yml`
+- `cirrus.yml` for base CI/CD
+- Base linter for markdown and yaml
+- Shuffling of input assets and alpha sort of output results
+- Performance measuring includes delay
