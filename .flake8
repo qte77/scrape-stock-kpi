@@ -1,0 +1,8 @@
+; flake8 does not support pyproject.toml until now
+; https://flake8.pycqa.org/en/latest/user/configuration.html#configuration-locations
+[flake8]
+max-line-length = 88
+doctests = true
+statistics = true
+include = ["app", "tests"]
+max-complexity = 10

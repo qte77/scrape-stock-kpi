@@ -1,0 +1,25 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[requires]
+python_version = "3.9.*"
+
+[packages]
+playwright = "*"
+rich = "*"
+tqdm = "*"
+# pydantic = "*"
+
+[dev-packages]
+black = "*"
+"blacken-docs" = "*"
+bump2version = "*"
+flake8 = "*"
+interrogate = "*"
+isort = "*"
+pyupgrade = "*"
+pytest = "*"
+# coverage = "*"
+# tuna = "*"

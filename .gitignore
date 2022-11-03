@@ -1,0 +1,8 @@
+# app
+results/
+
+# python
+__pycache__/
+
+# Pipenv
+Pipfile.lock

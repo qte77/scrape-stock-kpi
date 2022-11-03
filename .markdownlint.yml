@@ -1,0 +1,14 @@
+---
+# https://github.com/DavidAnson/markdownlint/blob/main/schema/.markdownlint.yaml
+"default": true
+# MD003/heading-style/header-style - Heading style
+# H1 =, H2 -, Hx #
+# used because of bump2version search/replace accepts not ## for heading
+"MD003": { "style": "setext_with_atx" }
+# MD013/line-length - Line length
+"MD013": false
+# MD024/no-duplicate-heading/no-duplicate-header - Multiple headings with the same content
+"MD024": false
+# MD033/no-inline-html - Inline HTML
+"MD033": false
+...

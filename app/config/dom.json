@@ -1,0 +1,48 @@
+{
+    "traderfox": {
+        "dom_selector_cookies_frame": "",
+        "dom_selector_cookies": "#tfcookie-accept-selected",
+        "dom_selector_cookies_all": "#tfcookie-accept-all",
+        "dom_has": {
+            "has_selector": "span",
+            "has_class": ".number"
+        },
+        "dom_selectors": {
+            "score_qual": {
+                "click": "#tdf-quality-check-tab",
+                "selector": "#tdf-quality-score-result"
+            },
+            "score_div": {
+                "click": "#tdf-dividend-check-tab",
+                "selector": "#tdf-dividend-score-result"
+            },
+            "score_growth": {
+                "click": "#tdf-growth-check-tab",
+                "selector": "#tdf-growth-score-result"
+            },
+            "score_call": {
+                "click": "#tdf-the_big_call-check-tab",
+                "selector": "#tdf-the_big_call-score-result"
+            },
+            "score_piotroski-f": {
+                "click": "#scoring_piotroski-tab",
+                "selector": "#scoring_piotroski-panel >> div.score-result-value"
+            },
+            "score_aaqs": {
+                "click": "#scoring_aaqs-tab",
+                "selector": "#scoring_aaqs-panel >> div.score-result-value"
+            },
+            "score_divadel": {
+                "click": "#scoring_dividendenadel-tab",
+                "selector": "#scoring_dividendenadel-panel >> div.score-result-value"
+            },
+            "score_hgi": {
+                "click": "#scoring_hgi-tab",
+                "selector": "#scoring_hgi-panel >> div.score-result-value"
+            }
+        }
+    },
+    "portfolio_vis": {
+        "": ""
+    }
+}

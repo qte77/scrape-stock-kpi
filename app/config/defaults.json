@@ -1,0 +1,19 @@
+{
+    "base_urls": {
+        "traderfox": "https://aktie.traderfox.com/visualizations/<ISIN>/<TF_INDICATION>",
+        "portfolio_vis": "https://www.portfoliovisualizer.com/optimize-portfolio?s=y&goal=7&benchmark=-1&benchmarkSymbol=SPY&constrained=false&lastMonth=12&historicalVolatility=true&endYear=2022&mode=2&comparedAllocation=2&startYear=1985&timePeriod=4&historicalReturns=true&robustOptimization=false&targetAnnualReturn=10&historicalCorrelations=true&firstMonth=1&groupConstraints=false"
+    },
+    "paths": {
+        "configs": "config",
+        "results": "results",
+        "assets": "assets"
+        },
+    "files": {
+        "config_dom": "dom.json",
+        "assets": "assets.csv",
+        "assets_test": "assets_test.csv",
+        "save_scores": "scores_<PROVIDER>.json",
+        "save_avgs": "averages_<PROVIDER>.json"
+    },
+    "timeout": 5000
+}
