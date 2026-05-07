@@ -7,15 +7,14 @@ TODO mkdir for json if not present, fair value
 """
 
 from enum import Enum
-from typing import Union
 
 from .utils.handle_data import shuffle_dict, sort_dict
 from .utils.handle_files import save_json
 from .utils.handle_playwright import get_values_multiple_url, get_values_single_url
 
-defaults: dict[str, Union[str, int]] = {}
+defaults: dict[str, str | int] = {}
 assets: dict[str, dict[str, str]] = {}
-config: dict[str, Union[str, dict[str, str]]] = {}
+config: dict[str, str | dict[str, str]] = {}
 
 
 class AppModes(Enum):
@@ -64,7 +63,7 @@ def calculate_averages_wrapper(results: dict, save_file: str):
     return averages
 
 
-def _calculate_averages(results: dict) -> dict[str, Union[int, str]]:
+def _calculate_averages(results: dict) -> dict[str, int | str]:
     """
     TODO
     """
@@ -87,7 +86,7 @@ def _get_results(
     timeout: int,
     headless: bool = False,
     delay_on: bool = False,
-) -> dict[str, dict[str, Union[int, str]]]:
+) -> dict[str, dict[str, int | str]]:
     """
     TODO
     """

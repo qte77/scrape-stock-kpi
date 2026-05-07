@@ -2,12 +2,11 @@
 """Handles arguments to the app"""
 
 from argparse import ArgumentParser
-from typing import Union
 
 from ..app import AppModes
 
 
-def parse_args() -> dict[str, Union[str, bool]]:
+def parse_args() -> dict[str, str | bool]:
     """Parses and evaluates argv and returns the results"""
 
     desc = ""

@@ -1,37 +1,71 @@
-[tool.isort]
-profile = "black"
-src_paths = ["app", "tests"]
+[project]
+name = "scrape-stock-kpi"
+version = "0.2.0"
+description = "Scrape the web for stock KPI without API keys"
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "playwright>=1.48",
+    "rich>=13.9",
+    "tqdm>=4.66",
+]
 
-[tool.black]
-# line_length = 88
-src_paths = ["app", "tests"]
-target-version = ["py37", "py38", "py39", "py310"]
+[dependency-groups]
+dev = [
+    "ruff>=0.8",
+    "pyright>=1.1",
+]
+test = [
+    "pytest>=8.0",
+    "pytest-cov>=6.0",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["app"]
+
+[tool.uv]
+default-groups = ["dev", "test"]
+
+[tool.ruff]
+target-version = "py312"
+line-length = 100
+src = ["app", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "W", "UP"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["S101"]
+
+[tool.pyright]
+pythonVersion = "3.12"
+typeCheckingMode = "basic"
+extraPaths = ["app"]
+include = ["app"]
+reportMissingImports = "error"
+reportMissingTypeStubs = "none"
 
 [tool.pytest.ini_options]
-minversion = "6.0"
-addopts = "-rfEX -svv --color=yes --code-highlight=yes --doctest-modules"
-testpaths = [
-    "tests"
+testpaths = ["tests"]
+addopts = "--strict-markers -q --tb=short"
+markers = [
+    "network: tests requiring network access",
+    "playwright: tests requiring playwright browsers",
 ]
-log_format = "%(asctime)s %(levelname)s %(message)s"
-log_date_format = "%Y-%m-%d %H:%M:%S"
 
-# https://pypi.org/project/interrogate/
-[tool.interrogate]
-fail-under = 95
-exclude = ["setup.py", "docs", "build", "tests"]
-# ignore-regex = ["^get$", "^mock_.*", ".*BaseClass.*"]
-# possible values: 0 (minimal output), 1 (-v), 2 (-vv)
-verbose = 0
+[tool.coverage.run]
+source = ["app"]
+omit = ["app/__main__.py"]
 
-# https://mypy.readthedocs.io/en/stable/config_file.html#using-a-pyproject-toml
-# https://mypy.readthedocs.io/en/stable/config_file.html#example-pyproject-toml
-[tool.mypy]
-warn_unused_configs = true
-warn_unused_ignores = true
-warn_unreachable = true
-warn_return_any = true
-
-# [[tool.mypy.overrides]]
-# module = 'mypy-pytest'
-# ignore_missing_imports = true
+[tool.coverage.report]
+show_missing = true
+exclude_lines = [
+    "pragma: no cover",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+]

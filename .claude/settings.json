@@ -1,0 +1,86 @@
+{
+  "env": {
+    "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "1",
+    "CLAUDE_CODE_IDE_SKIP_AUTO_INSTALL": "1",
+    "DISABLE_NON_ESSENTIAL_MODEL_CALLS": "1"
+  },
+  "outputStyle": "default",
+  "spinnerTipsEnabled": true,
+  "prefersReducedMotion": true,
+  "attribution": {
+    "commit": "Co-Authored-By: Claude <noreply@anthropic.com>",
+    "pr": "Generated with Claude <noreply@anthropic.com>"
+  },
+  "permissions": {
+    "allow": [
+      "AskUserQuestion",
+      "Bash(date:*)",
+      "Bash(git:add:*)",
+      "Bash(git:commit:*)",
+      "Bash(git:diff:*)",
+      "Bash(git:log:*)",
+      "Bash(git:status:*)",
+      "Bash(git:push:*)",
+      "Bash(git:rev-list:*)",
+      "Bash(make:*)",
+      "Bash(uv:*)",
+      "Edit(app/**)",
+      "Edit(tests/**)",
+      "Edit(Makefile)",
+      "Edit(pyproject.toml)",
+      "Edit(README.md)",
+      "Edit(CHANGELOG.md)",
+      "Edit(.github/**)",
+      "mcp__ide__getDiagnostics",
+      "mcp__plugin_context7_context7__resolve-library-id",
+      "mcp__plugin_context7_context7__query-docs",
+      "Read(.claude/skills/)",
+      "Read(.claude/rules/)",
+      "SlashCommand",
+      "Skill"
+    ],
+    "deny": [
+      "Bash(awk:*)",
+      "Bash(cat:*)",
+      "Bash(find:*)",
+      "Bash(grep:*)",
+      "Bash(head:*)",
+      "Bash(ls:*)",
+      "Bash(source:*)",
+      "Bash(tail:*)",
+      "Bash(touch:*)",
+      "Bash(curl:*)",
+      "Bash(wget:*)",
+      "Edit(.env)",
+      "Read(.env)"
+    ],
+    "ask": [
+      "Bash(git clean:*)",
+      "Bash(git reset:*)",
+      "Bash(mv:*)",
+      "Bash(mkdir:*)",
+      "Bash(rm:*)",
+      "Edit(.claude/**)",
+      "Edit(AGENTS.md)",
+      "Edit(CLAUDE.md)"
+    ]
+  },
+  "enabledPlugins": {
+    "context7@claude-plugins-official": true,
+    "code-review@claude-plugins-official": true,
+    "code-simplifier@claude-plugins-official": true,
+    "cc-meta@qte77-claude-code-plugins": true,
+    "python-dev@qte77-claude-code-plugins": true,
+    "docs-governance@qte77-claude-code-plugins": true,
+    "commit-helper@qte77-claude-code-plugins": true,
+    "codebase-tools@qte77-claude-code-plugins": true
+  },
+  "extraKnownMarketplaces": {
+    "qte77-claude-code-plugins": {
+      "source": {
+        "source": "github",
+        "repo": "qte77/claude-code-plugins"
+      }
+    }
+  }
+}

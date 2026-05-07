@@ -1,7 +1,7 @@
 RPA Stock KPI
 ===
 
-[![Cirrus CI - Base Branch Build Status](https://img.shields.io/cirrus/github/qte77/scrape-stock-kpi?logo=Cirrus-ci)](https://cirrus-ci.com/github/gte77/scrape-stock-kpi)
+[![validate](https://github.com/qte77/scrape-stock-kpi/actions/workflows/validate.yaml/badge.svg)](https://github.com/qte77/scrape-stock-kpi/actions/workflows/validate.yaml)
 [![CodeFactor](https://www.codefactor.io/repository/github/qte77/scrape-stock-kpi/badge)](https://www.codefactor.io/repository/github/qte77/scrape-stock-kpi)
 [![Links (Fail Fast)](https://github.com/qte77/scrape-stock-kpi/actions/workflows/links-fail-fast.yml/badge.svg)](https://github.com/qte77/scrape-stock-kpi/actions/workflows/links-fail-fast.yml)
 ![version](https://img.shields.io/badge/version-3.2.0-blue)

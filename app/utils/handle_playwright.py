@@ -5,11 +5,10 @@ TODO
 
 from math import ceil
 from random import randrange
-from re import IGNORECASE, UNICODE, compile
 from time import perf_counter, sleep
 from typing import Any
 
-from playwright.sync_api import expect, sync_playwright
+from playwright.sync_api import sync_playwright
 from rich.console import Console
 from rich.table import Table
 from tqdm import tqdm
