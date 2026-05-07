@@ -8,14 +8,18 @@ results/
 .vscode/
 .idea/
 
-# check
-.pre-commit-config.yaml
-
 # test
 .pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
 
-# linter, formatter
-.mypy_cache/
+# linter, formatter, type checker
+.ruff_cache/
+.pyright_cache/
+
+# uv venv
+.venv/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -26,8 +30,6 @@ __pycache__/
 *.so
 
 # Distribution / packaging
-Pipfile
-# exclude .lock to avoid os specifics
 poetry.lock
 pipfile.lock
 .Python
@@ -59,17 +61,13 @@ wheel/
 pip-log.txt
 pip-delete-this-directory.txt
 
-# Unit test / coverage reports
-htmlcov/
+# Unit test / coverage reports (extras beyond top section)
 .tox/
-.coverage
-.coverage.*
 .cache
 nosetests.xml
 coverage.xml
 *,cover
 .hypothesis/
-6.3.1
 
 # Translations
 *.mo
