@@ -14,7 +14,7 @@ def open_json(path: str, name: str) -> dict:
     TODO
     """
     try:
-        with open(join(path, name), "r") as lineobj:
+        with open(join(path, name)) as lineobj:
             return load(lineobj)
     except Exception as e:
         return e
@@ -26,7 +26,7 @@ def open_csv_to_dict(path: str, name: str) -> object:
     """
     companies = {}
     try:
-        with open(join(path, name), "r") as lineobj:
+        with open(join(path, name)) as lineobj:
             csv_reader = reader(lineobj)
             headers = next(csv_reader)
             # TODO refactor repetition into dictcomp?
