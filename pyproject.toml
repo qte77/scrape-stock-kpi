@@ -51,7 +51,6 @@ reportMissingImports = "error"
 reportMissingTypeStubs = "none"
 
 [tool.pytest.ini_options]
-pythonpath = ["app"]
 testpaths = ["tests"]
 addopts = "--strict-markers -q --tb=short"
 markers = [
