@@ -20,9 +20,11 @@ Quickstart
 ---
 
 ```bash
-make setup_dev   # uv sync (default groups: dev + test)
-make help        # list available recipes
-make validate    # lint + type check + tests with coverage
+make setup_dev                                  # uv sync (default groups: dev + test)
+uv run playwright install chromium              # one-time browser install
+make run PROVIDER=traderfox MODE=test HEADLESS=1  # run the scraper (results/ JSON)
+make help                                       # list available recipes
+make validate                                   # lint + type check + tests with coverage
 ```
 
 <!--

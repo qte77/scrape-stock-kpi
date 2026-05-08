@@ -3,6 +3,7 @@
 .PHONY: \
 	setup_uv setup_dev \
 	lint autofix check_types test test_cov retest validate \
+	run \
 	clean help
 .DEFAULT_GOAL := help
 
@@ -59,6 +60,17 @@ validate:  ## CI gate: lint + check_types + test_cov
 	$(MAKE) -s lint
 	$(MAKE) -s check_types
 	$(MAKE) -s test_cov
+
+
+# MARK: RUN
+
+
+run:  ## run the scraper (PROVIDER=traderfox MODE=test HEADLESS=1 DELAY=1)
+	uv run python -m app \
+	  $(if $(PROVIDER),-p $(PROVIDER)) \
+	  -m $(or $(MODE),test) \
+	  $(if $(HEADLESS),-l) \
+	  $(if $(DELAY),-d)
 
 
 # MARK: CLEAN
