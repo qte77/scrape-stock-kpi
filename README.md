@@ -20,7 +20,11 @@ The current version is <0.0.0>. For version history have a look at [CHANGELOG.md
 Quickstart
 ---
 
-* TODO <!-- `make run_all` -->
+```bash
+make setup_dev   # uv sync (default groups: dev + test)
+make help        # list available recipes
+make validate    # lint + type check + tests with coverage
+```
 
 <!--
 TOC
@@ -67,9 +71,22 @@ KPI TODO
 Packages used
 ---
 
-* [playwright](https://pypi.org/project/playwright/)
+* [playwright](https://pypi.org/project/playwright/) — browser automation
+* [rich](https://pypi.org/project/rich/) — console output + tables
+* [tqdm](https://pypi.org/project/tqdm/) — progress bars
+
+Planned for relative-strength feature (see [#4](https://github.com/qte77/scrape-stock-kpi/issues/4)):
+
 * [yfinance](https://pypi.org/project/yfinance/)
-* [QuantStats](https://pypi.org/project/yfinance/)
+* [QuantStats](https://pypi.org/project/QuantStats/)
+
+Quality tooling
+---
+
+* [uv](https://docs.astral.sh/uv/) — package + venv manager
+* [ruff](https://docs.astral.sh/ruff/) — linter + formatter
+* [pyright](https://microsoft.github.io/pyright/) — static type checker
+* [pytest](https://docs.pytest.org/) + [pytest-cov](https://pypi.org/project/pytest-cov/) — tests + coverage
 
 Other possible packages
 ---
