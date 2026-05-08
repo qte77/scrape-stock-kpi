@@ -6,19 +6,19 @@ readme = "README.md"
 license = "MIT"
 requires-python = ">=3.12,<3.13"
 dependencies = [
-    "playwright>=1.48",
-    "rich>=13.9",
-    "tqdm>=4.66",
+    "playwright>=1.59",
+    "rich>=15.0",
+    "tqdm>=4.67",
 ]
 
 [dependency-groups]
 dev = [
-    "ruff>=0.8",
-    "pyright>=1.1",
+    "ruff>=0.15",
+    "pyright>=1.1.400",
 ]
 test = [
-    "pytest>=8.0",
-    "pytest-cov>=6.0",
+    "pytest>=9.0",
+    "pytest-cov>=7.1",
 ]
 
 [build-system]
@@ -30,6 +30,7 @@ packages = ["app"]
 
 [tool.uv]
 default-groups = ["dev", "test"]
+exclude-newer = "2026-05-08T00:00:00Z"
 
 [tool.ruff]
 target-version = "py312"
