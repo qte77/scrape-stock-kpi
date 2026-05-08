@@ -97,7 +97,7 @@ def get_values_single_url(
     symbols = ""
 
     len_symbols = ceil(len(assets) / max_symbols)
-    results = [None] * len_symbols
+    results: list[dict | None] = [None] * len_symbols
 
     for i, items in enumerate(assets.values()):
         symbol = items["symbol"]
@@ -105,7 +105,11 @@ def get_values_single_url(
         if not i == 0 and (i % max_symbols) == 0:
             url = f"{base_url}{symbols}"
             results[k] = _get_result(
-                "Portfolio Optimization", url, dom_cfg, headless, timeout
+                asset_name="Portfolio Optimization",
+                url=url,
+                dom_cfg=dom_cfg,
+                timeout=timeout,
+                headless=headless,
             )
 
     return results
@@ -140,7 +144,10 @@ def _get_page(
 
 
 def _handle_page_cookies(
-    page, cookie_selector: str, cookie_frame: str = None, timeout: int = None
+    page,
+    cookie_selector: str,
+    cookie_frame: str | None = None,
+    timeout: int | None = None,
 ) -> None:
     """
     TODO
