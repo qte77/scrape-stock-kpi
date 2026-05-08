@@ -87,3 +87,31 @@ target/
 
 # python importtime and tuna visualizer
 importtime/
+
+# Agent-managed working memory (per qte77 convention)
+MEMORY.md
+
+# Claude Code sandbox bwrap phantom files
+# https://github.com/anthropics/claude-code/issues/17727
+/HEAD
+/config
+/hooks
+/objects
+/refs
+/.bash_profile
+/.bashrc
+/.profile
+/.zprofile
+/.zshrc
+/.gitconfig
+/.gitmessage
+/.gitmodules
+/.ripgreprc
+/.mcp.json
+/.env
+/.idea
+/.vscode
+/.claude/agents
+/.claude/commands
+/.claude/skills
+/.claude/worktrees/
