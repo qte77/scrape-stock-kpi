@@ -32,5 +32,8 @@ jobs:
       - name: Ruff lint
         run: uv run ruff check .
 
+      - name: Pyright type check
+        run: uv run pyright app
+
       - name: Pytest with coverage
         run: uv run pytest --cov=app --cov-fail-under=0

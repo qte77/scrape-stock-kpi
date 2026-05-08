@@ -104,7 +104,6 @@ MEMORY.md
 /.zprofile
 /.zshrc
 /.gitconfig
-/.gitmessage
 /.gitmodules
 /.ripgreprc
 /.mcp.json

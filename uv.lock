@@ -2,6 +2,9 @@ version = 1
 revision = 3
 requires-python = "==3.12.*"
 
+[options]
+exclude-newer = "2026-05-08T00:00:00Z"
+
 [[package]]
 name = "colorama"
 version = "0.4.6"
@@ -253,19 +256,19 @@ test = [
 
 [package.metadata]
 requires-dist = [
-    { name = "playwright", specifier = ">=1.48" },
-    { name = "rich", specifier = ">=13.9" },
-    { name = "tqdm", specifier = ">=4.66" },
+    { name = "playwright", specifier = ">=1.59" },
+    { name = "rich", specifier = ">=15.0" },
+    { name = "tqdm", specifier = ">=4.67" },
 ]
 
 [package.metadata.requires-dev]
 dev = [
-    { name = "pyright", specifier = ">=1.1" },
-    { name = "ruff", specifier = ">=0.8" },
+    { name = "pyright", specifier = ">=1.1.400" },
+    { name = "ruff", specifier = ">=0.15" },
 ]
 test = [
-    { name = "pytest", specifier = ">=8.0" },
-    { name = "pytest-cov", specifier = ">=6.0" },
+    { name = "pytest", specifier = ">=9.0" },
+    { name = "pytest-cov", specifier = ">=7.1" },
 ]
 
 [[package]]

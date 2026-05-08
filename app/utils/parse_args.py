@@ -2,12 +2,22 @@
 """Handles arguments to the app"""
 
 from argparse import ArgumentParser
+from typing import TypedDict, cast
 
 from ..app import AppModes
 
 
-def parse_args() -> dict[str, str | bool]:
-    """Parses and evaluates argv and returns the results"""
+class CliArgs(TypedDict):
+    """Typed shape of the parsed CLI args returned by `parse_args`."""
+
+    m: str
+    provider: str
+    headless: bool
+    delay: bool
+
+
+def parse_args() -> CliArgs:
+    """Parses and evaluates argv and returns the results."""
 
     desc = ""
 
@@ -34,4 +44,4 @@ def parse_args() -> dict[str, str | bool]:
         "-d", "--delay", action="store_true", help="run with random delay"
     )
 
-    return vars(parser.parse_args())
+    return cast(CliArgs, vars(parser.parse_args()))

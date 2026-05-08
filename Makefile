@@ -54,9 +54,10 @@ test_cov:  ## pytest with coverage (--cov-fail-under=0; raise once tests exist)
 retest:  ## rerun last failed tests only
 	uv run pytest --lf -x
 
-validate:  ## CI gate: lint + test_cov (check_types added once existing 22 errors clear)
+validate:  ## CI gate: lint + check_types + test_cov
 	set -e
 	$(MAKE) -s lint
+	$(MAKE) -s check_types
 	$(MAKE) -s test_cov
 
 
