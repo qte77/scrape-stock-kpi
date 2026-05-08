@@ -8,7 +8,7 @@ from .handle_files import open_csv_to_dict
 
 
 def get_assets(
-    path: str, file: str, file_test: str, mode: AppModes = AppModes.DEFAULT.value
+    path: str, file: str, file_test: str, mode: str = AppModes.DEFAULT.value
 ) -> dict:
     """
     TODO

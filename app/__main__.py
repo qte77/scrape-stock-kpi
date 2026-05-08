@@ -15,7 +15,12 @@ if __name__ == "__main__":
 
     console = Console()
 
-    mode, provider_to_test, headless, delay_on = parse_args().values()
+    args = parse_args()
+    mode = args["m"]
+    provider_to_test = args["provider"]
+    headless = args["headless"]
+    delay_on = args["delay"]
+
     defaults = get_defaults()
     dom_cfg = get_dom_cfg(defaults["paths"]["configs"], defaults["files"]["config_dom"])
     assets = get_assets(
