@@ -6,6 +6,7 @@ TODO
 from csv import reader, writer
 from datetime import datetime
 from json import dump, load
+from os import makedirs
 from os.path import dirname, join, realpath
 
 
@@ -39,6 +40,7 @@ def save_json(input: dict, save_file: str) -> None:
     """
     TODO
     """
+    makedirs(dirname(save_file), exist_ok=True)
     with open(save_file, "w") as outfile:
         dump(input, outfile, indent=2)
 
