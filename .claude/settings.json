@@ -73,7 +73,11 @@
     "python-dev@qte77-claude-code-plugins": true,
     "docs-governance@qte77-claude-code-plugins": true,
     "commit-helper@qte77-claude-code-plugins": true,
-    "codebase-tools@qte77-claude-code-plugins": true
+    "codebase-tools@qte77-claude-code-plugins": true,
+    "tdd-core@qte77-claude-code-plugins": true,
+    "makefile-core@qte77-claude-code-plugins": true,
+    "planning@qte77-claude-code-plugins": true,
+    "readme-generator@qte77-claude-code-plugins": true
   },
   "extraKnownMarketplaces": {
     "qte77-claude-code-plugins": {
