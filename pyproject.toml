@@ -3,7 +3,7 @@ name = "scrape-stock-kpi"
 version = "0.2.0"
 description = "Scrape the web for stock KPI without API keys"
 readme = "README.md"
-license = "MIT"
+license = "Apache-2.0"
 requires-python = ">=3.12,<3.13"
 dependencies = [
     "playwright>=1.59",
