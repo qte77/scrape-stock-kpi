@@ -95,22 +95,22 @@ def get_values_single_url(
     k = 0
     max_symbols = 25
     symbols = ""
-
-    len_symbols = ceil(len(assets) / max_symbols)
-    results: list[dict | None] = [None] * len_symbols
+    _ = ceil(len(assets) / max_symbols)
+    results: dict[str, dict] = {}
 
     for i, items in enumerate(assets.values()):
         symbol = items["symbol"]
         symbols = f"{symbols}&symbol{i}={symbol}"
         if not i == 0 and (i % max_symbols) == 0:
             url = f"{base_url}{symbols}"
-            results[k] = _get_result(
+            results[f"batch_{k}"] = _get_result(
                 asset_name="Portfolio Optimization",
                 url=url,
                 dom_cfg=dom_cfg,
                 timeout=timeout,
                 headless=headless,
             )
+            k += 1
 
     return results
 
