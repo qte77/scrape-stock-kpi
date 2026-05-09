@@ -70,12 +70,11 @@ validate:  ## CI gate: lint + check_types + check_complexity + test_cov
 # MARK: RUN
 
 
-run:  ## run the scraper (PROVIDER=traderfox MODE=test HEADLESS=1 DELAY=1)
+run:  ## run the scraper (UNIVERSE=qte77-watchlist | TICKERS=AAPL,MSFT | TICKERS_FILE=path)
 	uv run python -m app \
-	  $(if $(PROVIDER),-p $(PROVIDER)) \
-	  -m $(or $(MODE),test) \
-	  $(if $(HEADLESS),-l) \
-	  $(if $(DELAY),-d)
+	  $(if $(UNIVERSE),--universe $(UNIVERSE)) \
+	  $(if $(TICKERS),--tickers $(TICKERS)) \
+	  $(if $(TICKERS_FILE),--tickers-file $(TICKERS_FILE))
 
 
 # MARK: CLEAN

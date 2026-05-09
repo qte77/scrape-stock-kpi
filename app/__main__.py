@@ -1,22 +1,28 @@
 """scrape-stock-kpi entrypoint.
 
-Parses CLI args via :class:`app.utils.parse_args.CliArgs` and reports them.
-Universe resolution + fundamentals fetching land in subsequent PRs (#16, #20).
+Resolves the active asset universe from CLI args + reports its size.
+Fundamentals fetching lands in #16; this stub validates that the
+CliArgs → universe resolver chain works end-to-end.
 """
 
 from rich.console import Console
 
+from .universe import resolve_universe
 from .utils.parse_args import CliArgs
 
 
 def main() -> None:
-    """Stub entrypoint — echoes the parsed CliArgs until #16 lands."""
+    """Stub entrypoint until #16 lands."""
     console = Console()
     args = CliArgs()
-    console.print(f"[yellow]scrape-stock-kpi[/yellow] received: {args.model_dump()}")
+    tickers = resolve_universe(args)
     console.print(
-        "[yellow]Universe resolver and fundamentals module pending — "
-        "see issues #20 and #16.[/yellow]"
+        f"[green]scrape-stock-kpi[/green] resolved "
+        f"[bold]{len(tickers)}[/bold] tickers"
+    )
+    console.print(f"first 5: {tickers[:5]}")
+    console.print(
+        "[yellow]Fundamentals module pending — see issue #16.[/yellow]"
     )
 
 
