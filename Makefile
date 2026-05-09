@@ -44,9 +44,9 @@ check_types:  ## pyright type check
 	echo "--- check_types"
 	uv run pyright app $(PYRIGHT_QUIET)
 
-check_complexity:  ## complexipy cognitive complexity gate (max 15) — excludes Traderfox-bound files
+check_complexity:  ## complexipy cognitive complexity gate (max 15)
 	echo "--- check_complexity"
-	uv run complexipy $$(find app -name '*.py' ! -name 'handle_playwright.py') --max-complexity-allowed 15
+	uv run complexipy app --max-complexity-allowed 15
 
 test:  ## pytest
 	echo "--- test"

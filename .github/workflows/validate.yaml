@@ -36,7 +36,7 @@ jobs:
         run: uv run pyright app
 
       - name: Complexipy cognitive complexity (max 15)
-        run: uv run complexipy $(find app -name '*.py' ! -name 'handle_playwright.py') --max-complexity-allowed 15
+        run: uv run complexipy app --max-complexity-allowed 15
 
       - name: Pytest with coverage
         run: uv run pytest --cov=app --cov-fail-under=0
