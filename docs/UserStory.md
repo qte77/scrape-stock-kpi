@@ -25,6 +25,7 @@ Solo investors building their own auditable, rule-based screening pipeline. Anyo
 ## Done means
 
 `make run UNIVERSE=<preset>` produces, per asset in `results/<DATE>_<universe>/`:
+
 - `fundamentals.json` (Tier 1: Piotroski, ROE/ROA/ROIC, Beta, PEG, margin, E/P, yield, aristocrat flag)
 - `composites.json` (Tier 3: quality / dividend / growth / big_call / aaqs / hgi proxy scores)
 - `sentiment.json` (CNN F&G snapshot, daily-cron-committed independently)
