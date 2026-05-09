@@ -1,109 +1,16 @@
-#!/usr/bin/env python
-# https://www.diogonunes.com/blog/playwright-cheat-sheet/
-# TODO fair value
-# page.locator("#fundChart2").click(position={"x":12,"y":107})
-"""
-TODO mkdir for json if not present, fair value
+"""App-mode enum.
+
+The Traderfox provider dispatch and score-aggregation helpers that previously
+lived here were removed when the Traderfox scraper was decommissioned. See
+``docs/decisions/0000-remove-traderfox.md`` and issue #19. The library-based
+fundamentals replacement is tracked in #16.
 """
 
 from enum import Enum
 
-from .utils.handle_data import shuffle_dict, sort_dict
-from .utils.handle_files import save_json
-from .utils.handle_playwright import get_values_multiple_url, get_values_single_url
-
-defaults: dict[str, str | int] = {}
-assets: dict[str, dict[str, str]] = {}
-config: dict[str, str | dict[str, str]] = {}
-
 
 class AppModes(Enum):
-    """Provides the states the app can run in"""
+    """Modes the app can run in (selects the asset CSV variant)."""
 
     DEFAULT = "prod"
     TEST = "test"
-
-
-def get_values_wrapper(
-    provider: str,
-    dom_cfg: dict,
-    assets: dict,
-    base_url: str,
-    save_file: str,
-    timeout: int,
-    headless: bool = False,
-    delay_on: bool = False,
-):
-    """
-    TODO
-    """
-
-    results_args = {
-        "provider": provider,
-        "dom_cfg": dom_cfg,
-        "assets": assets,
-        "base_url": base_url,
-        "timeout": timeout,
-        "headless": headless,
-        "delay_on": delay_on,
-    }
-
-    results = _get_results(**results_args)
-    save_json(results, save_file)
-
-    return results
-
-
-def calculate_averages_wrapper(results: dict, save_file: str):
-    """
-    TODO
-    """
-    averages = _calculate_averages(results)
-    save_json(averages, save_file)
-    return averages
-
-
-def _calculate_averages(results: dict) -> dict[str, int | str]:
-    """
-    TODO
-    """
-
-    averages = {}
-
-    for name, scores in results.items():
-        scores_valid = [i for i in scores.values() if isinstance(i, int)]
-        num_int = len(scores_valid)
-        averages[name] = round(sum(scores_valid) / num_int, 2) if num_int > 0 else "N/A"
-
-    return averages
-
-
-def _get_results(
-    provider: str,
-    dom_cfg: dict,
-    assets: dict,
-    base_url: str,
-    timeout: int,
-    headless: bool = False,
-    delay_on: bool = False,
-) -> dict[str, dict[str, int | str]]:
-    """
-    TODO
-    """
-
-    assets = shuffle_dict(assets)
-    print(f"shuffled assets: {assets.keys()}")
-
-    get_values_args = {
-        "dom_cfg": dom_cfg,
-        "assets": assets,
-        "base_url": base_url,
-        "timeout": timeout,
-        "headless": headless,
-        "delay_on": delay_on,
-    }
-
-    if provider == "portfolio_vis":
-        return get_values_single_url(**get_values_args)
-    else:
-        return sort_dict(get_values_multiple_url(**get_values_args))
