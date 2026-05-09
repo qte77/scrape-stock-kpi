@@ -2,7 +2,7 @@
 .ONESHELL:
 .PHONY: \
 	setup_uv setup_dev \
-	lint autofix check_types test test_cov retest validate \
+	lint autofix check_types check_complexity test test_cov retest validate \
 	run \
 	clean help
 .DEFAULT_GOAL := help
@@ -44,6 +44,10 @@ check_types:  ## pyright type check
 	echo "--- check_types"
 	uv run pyright app $(PYRIGHT_QUIET)
 
+check_complexity:  ## complexipy cognitive complexity gate (max 15) — excludes Traderfox-bound files
+	echo "--- check_complexity"
+	uv run complexipy $$(find app -name '*.py' ! -name 'handle_playwright.py') --max-complexity-allowed 15
+
 test:  ## pytest
 	echo "--- test"
 	uv run pytest $(PYTEST_QUIET)
@@ -55,10 +59,11 @@ test_cov:  ## pytest with coverage (--cov-fail-under=0; raise once tests exist)
 retest:  ## rerun last failed tests only
 	uv run pytest --lf -x
 
-validate:  ## CI gate: lint + check_types + test_cov
+validate:  ## CI gate: lint + check_types + check_complexity + test_cov
 	set -e
 	$(MAKE) -s lint
 	$(MAKE) -s check_types
+	$(MAKE) -s check_complexity
 	$(MAKE) -s test_cov
 
 
