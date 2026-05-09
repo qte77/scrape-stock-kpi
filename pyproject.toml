@@ -6,7 +6,6 @@ readme = "README.md"
 license = "Apache-2.0"
 requires-python = ">=3.12,<3.13"
 dependencies = [
-    "playwright>=1.59",
     "rich>=15.0",
     "tqdm>=4.67",
 ]
@@ -60,7 +59,6 @@ testpaths = ["tests"]
 addopts = "--strict-markers -q --tb=short"
 markers = [
     "network: tests requiring network access",
-    "playwright: tests requiring playwright browsers",
 ]
 
 [tool.coverage.run]
