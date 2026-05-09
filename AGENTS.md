@@ -1,7 +1,8 @@
 # Agent Instructions for scrape-stock-kpi
 
-Behavioral rules for AI agents working on this Playwright-based stock KPI
-scraper. For technical details and run instructions, see [README.md](README.md).
+Behavioral rules for AI agents working on this library-based stock KPI CLI.
+For technical details and run instructions, see [README.md](README.md). For
+module map and data flow, see [docs/architecture.md](docs/architecture.md).
 
 ## Core Rules
 
@@ -12,20 +13,24 @@ scraper. For technical details and run instructions, see [README.md](README.md).
 - **Always confirm file paths exist** before referencing in code or tests
 - **Never delete existing code** unless explicitly instructed
 - **Touch only task-related code** — bug fixes don't need surrounding cleanup
+- **Strict pydantic** — every structured payload is a `BaseModel`; CLI/env via
+  `BaseSettings(cli_parse_args=True)`. No `TypedDict`, no `dataclass`.
 
 ## Architecture Overview
 
-Single-purpose CLI scraper. `app/__main__.py` orchestrates: load defaults +
-DOM config + asset list, then dispatch to a provider scraper that visits each
-URL with Playwright, extracts KPI values via DOM selectors, computes averages,
-and writes JSON results.
+Single-purpose CLI fetching fundamentals via yfinance for any Yahoo symbol
+(stocks, ETFs, FX, futures, crypto, indices). `app/__main__.py` resolves a
+universe → fetches per-ticker → prints a rich summary table → writes
+`results/fundamentals_<UTC>.json`. See
+[docs/architecture.md](docs/architecture.md) for the module map.
 
-- `app/app.py` — provider dispatch (`get_values_wrapper`, `calculate_averages_wrapper`)
-- `app/utils/handle_playwright.py` — browser automation
-- `app/utils/handle_*.py` — assets, config, data, files I/O
-- `app/config/` — `defaults.json` (paths, timeouts, base URLs) and `dom.json`
-  (per-provider DOM selectors)
-- `app/assets/` — asset CSVs (prod + test)
+Active modules:
+
+- `app/__main__.py` — entrypoint
+- `app/universe.py` — universe resolver (presets in `app/assets/universes/*.txt`)
+- `app/fundamentals.py` — `FundamentalsSnapshot(BaseModel)` + fetchers
+- `app/utils/parse_args.py` — `CliArgs(BaseSettings)`
+- `app/assets/universes/` — preset ticker lists
 
 ## Decision Framework
 
@@ -35,41 +40,42 @@ and writes JSON results.
 
 - Requirements: task description (primary)
 - Run/lint/test commands: `make help`
-- Project version + author: `app/__version__.py`
-- Provider DOM contracts: `app/config/dom.json`
+- Project version: `app/__version__.py`
+- Library API shapes (yfinance, pydantic, etc.): `context7` MCP, not training data
 
-**Anti-scope-creep:** Implement only what is explicitly requested. The repo is
-DRAFT/WIP — prefer landing small working slices over comprehensive rewrites.
+**Anti-scope-creep:** Implement only what is explicitly requested. Prefer
+landing small working slices over comprehensive rewrites within a single PR.
 
 ## Quality Thresholds
 
-Before starting any task:
+Subjective gut-check before starting any task. If below threshold: gather
+more context or ask the user.
 
-- **Context**: 8/10 — understand requirements, codebase patterns, scraping target
-- **Clarity**: 7/10 — clear implementation path and expected outcomes
-- **Alignment**: 8/10 — follows project patterns, respects KISS/DRY/YAGNI/AHA
-- **Success**: 7/10 — confident in completing task correctly
-
-If below threshold: gather more context or ask the user.
+- **Context** 8/10 — understand requirements, codebase patterns, target API
+- **Clarity** 7/10 — clear implementation path and expected outcomes
+- **Alignment** 8/10 — follows project patterns, respects KISS/DRY/YAGNI/AHA
+- **Success** 7/10 — confident in completing task correctly
 
 ## Agent Quick Reference
 
 **Pre-task:**
 
-- Read AGENTS.md → README.md
+- Read AGENTS.md → README.md → relevant `docs/` files
 - Confirm quality thresholds met
 - Check `make help` for available recipes
 
 **During task:**
 
 - Use `make` commands; document any deviation
-- For new feature code: follow TDD (Red → Green → Refactor) with one commit
-  per phase
-- Tag network-dependent tests with `@pytest.mark.network`,
-  Playwright-dependent tests with `@pytest.mark.playwright`
+- For new feature code: **topic-grouped commits with tests + implementation
+  co-committed**. Strict TDD (Red → Green → Refactor with one commit per
+  phase) is reserved for the relative-strength hedging epic (#8/#9/#10).
+- Tag network-dependent tests with `@pytest.mark.network` (excluded from
+  default `make test` via `-m 'not network'`; opt in with `pytest -m network`)
 
 **Post-task:**
 
-- Run `make validate` — must pass
-- Update CHANGELOG.md `[Unreleased]` section for non-trivial changes
+- Run `make validate` — must pass (lint + types + complexity + lint_md + tests)
+- `make lint_links` — opt-in locally; mandatory in CI via `links-fail-fast.yml`
+- Update `CHANGELOG.md` `[Unreleased]` section for non-trivial changes
 - Bump `app/__version__.py` only at the end of a feature branch (semver)

@@ -22,12 +22,19 @@ Solo investors building their own auditable, rule-based screening pipeline. Anyo
 - Paid-data integrations (CDS spreads, Bloomberg, Refinitiv) — out of scope
 - Automated trade execution — analysis only
 
-## Done means
+## v0.4.0 done means (current milestone)
 
-`make run UNIVERSE=<preset>` produces, per asset in `results/<DATE>_<universe>/`:
+- `make run UNIVERSE=<preset>` (or `TICKERS=...`, `TICKERS_FILE=...`) writes a single `results/fundamentals_<UTC>.json` containing one `FundamentalsSnapshot` per resolved ticker. Sparse fields for non-equities are valid.
+- Stdout shows a rich summary table for equities + ETFs in the resolved universe.
+- CNN F&G snapshot lands daily in `results/fear_greed/<DATE>.json` via cron after #17 ships.
+- `make validate` passes lint + types + complexity + lint_md + tests. CI green on push and PR (validate + links-fail-fast workflows).
 
-- `fundamentals.json` (Tier 1: Piotroski, ROE/ROA/ROIC, Beta, PEG, margin, E/P, yield, aristocrat flag)
-- `composites.json` (Tier 3: quality / dividend / growth / big_call / aaqs / hgi proxy scores)
-- `sentiment.json` (CNN F&G snapshot, daily-cron-committed independently)
+## v1.0.0 vision (post v0.5.0)
 
-`make validate` passes lint + types + tests + complexity. CI green.
+`make run UNIVERSE=<preset>` produces, per asset in `results/<DATE>_<universe>/<ticker>/`:
+
+- `fundamentals.json` — Tier 1: extends v0.4.0's `FundamentalsSnapshot` with Piotroski, ROIC, Beta, PEG, dividend-aristocrat flag (additions land via v0.5.0 #18 and later)
+- `composites.json` — Tier 3: quality / dividend / growth / big_call / aaqs / hgi proxy scores (v0.5.0 #18)
+- `sentiment.json` — CNN F&G snapshot (v0.4.0 #17, runs independently on cron)
+
+The per-asset directory layout is a future schema change from v0.4.0's single-file output; not yet implemented.
