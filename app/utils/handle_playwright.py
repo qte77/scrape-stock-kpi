@@ -214,7 +214,6 @@ def _get_result(
 
         page_kw = {
             "pw_context": pw_context,
-            "title": asset_name,
             "url": url,
             "cookie_selector": dom_cfg["dom_selector_cookies"],
             "cookie_frame": dom_cfg["dom_selector_cookies_frame"],
