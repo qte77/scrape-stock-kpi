@@ -11,7 +11,7 @@ High-level sketch of modules + data flow. See [`UserStory.md`](UserStory.md) for
 
 ## Modules
 
-```
+```text
 app/
 ├── __main__.py            entrypoint: parse CLI -> resolve universe -> per-ticker pipeline -> write results
 ├── universe.py            resolve_universe(spec) -> list[ticker]; presets in app/assets/universes/*.txt
@@ -28,7 +28,7 @@ app/
 
 ## Data flow
 
-```
+```text
 CLI args  ──► CliArgs(BaseSettings)
                   │
                   ▼

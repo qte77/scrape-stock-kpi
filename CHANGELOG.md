@@ -1,5 +1,4 @@
-Changelog
-===
+# Changelog
 
 All notable changes to this project will be documented in this file.
 
@@ -15,8 +14,7 @@ Types of changes:
 - `Fixed` for any bugfixes.
 - `Security` in case of vulnerabilities.
 
-[Unreleased]
----
+## [Unreleased]
 
 ### Added
 
