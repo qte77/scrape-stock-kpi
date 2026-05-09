@@ -13,7 +13,7 @@ permissions:
 
 jobs:
   validate:
-    name: lint + test
+    name: lint + types + complexity + tests
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -34,6 +34,9 @@ jobs:
 
       - name: Pyright type check
         run: uv run pyright app
+
+      - name: Complexipy cognitive complexity (max 15)
+        run: uv run complexipy $(find app -name '*.py' ! -name 'handle_playwright.py') --max-complexity-allowed 15
 
       - name: Pytest with coverage
         run: uv run pytest --cov=app --cov-fail-under=0
