@@ -38,5 +38,8 @@ jobs:
       - name: Complexipy cognitive complexity (max 15)
         run: uv run complexipy app --max-complexity-allowed 15
 
+      - name: Markdownlint
+        run: npx --yes markdownlint-cli --config .markdownlint.json '**/*.md' --ignore '.venv/**' --ignore 'results/**' --ignore 'node_modules/**'
+
       - name: Pytest with coverage
         run: uv run pytest --cov=app --cov-fail-under=0

@@ -40,3 +40,11 @@ class CliArgs(BaseSettings):
 
     tickers_file: Path | None = None
     """Path to a file containing one Yahoo symbol per line."""
+
+    period: str = "5y"
+    """Price-history depth for :func:`app.fundamentals.fetch_price_history`.
+
+    Accepts any value yfinance accepts (``1d``/``5d``/``1mo``/``1y``/``5y``
+    /``max`` etc.). Not consumed by the default fundamentals flow in
+    :mod:`app.__main__`; reserved for the v0.5.0 composites PR (#18).
+    """
