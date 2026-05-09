@@ -1,47 +1,42 @@
-#!/usr/bin/env python
-"""Handles arguments to the app"""
+"""CLI args + env vars typed via pydantic-settings.
 
-from argparse import ArgumentParser
-from typing import TypedDict, cast
+`CliArgs` is the single source of truth for all runtime configuration that
+comes from outside the process. Instantiate with `CliArgs()` and
+``cli_parse_args=True`` reads ``sys.argv`` automatically.
 
-from ..app import AppModes
+The legacy argparse-based ``parse_args()`` function returned a loose
+``dict[str, str | bool]`` that callers had to index by string key. The
+pydantic settings model gives every field its precise type at the boundary
+and removes the type-narrowing burden from callers.
+"""
+
+from pathlib import Path
+
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
-class CliArgs(TypedDict):
-    """Typed shape of the parsed CLI args returned by `parse_args`."""
+class CliArgs(BaseSettings):
+    """Parsed CLI args (and matching env vars).
 
-    m: str
-    provider: str
-    headless: bool
-    delay: bool
+    The asset universe is selected by **exactly one** of these fields, in
+    precedence order: ``tickers`` > ``tickers_file`` > ``universe``. The
+    resolver in :mod:`app.universe` enforces the precedence at runtime.
+    """
 
-
-def parse_args() -> CliArgs:
-    """Parses and evaluates argv and returns the results."""
-
-    desc = ""
-
-    parser = ArgumentParser(prog="app", description=desc)
-    parser.add_argument(
-        "-m",
-        # "--mode",
-        type=str,
-        default=AppModes.DEFAULT.value,
-        choices=[AppModes.DEFAULT.value, AppModes.TEST.value],
-        help="change app mode",
-    )
-    parser.add_argument(
-        "-p",
-        "--provider",
-        type=str,
-        default="",
-        help="which provider to test against",
-    )
-    parser.add_argument(
-        "-l", "--headless", action="store_true", help="don't show browser"
-    )
-    parser.add_argument(
-        "-d", "--delay", action="store_true", help="run with random delay"
+    model_config = SettingsConfigDict(
+        cli_parse_args=True,
+        cli_kebab_case=True,
+        cli_implicit_flags=True,
+        env_prefix="SSK_",
+        case_sensitive=False,
+        extra="forbid",
     )
 
-    return cast(CliArgs, vars(parser.parse_args()))
+    universe: str = "qte77-watchlist"
+    """Preset universe name (file basename in `app/assets/universes/`)."""
+
+    tickers: str | None = None
+    """Comma-separated Yahoo symbols, e.g. ``MSFT,SPY,EURUSD=X,GC=F``."""
+
+    tickers_file: Path | None = None
+    """Path to a file containing one Yahoo symbol per line."""

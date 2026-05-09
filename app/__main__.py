@@ -1,25 +1,22 @@
 """scrape-stock-kpi entrypoint.
 
-The Traderfox scraper has been decommissioned (see
-``docs/decisions/0000-remove-traderfox.md`` and issue #19). The library-based
-fundamentals module is in progress; see issue #16.
-
-Until #16 lands, ``python -m app`` echoes the parsed CLI args and exits.
+Parses CLI args via :class:`app.utils.parse_args.CliArgs` and reports them.
+Universe resolution + fundamentals fetching land in subsequent PRs (#16, #20).
 """
 
 from rich.console import Console
 
-from .utils.parse_args import parse_args
+from .utils.parse_args import CliArgs
 
 
 def main() -> None:
-    """Stub entrypoint until #16 lands."""
+    """Stub entrypoint — echoes the parsed CliArgs until #16 lands."""
     console = Console()
-    args = parse_args()
-    console.print(f"[yellow]scrape-stock-kpi[/yellow] received: {args}")
+    args = CliArgs()
+    console.print(f"[yellow]scrape-stock-kpi[/yellow] received: {args.model_dump()}")
     console.print(
-        "[yellow]Traderfox scraper decommissioned. "
-        "Library-based fundamentals pending — see issue #16.[/yellow]"
+        "[yellow]Universe resolver and fundamentals module pending — "
+        "see issues #20 and #16.[/yellow]"
     )
 
 
