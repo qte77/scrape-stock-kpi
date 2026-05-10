@@ -225,10 +225,18 @@ def _load_year(year: int, *, root: Path = RESULTS_DIR) -> dict[str, FearGreedSna
 def _write_year(
     year: int, by_date: dict[str, FearGreedSnapshot], *, root: Path = RESULTS_DIR
 ) -> Path:
-    """Write a year's snapshots as a date-sorted JSON array."""
+    """Write a year's snapshots as a date-sorted JSON array.
+
+    ``exclude_none=True`` keeps the per-row payload tight: historical rows
+    (which have ``previous_*`` and per-day subindicator scores as ``None``)
+    omit those keys entirely. Loading round-trips because the model fills
+    missing optional fields with their declared defaults.
+    """
     root.mkdir(parents=True, exist_ok=True)
     path = _year_path(year, root=root)
-    payload = [by_date[k].model_dump(mode="json") for k in sorted(by_date)]
+    payload = [
+        by_date[k].model_dump(mode="json", exclude_none=True) for k in sorted(by_date)
+    ]
     path.write_text(json.dumps(payload, indent=2) + "\n")
     return path
 
@@ -238,13 +246,19 @@ def _upsert(
 ) -> bool:
     """Insert/replace a snapshot keyed by its UTC date.
 
-    ``force=True`` always wins (used for the live headline). Otherwise only
-    inserts when missing or when the incoming timestamp is strictly newer
-    than the stored one.
+    ``force=True`` always wins (used for the live headline). Otherwise:
+
+    - newer CNN timestamp → replace (CNN updated this day intraday);
+    - same timestamp but different content → replace (schema upgrade — e.g.
+      a row written before subindicator capture needs to gain those fields);
+    - older or identical → no-op.
     """
     date_key = snap.timestamp.astimezone(UTC).strftime("%Y-%m-%d")
     existing = by_date.get(date_key)
     if force or existing is None or snap.timestamp > existing.timestamp:
+        by_date[date_key] = snap
+        return True
+    if snap.timestamp == existing.timestamp and snap != existing:
         by_date[date_key] = snap
         return True
     return False
