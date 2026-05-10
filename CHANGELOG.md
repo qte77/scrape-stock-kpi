@@ -22,6 +22,15 @@ fundamentals + sentiment + composites stack. See
 
 ### Added
 
+- `app/sentiment.py` — `FearGreedSnapshot(BaseModel)` + `fetch_fear_greed()`
+  via stdlib `urllib.request`; `User-Agent` header sent to satisfy the CNN
+  endpoint (returns 418 without one). Subindicators ignored via
+  `extra="ignore"` in v0.4.0. `python -m app.sentiment` writes
+  `results/fear_greed_<UTC>.json` (#17).
+- `.github/workflows/fear-greed.yaml` — daily cron at 21:30 UTC (~30 min
+  after NYSE close, year-round) plus `workflow_dispatch`; commits the
+  snapshot via `stefanzweifel/git-auto-commit-action@v5` scoped to
+  `results/fear_greed_*.json` (#17).
 - `app/fundamentals.py` — `FundamentalsSnapshot(BaseModel)` plus
   `fetch_fundamentals` / `fetch_price_history` /
   `fetch_universe_fundamentals`. yfinance-backed, ~30 aliased fields,
@@ -53,7 +62,11 @@ fundamentals + sentiment + composites stack. See
 
 - `make run` no longer scrapes via Playwright; runs fundamentals via
   yfinance and writes `results/fundamentals_<UTC>.json` plus a rich
-  summary table (#28).
+  summary table (#28). A CNN Fear & Greed banner now precedes the table;
+  fetch failure logs a warning and continues (#17).
+- `results/` is no longer gitignored — cron-committed F&G snapshots live
+  there. The cron's `file_pattern` is scoped narrowly so locally-produced
+  fundamentals files are never accidentally swept into a CI commit (#17).
 - Default `pytest` excludes `@pytest.mark.network` tests via
   `-m 'not network'` in addopts. Opt in with `pytest -m network`
   (#28).
