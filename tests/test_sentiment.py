@@ -9,6 +9,7 @@ from unittest.mock import patch
 
 import pytest
 from app.sentiment import (
+    ACCEPT,
     USER_AGENT,
     FearGreedSnapshot,
     fetch_fear_greed,
@@ -78,7 +79,7 @@ def test_fetch_fear_greed_returns_snapshot_from_payload() -> None:
     assert snap.rating == "neutral"
 
 
-def test_fetch_fear_greed_sends_user_agent_header() -> None:
+def test_fetch_fear_greed_sends_browser_headers() -> None:
     payload = load_fear_greed_fixture("current")
     captured: dict[str, Any] = {}
 
@@ -90,6 +91,10 @@ def test_fetch_fear_greed_sends_user_agent_header() -> None:
         fetch_fear_greed()
 
     assert captured["request"].get_header("User-agent") == USER_AGENT
+    assert captured["request"].get_header("Accept") == ACCEPT
+    # Guard against the regression that triggered this fix: CNN's WAF rejects
+    # any UA containing the bot-style "(compatible;" parenthetical.
+    assert "(compatible;" not in USER_AGENT
 
 
 @pytest.mark.network
