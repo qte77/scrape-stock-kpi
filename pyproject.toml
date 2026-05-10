@@ -18,6 +18,7 @@ dev = [
     "ruff>=0.15",
     "pyright>=1.1.400",
     "complexipy>=5.0",
+    "bump-my-version>=0.29",
 ]
 test = [
     "pytest>=9.0",
@@ -75,3 +76,42 @@ exclude_lines = [
     "raise NotImplementedError",
     "if __name__ == .__main__.:",
 ]
+
+# Atomic version bumping. Single source of truth is [project].version;
+# bumpversion keeps the README static badge and CHANGELOG header in sync,
+# tags the release, and creates a conventional bump commit. Trigger
+# via `uv run bump-my-version bump [major|minor|patch]` or the
+# `bump-my-version.yaml` workflow_dispatch.
+[tool.bumpversion]
+current_version = "0.5.0"
+parse = "(?P<major>\\d+)\\.(?P<minor>\\d+)\\.(?P<patch>\\d+)"
+serialize = ["{major}.{minor}.{patch}"]
+commit = true
+tag = true
+allow_dirty = false
+ignore_missing_version = false
+sign_tags = false
+tag_name = "v{new_version}"
+tag_message = "v{new_version}"
+message = "chore(release): bump {current_version} -> {new_version}"
+
+[[tool.bumpversion.files]]
+filename = "pyproject.toml"
+search = 'version = "{current_version}"'
+replace = 'version = "{new_version}"'
+
+[[tool.bumpversion.files]]
+filename = "README.md"
+search = "version-{current_version}-blue"
+replace = "version-{new_version}-blue"
+
+[[tool.bumpversion.files]]
+filename = "CHANGELOG.md"
+search = """
+## [Unreleased]
+"""
+replace = """
+## [Unreleased]
+
+## [{new_version}] - {now:%Y-%m-%d}
+"""
