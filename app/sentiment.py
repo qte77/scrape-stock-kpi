@@ -3,10 +3,12 @@
 Public API:
     - :func:`fetch_fear_greed` returns the headline :class:`FearGreedSnapshot`
       (used by the ``make run`` banner).
-    - ``python -m app.sentiment`` fetches the full payload and writes one
-      date-keyed snapshot per CNN reading to ``results/cnn_fg/YYYY-MM-DD.json``.
-      Today's file is rewritten each run (CNN updates intraday); historical
-      files are immutable and skipped if they already exist.
+    - ``python -m app.sentiment`` fetches the full payload and merges the
+      headline + ~1y historical points into per-year files at
+      ``results/cnn_fg/YYYY.json`` — sorted-by-date JSON arrays. Today's
+      entry is always overwritten with the live headline (which carries
+      ``previous_*`` deltas); older dates are gap-filled and only updated
+      if a fresher CNN timestamp arrives.
 
 CNN's WAF requires a browser-shape request — see ``USER_AGENT`` / ``ACCEPT``
 / ``REFERER`` constants. No external dependencies; stdlib ``urllib.request``
@@ -103,38 +105,83 @@ def parse_historical(payload: dict[str, Any]) -> dict[str, FearGreedSnapshot]:
     return {date: snap for date, (_, snap) in by_date.items()}
 
 
-def _persist_snapshot(snapshot: FearGreedSnapshot, *, overwrite: bool) -> Path | None:
-    """Write one snapshot to ``results/cnn_fg/<date>.json``.
+def _year_path(year: int, *, root: Path = RESULTS_DIR) -> Path:
+    return root / f"{year}.json"
 
-    Returns the path written, or ``None`` if the file already exists and
-    ``overwrite`` is ``False`` (immutable historical entries).
+
+def _load_year(year: int, *, root: Path = RESULTS_DIR) -> dict[str, FearGreedSnapshot]:
+    """Load the per-year file as a date-keyed dict, or empty if missing."""
+    path = _year_path(year, root=root)
+    if not path.exists():
+        return {}
+    raw = json.loads(path.read_text())
+    return {item["timestamp"][:10]: FearGreedSnapshot.model_validate(item) for item in raw}
+
+
+def _write_year(
+    year: int, by_date: dict[str, FearGreedSnapshot], *, root: Path = RESULTS_DIR
+) -> Path:
+    """Write a year's snapshots as a date-sorted JSON array."""
+    root.mkdir(parents=True, exist_ok=True)
+    path = _year_path(year, root=root)
+    payload = [by_date[k].model_dump(mode="json") for k in sorted(by_date)]
+    path.write_text(json.dumps(payload, indent=2) + "\n")
+    return path
+
+
+def _upsert(
+    by_date: dict[str, FearGreedSnapshot], snap: FearGreedSnapshot, *, force: bool
+) -> bool:
+    """Insert/replace a snapshot keyed by its UTC date.
+
+    ``force=True`` always wins (used for the live headline). Otherwise only
+    inserts when missing or when the incoming timestamp is strictly newer
+    than the stored one.
     """
-    RESULTS_DIR.mkdir(parents=True, exist_ok=True)
-    date_key = snapshot.timestamp.astimezone(UTC).strftime("%Y-%m-%d")
-    out_path = RESULTS_DIR / f"{date_key}.json"
-    if out_path.exists() and not overwrite:
-        return None
-    out_path.write_text(json.dumps(snapshot.model_dump(mode="json"), indent=2))
-    return out_path
+    date_key = snap.timestamp.astimezone(UTC).strftime("%Y-%m-%d")
+    existing = by_date.get(date_key)
+    if force or existing is None or snap.timestamp > existing.timestamp:
+        by_date[date_key] = snap
+        return True
+    return False
+
+
+def merge_payload_into_years(
+    payload: dict[str, Any], *, root: Path = RESULTS_DIR
+) -> dict[int, dict[str, FearGreedSnapshot]]:
+    """Apply a CNN payload onto the on-disk per-year history, in memory only.
+
+    Returns the resulting ``{year: {date: snap}}`` mapping. The headline
+    upsert is forced (today's reading always wins, including its
+    ``previous_*`` fields). Historical entries fill gaps and refresh same-day
+    duplicates that CNN has since updated.
+    """
+    headline = FearGreedSnapshot.model_validate(payload["fear_and_greed"])
+    historical = parse_historical(payload)
+    today_year = headline.timestamp.astimezone(UTC).year
+    today_key = headline.timestamp.astimezone(UTC).strftime("%Y-%m-%d")
+
+    by_year: dict[int, dict[str, FearGreedSnapshot]] = {}
+
+    def _ensure(year: int) -> dict[str, FearGreedSnapshot]:
+        if year not in by_year:
+            by_year[year] = _load_year(year, root=root)
+        return by_year[year]
+
+    _upsert(_ensure(today_year), headline, force=True)
+    for date_key, snap in historical.items():
+        if date_key == today_key:
+            continue
+        _upsert(_ensure(snap.timestamp.astimezone(UTC).year), snap, force=False)
+    return by_year
 
 
 def main() -> None:
     logging.basicConfig(level=logging.INFO, format="%(message)s")
-    payload = _fetch_payload()
-    headline = FearGreedSnapshot.model_validate(payload["fear_and_greed"])
-    today_path = _persist_snapshot(headline, overwrite=True)
-    logger.info(
-        "Wrote %s (score=%.2f, rating=%s)", today_path, headline.score, headline.rating
-    )
-    historical = parse_historical(payload)
-    today_date = headline.timestamp.astimezone(UTC).strftime("%Y-%m-%d")
-    written = 0
-    for date, snap in historical.items():
-        if date == today_date:
-            continue
-        if _persist_snapshot(snap, overwrite=False) is not None:
-            written += 1
-    logger.info("Backfilled %d historical date(s)", written)
+    by_year = merge_payload_into_years(_fetch_payload())
+    for year, by_date in by_year.items():
+        path = _write_year(year, by_date)
+        logger.info("Wrote %s with %d entries", path, len(by_date))
 
 
 if __name__ == "__main__":
