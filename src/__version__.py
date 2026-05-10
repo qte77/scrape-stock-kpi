@@ -2,5 +2,5 @@
 
 from importlib.metadata import version
 
-__version__: str = version("scrape-stock-kpi")
+__version__: str = version("analyze-stock-kpi")
 __authors__: str = "qte77"

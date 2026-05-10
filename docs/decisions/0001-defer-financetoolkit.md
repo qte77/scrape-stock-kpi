@@ -4,7 +4,7 @@
 
 **Amends:** [ADR-0000](0000-remove-traderfox.md) §Decision (fundamentals stack)
 
-**Drives:** [#18](https://github.com/qte77/scrape-stock-kpi/issues/18)
+**Drives:** [#18](https://github.com/qte77/analyze-stock-kpi/issues/18)
 
 ## Context
 
@@ -42,6 +42,6 @@ Defer the `financetoolkit` dependency to v0.5.0 (the #18 composites PR). PR 1D (
 
 ## References
 
-- [PR #28](https://github.com/qte77/scrape-stock-kpi/pull/28) — v0.4.0 fundamentals shipped yfinance-only
+- [PR #28](https://github.com/qte77/analyze-stock-kpi/pull/28) — v0.4.0 fundamentals shipped yfinance-only
 - [`/jerbouma/financetoolkit`](https://github.com/jerbouma/financetoolkit) (context7 ID)
 - [ADR-0000](0000-remove-traderfox.md) — original library-stack decision being amended

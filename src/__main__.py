@@ -1,4 +1,4 @@
-"""scrape-stock-kpi entrypoint.
+"""analyze-stock-kpi entrypoint.
 
 Resolves the active asset universe, prints a CNN Fear & Greed sentiment
 banner, fetches fundamentals via yfinance, prints an equities/ETF summary
@@ -125,7 +125,7 @@ def main() -> None:
         logger.warning("Failed to fetch CNN Fear & Greed: %s", exc)
     tickers = resolve_universe(args)
     console.print(
-        f"[green]scrape-stock-kpi[/green] resolving "
+        f"[green]analyze-stock-kpi[/green] resolving "
         f"[bold]{len(tickers)}[/bold] tickers"
     )
     raw_snapshots = fetch_universe_fundamentals(tickers)

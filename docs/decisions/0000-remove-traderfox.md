@@ -2,7 +2,7 @@
 
 **Status:** Accepted (2026-05-09); [ADR-0001](0001-defer-financetoolkit.md) amends §Decision re: `financetoolkit`
 
-**Drives:** [#19](https://github.com/qte77/scrape-stock-kpi/issues/19) (decommission), [#16](https://github.com/qte77/scrape-stock-kpi/issues/16) (fundamentals replacement), [#17](https://github.com/qte77/scrape-stock-kpi/issues/17) (sentiment), [#18](https://github.com/qte77/scrape-stock-kpi/issues/18) (composite proxies)
+**Drives:** [#19](https://github.com/qte77/analyze-stock-kpi/issues/19) (decommission), [#16](https://github.com/qte77/analyze-stock-kpi/issues/16) (fundamentals replacement), [#17](https://github.com/qte77/analyze-stock-kpi/issues/17) (sentiment), [#18](https://github.com/qte77/analyze-stock-kpi/issues/18) (composite proxies)
 
 ## Context
 
@@ -59,4 +59,4 @@ Traderfox-specific code (`handle_playwright.py`, `dom.json`, Playwright dep, tra
 
 - [`UserStory.md`](../UserStory.md), [`architecture.md`](../architecture.md), [`roadmap.md`](../roadmap.md)
 - [yfinance](https://pypi.org/project/yfinance/), [financetoolkit](https://pypi.org/project/financetoolkit/)
-- CNN F&G endpoint research: [#27 (closed, superseded by #17)](https://github.com/qte77/scrape-stock-kpi/issues/17)
+- CNN F&G endpoint research: [#27 (closed, superseded by #17)](https://github.com/qte77/analyze-stock-kpi/issues/17)
