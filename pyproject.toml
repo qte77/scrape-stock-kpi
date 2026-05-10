@@ -10,6 +10,7 @@ dependencies = [
     "pydantic-settings>=2.6",
     "rich>=15.0",
     "tqdm>=4.67",
+    "yfinance>=0.2.40",
 ]
 
 [dependency-groups]
@@ -58,9 +59,9 @@ reportMissingTypeStubs = "none"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-addopts = "--strict-markers -q --tb=short"
+addopts = "--strict-markers -q --tb=short -m 'not network'"
 markers = [
-    "network: tests requiring network access",
+    "network: tests requiring network access (opt in via `pytest -m network`)",
 ]
 
 [tool.coverage.run]
