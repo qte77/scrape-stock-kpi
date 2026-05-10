@@ -173,6 +173,52 @@ def test_upsert_gapfill_inserts_when_missing() -> None:
     assert bucket["2026-05-09"] is snap
 
 
+def test_upsert_replaces_when_same_timestamp_but_richer_content() -> None:
+    """Schema-upgrade path: a row written before subindicator capture must
+    be replaced when the same-timestamp re-fetch carries more data."""
+    stored = _snap("2026-05-09", score=10.0, rating="extreme fear")
+    bucket: dict[str, FearGreedSnapshot] = {"2026-05-09": stored}
+    incoming = FearGreedSnapshot(
+        score=10.0,
+        rating="extreme fear",
+        timestamp=stored.timestamp,
+        subindicators={
+            "market_momentum_sp500": SubindicatorReading(
+                rating="extreme greed", raw_value=5800.0
+            ),
+        },
+    )
+
+    changed = _upsert(bucket, incoming, force=False)
+
+    assert changed is True
+    assert bucket["2026-05-09"].subindicators is not None
+
+
+def test_upsert_noop_when_same_timestamp_and_identical_content() -> None:
+    stored = _snap("2026-05-09", score=10.0, rating="extreme fear")
+    bucket: dict[str, FearGreedSnapshot] = {"2026-05-09": stored}
+    duplicate = _snap("2026-05-09", score=10.0, rating="extreme fear")
+
+    changed = _upsert(bucket, duplicate, force=False)
+
+    assert changed is False
+    assert bucket["2026-05-09"] is stored
+
+
+def test_write_year_omits_none_fields(tmp_path: Path) -> None:
+    """Historical rows must not waste bytes on null `previous_*` /
+    `subindicators` keys — only fields with actual values are emitted."""
+    by_date = {"2026-01-15": _snap("2026-01-15", score=30.0, rating="fear")}
+    path = _write_year(2026, by_date, root=tmp_path)
+    raw = json.loads(path.read_text())
+
+    keys = set(raw[0])
+    assert keys == {"score", "rating", "timestamp"}
+    assert "previous_close" not in keys
+    assert "subindicators" not in keys
+
+
 def test_write_then_load_year_roundtrip(tmp_path: Path) -> None:
     by_date = {
         "2026-01-15": _snap("2026-01-15", score=30.0, rating="fear"),
