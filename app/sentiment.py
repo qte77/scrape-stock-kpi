@@ -22,14 +22,17 @@ from pathlib import Path
 from pydantic import BaseModel, ConfigDict
 
 ENDPOINT = "https://production.dataviz.cnn.io/index/fearandgreed/graphdata"
-# CNN's WAF rejects bot-style UAs (incl. "(compatible; ...)" and the token
-# "scrape") with HTTP 418. A plain desktop-browser UA + Accept header gets
-# through. The exact Chrome version is not load-bearing.
+# CNN's WAF rejects unidentified clients with HTTP 418. The headers below
+# mirror what edition.cnn.com itself sends when it XHRs the dataviz API:
+# a plain desktop-browser UA, an XHR-shape Accept, and a CNN Referer.
+# All three are required when the egress IP is a datacenter range; from
+# residential IPs the UA alone usually suffices.
 USER_AGENT = (
     "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
     "(KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
 )
 ACCEPT = "application/json, text/plain, */*"
+REFERER = "https://edition.cnn.com/"
 REQUEST_TIMEOUT_SEC = 10
 RESULTS_DIR = Path("results")
 
@@ -62,7 +65,8 @@ def fetch_fear_greed() -> FearGreedSnapshot:
     whether to swallow or surface.
     """
     request = urllib.request.Request(
-        ENDPOINT, headers={"User-Agent": USER_AGENT, "Accept": ACCEPT}
+        ENDPOINT,
+        headers={"User-Agent": USER_AGENT, "Accept": ACCEPT, "Referer": REFERER},
     )
     with urllib.request.urlopen(request, timeout=REQUEST_TIMEOUT_SEC) as response:  # noqa: S310
         payload = json.loads(response.read())

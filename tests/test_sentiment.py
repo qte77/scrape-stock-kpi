@@ -10,6 +10,7 @@ from unittest.mock import patch
 import pytest
 from app.sentiment import (
     ACCEPT,
+    REFERER,
     USER_AGENT,
     FearGreedSnapshot,
     fetch_fear_greed,
@@ -92,8 +93,10 @@ def test_fetch_fear_greed_sends_browser_headers() -> None:
 
     assert captured["request"].get_header("User-agent") == USER_AGENT
     assert captured["request"].get_header("Accept") == ACCEPT
-    # Guard against the regression that triggered this fix: CNN's WAF rejects
-    # any UA containing the bot-style "(compatible;" parenthetical.
+    assert captured["request"].get_header("Referer") == REFERER
+    # Guard against the regression that triggered the first hot-fix: CNN's
+    # WAF rejects any UA containing the bot-style "(compatible;"
+    # parenthetical.
     assert "(compatible;" not in USER_AGENT
 
 
