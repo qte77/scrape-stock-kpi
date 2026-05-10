@@ -18,7 +18,7 @@ app/
 ├── fundamentals.py        fetch_fundamentals(ticker) -> FundamentalsSnapshot
 │                          fetch_price_history(ticker, period) -> DataFrame
 │                          fetch_universe_fundamentals(tickers) -> list[FundamentalsSnapshot]
-├── sentiment.py           fetch_fear_greed() -> FearGreedSnapshot     [v0.4.0 / #17 — not yet implemented]
+├── sentiment.py           fetch_fear_greed() -> FearGreedSnapshot; `python -m app.sentiment` writes results/fear_greed_<UTC>.json
 ├── composite_scores.py    quality/dividend/growth/big_call/aaqs/hgi   [v0.5.0 / #18 — not yet implemented]
 ├── assets/
 │   └── universes/         preset *.txt ticker lists (one per universe name)
@@ -32,6 +32,9 @@ app/
 CLI args  ──► CliArgs(BaseSettings)
                   │
                   ▼
+            sentiment.fetch_fear_greed()  ──► rich banner (best-effort; failure logs and continues)
+                  │
+                  ▼
             universe.resolve_universe()
                   │  list[ticker]
                   ▼
@@ -41,7 +44,9 @@ CLI args  ──► CliArgs(BaseSettings)
    rich table (equities + ETFs only)  +  json.dumps -> results/fundamentals_<UTC>.json
 ```
 
-v0.5.0 additions (deferred): `sentiment.fear_greed` runs on a separate cron workflow; `composite_scores` aggregates `FundamentalsSnapshot` fields into 0-100 proxy scores merged into per-asset output.
+A separate daily GitHub Actions cron (`.github/workflows/fear-greed.yaml`) runs `python -m app.sentiment` and commits the resulting `results/fear_greed_<UTC>.json` back to the repo via `stefanzweifel/git-auto-commit-action@v5`, scoped to `file_pattern: results/fear_greed_*.json`.
+
+v0.5.0 additions (deferred): `composite_scores` aggregates `FundamentalsSnapshot` fields into 0-100 proxy scores merged into per-asset output.
 
 ## Public types (`pydantic.BaseModel`)
 
@@ -49,14 +54,14 @@ v0.5.0 additions (deferred): `sentiment.fear_greed` runs on a separate cron work
 |---|---|---|
 | `CliArgs(BaseSettings)` | `utils/parse_args.py` | CLI + env input — `cli_parse_args=True`, `extra="forbid"` |
 | `FundamentalsSnapshot` | `fundamentals.py` | Per-ticker fundamentals — ~30 aliased fields; sparse for non-equities |
-| `FearGreedSnapshot` | `sentiment.py` | CNN F&G fields — *v0.4.0 / #17, not yet implemented* |
+| `FearGreedSnapshot` | `sentiment.py` | CNN F&G headline fields (score, rating, timestamp, prev close/1w/1m/1y); subindicators ignored via `extra="ignore"` |
 | `CompositeScores` | `composite_scores.py` | Quality/dividend/growth/big_call/aaqs/hgi proxies — *v0.5.0 / #18, not yet implemented* |
 
 ## External boundaries
 
 - **`yfinance`** — fundamentals (`Ticker.info`) + price history (`Ticker.history`); rate-limit risk; live tests tagged `@pytest.mark.network` (excluded from default `make test`, opt in via `pytest -m network`)
-- **CNN F&G JSON endpoint** *(v0.4.0 / #17)* — `production.dataviz.cnn.io/index/fearandgreed/graphdata`; requires `User-Agent` header; stdlib `urllib.request`, no extra deps
-- **GitHub Actions cron** *(v0.4.0 / #17)* — daily snapshot of sentiment committed to `results/fear_greed/<DATE>.json`
+- **CNN F&G JSON endpoint** — `production.dataviz.cnn.io/index/fearandgreed/graphdata`; requires `User-Agent` header (returns 418 without one); stdlib `urllib.request`, no extra deps
+- **GitHub Actions cron** — `.github/workflows/fear-greed.yaml` runs daily at 21:30 UTC; commits `results/fear_greed_<UTC>.json` via `stefanzweifel/git-auto-commit-action@v5`
 - **`financetoolkit`** — *deferred to v0.5.0 (#18); see [`decisions/0001-defer-financetoolkit.md`](decisions/0001-defer-financetoolkit.md)*
 
 ## What's not here

@@ -1,0 +1,21 @@
+{
+  "fear_and_greed": {
+    "score": 56.42,
+    "rating": "neutral",
+    "timestamp": "2026-05-09T20:00:00+00:00",
+    "previous_close": 55.10,
+    "previous_1_week": 60.30,
+    "previous_1_month": 45.20,
+    "previous_1_year": 72.40,
+    "_unknown_subindicator_pointer": "should be ignored by extra='ignore'"
+  },
+  "fear_and_greed_historical": {"data": []},
+  "market_momentum_sp500": {"score": 50.0, "rating": "neutral"},
+  "market_momentum_sp125": {"score": 50.0, "rating": "neutral"},
+  "stock_price_strength": {"score": 50.0, "rating": "neutral"},
+  "stock_price_breadth": {"score": 50.0, "rating": "neutral"},
+  "put_call_options": {"score": 50.0, "rating": "neutral"},
+  "market_volatility_vix": {"score": 50.0, "rating": "neutral"},
+  "junk_bond_demand": {"score": 50.0, "rating": "neutral"},
+  "safe_haven_demand": {"score": 50.0, "rating": "neutral"}
+}
