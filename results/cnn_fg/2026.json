@@ -1,0 +1,785 @@
+[
+  {
+    "score": 45.22857142857142,
+    "rating": "neutral",
+    "timestamp": "2026-01-02T00:00:00Z",
+    "previous_close": null,
+    "previous_1_week": null,
+    "previous_1_month": null,
+    "previous_1_year": null
+  },
+  {
+    "score": 47.60000000000001,
+    "rating": "neutral",
+    "timestamp": "2026-01-05T00:00:00Z",
+    "previous_close": null,
+    "previous_1_week": null,
+    "previous_1_month": null,
+    "previous_1_year": null
+  },
+  {
+    "score": 52.857142857142854,
+    "rating": "neutral",
+    "timestamp": "2026-01-06T00:00:00Z",
+    "previous_close": null,
+    "previous_1_week": null,
+    "previous_1_month": null,
+    "previous_1_year": null
+  },
+  {
+    "score": 48.57142857142857,
+    "rating": "neutral",
+    "timestamp": "2026-01-07T00:00:00Z",
+    "previous_close": null,
+    "previous_1_week": null,
+    "previous_1_month": null,
+    "previous_1_year": null
+  },
+  {
+    "score": 48.371428571428574,
+    "rating": "neutral",
+    "timestamp": "2026-01-08T00:00:00Z",
+    "previous_close": null,
+    "previous_1_week": null,
+    "previous_1_month": null,
+    "previous_1_year": null
+  },
+  {
+    "score": 54.114285714285714,
+    "rating": "neutral",
+    "timestamp": "2026-01-09T00:00:00Z",
+    "previous_close": null,
+    "previous_1_week": null,
+    "previous_1_month": null,
+    "previous_1_year": null
+  },
+  {
+    "score": 58.0,
+    "rating": "greed",
+    "timestamp": "2026-01-12T00:00:00Z",
+    "previous_close": null,
+    "previous_1_week": null,
+    "previous_1_month": null,
+    "previous_1_year": null
+  },
+  {
+    "score": 59.085714285714296,
+    "rating": "greed",
+    "timestamp": "2026-01-13T00:00:00Z",
+    "previous_close": null,
+    "previous_1_week": null,
+    "previous_1_month": null,
+    "previous_1_year": null
+  },
+  {
+    "score": 58.62857142857143,
+    "rating": "greed",
+    "timestamp": "2026-01-14T00:00:00Z",
+    "previous_close": null,
+    "previous_1_week": null,
+    "previous_1_month": null,
+    "previous_1_year": null
+  },
+  {
+    "score": 63.65714285714286,
+    "rating": "greed",
+    "timestamp": "2026-01-15T00:00:00Z",
+    "previous_close": null,
+    "previous_1_week": null,
+    "previous_1_month": null,
+    "previous_1_year": null
+  },
+  {
+    "score": 63.77142857142858,
+    "rating": "greed",
+    "timestamp": "2026-01-16T00:00:00Z",
+    "previous_close": null,
+    "previous_1_week": null,
+    "previous_1_month": null,
+    "previous_1_year": null
+  },
+  {
+    "score": 50.85714285714287,
+    "rating": "neutral",
+    "timestamp": "2026-01-20T00:00:00Z",
+    "previous_close": null,
+    "previous_1_week": null,
+    "previous_1_month": null,
+    "previous_1_year": null
+  },
+  {
+    "score": 53.857142857142854,
+    "rating": "neutral",
+    "timestamp": "2026-01-21T00:00:00Z",
+    "previous_close": null,
+    "previous_1_week": null,
+    "previous_1_month": null,
+    "previous_1_year": null
+  },
+  {
+    "score": 54.771428571428565,
+    "rating": "neutral",
+    "timestamp": "2026-01-22T00:00:00Z",
+    "previous_close": null,
+    "previous_1_week": null,
+    "previous_1_month": null,
+    "previous_1_year": null
+  },
+  {
+    "score": 54.885714285714286,
+    "rating": "neutral",
+    "timestamp": "2026-01-23T00:00:00Z",
+    "previous_close": null,
+    "previous_1_week": null,
+    "previous_1_month": null,
+    "previous_1_year": null
+  },
+  {
+    "score": 57.65714285714286,
+    "rating": "greed",
+    "timestamp": "2026-01-26T00:00:00Z",
+    "previous_close": null,
+    "previous_1_week": null,
+    "previous_1_month": null,
+    "previous_1_year": null
+  },
+  {
+    "score": 64.97142857142858,
+    "rating": "greed",
+    "timestamp": "2026-01-27T00:00:00Z",
+    "previous_close": null,
+    "previous_1_week": null,
+    "previous_1_month": null,
+    "previous_1_year": null
+  },
+  {
+    "score": 65.54285714285713,
+    "rating": "greed",
+    "timestamp": "2026-01-28T00:00:00Z",
+    "previous_close": null,
+    "previous_1_week": null,
+    "previous_1_month": null,
+    "previous_1_year": null
+  },
+  {
+    "score": 63.82857142857143,
+    "rating": "greed",
+    "timestamp": "2026-01-29T00:00:00Z",
+    "previous_close": null,
+    "previous_1_week": null,
+    "previous_1_month": null,
+    "previous_1_year": null
+  },
+  {
+    "score": 58.60000000000001,
+    "rating": "greed",
+    "timestamp": "2026-01-30T00:00:00Z",
+    "previous_close": null,
+    "previous_1_week": null,
+    "previous_1_month": null,
+    "previous_1_year": null
+  },
+  {
+    "score": 63.40000000000001,
+    "rating": "greed",
+    "timestamp": "2026-02-02T00:00:00Z",
+    "previous_close": null,
+    "previous_1_week": null,
+    "previous_1_month": null,
+    "previous_1_year": null
+  },
+  {
+    "score": 43.34285714285714,
+    "rating": "fear",
+    "timestamp": "2026-02-03T00:00:00Z",
+    "previous_close": null,
+    "previous_1_week": null,
+    "previous_1_month": null,
+    "previous_1_year": null
+  },
+  {
+    "score": 47.228571428571435,
+    "rating": "neutral",
+    "timestamp": "2026-02-04T00:00:00Z",
+    "previous_close": null,
+    "previous_1_week": null,
+    "previous_1_month": null,
+    "previous_1_year": null
+  },
+  {
+    "score": 34.94285714285714,
+    "rating": "fear",
+    "timestamp": "2026-02-05T00:00:00Z",
+    "previous_close": null,
+    "previous_1_week": null,
+    "previous_1_month": null,
+    "previous_1_year": null
+  },
+  {
+    "score": 45.371428571428574,
+    "rating": "neutral",
+    "timestamp": "2026-02-06T00:00:00Z",
+    "previous_close": null,
+    "previous_1_week": null,
+    "previous_1_month": null,
+    "previous_1_year": null
+  },
+  {
+    "score": 48.4857142857143,
+    "rating": "neutral",
+    "timestamp": "2026-02-09T00:00:00Z",
+    "previous_close": null,
+    "previous_1_week": null,
+    "previous_1_month": null,
+    "previous_1_year": null
+  },
+  {
+    "score": 47.228571428571435,
+    "rating": "neutral",
+    "timestamp": "2026-02-10T00:00:00Z",
+    "previous_close": null,
+    "previous_1_week": null,
+    "previous_1_month": null,
+    "previous_1_year": null
+  },
+  {
+    "score": 49.91428571428571,
+    "rating": "neutral",
+    "timestamp": "2026-02-11T00:00:00Z",
+    "previous_close": null,
+    "previous_1_week": null,
+    "previous_1_month": null,
+    "previous_1_year": null
+  },
+  {
+    "score": 36.357142857142854,
+    "rating": "fear",
+    "timestamp": "2026-02-12T00:00:00Z",
+    "previous_close": null,
+    "previous_1_week": null,
+    "previous_1_month": null,
+    "previous_1_year": null
+  },
+  {
+    "score": 33.84285714285714,
+    "rating": "fear",
+    "timestamp": "2026-02-13T00:00:00Z",
+    "previous_close": null,
+    "previous_1_week": null,
+    "previous_1_month": null,
+    "previous_1_year": null
+  },
+  {
+    "score": 33.31428571428572,
+    "rating": "fear",
+    "timestamp": "2026-02-17T00:00:00Z",
+    "previous_close": null,
+    "previous_1_week": null,
+    "previous_1_month": null,
+    "previous_1_year": null
+  },
+  {
+    "score": 34.157142857142865,
+    "rating": "fear",
+    "timestamp": "2026-02-18T00:00:00Z",
+    "previous_close": null,
+    "previous_1_week": null,
+    "previous_1_month": null,
+    "previous_1_year": null
+  },
+  {
+    "score": 34.400000000000006,
+    "rating": "fear",
+    "timestamp": "2026-02-19T00:00:00Z",
+    "previous_close": null,
+    "previous_1_week": null,
+    "previous_1_month": null,
+    "previous_1_year": null
+  },
+  {
+    "score": 42.34285714285715,
+    "rating": "fear",
+    "timestamp": "2026-02-20T00:00:00Z",
+    "previous_close": null,
+    "previous_1_week": null,
+    "previous_1_month": null,
+    "previous_1_year": null
+  },
+  {
+    "score": 32.542857142857144,
+    "rating": "fear",
+    "timestamp": "2026-02-23T00:00:00Z",
+    "previous_close": null,
+    "previous_1_week": null,
+    "previous_1_month": null,
+    "previous_1_year": null
+  },
+  {
+    "score": 40.25714285714286,
+    "rating": "fear",
+    "timestamp": "2026-02-24T00:00:00Z",
+    "previous_close": null,
+    "previous_1_week": null,
+    "previous_1_month": null,
+    "previous_1_year": null
+  },
+  {
+    "score": 43.142857142857146,
+    "rating": "fear",
+    "timestamp": "2026-02-25T00:00:00Z",
+    "previous_close": null,
+    "previous_1_week": null,
+    "previous_1_month": null,
+    "previous_1_year": null
+  },
+  {
+    "score": 42.91428571428571,
+    "rating": "fear",
+    "timestamp": "2026-02-26T00:00:00Z",
+    "previous_close": null,
+    "previous_1_week": null,
+    "previous_1_month": null,
+    "previous_1_year": null
+  },
+  {
+    "score": 41.17142857142857,
+    "rating": "fear",
+    "timestamp": "2026-02-27T00:00:00Z",
+    "previous_close": null,
+    "previous_1_week": null,
+    "previous_1_month": null,
+    "previous_1_year": null
+  },
+  {
+    "score": 34.285714285714285,
+    "rating": "fear",
+    "timestamp": "2026-03-02T00:00:00Z",
+    "previous_close": null,
+    "previous_1_week": null,
+    "previous_1_month": null,
+    "previous_1_year": null
+  },
+  {
+    "score": 31.628571428571426,
+    "rating": "fear",
+    "timestamp": "2026-03-03T00:00:00Z",
+    "previous_close": null,
+    "previous_1_week": null,
+    "previous_1_month": null,
+    "previous_1_year": null
+  },
+  {
+    "score": 33.07142857142857,
+    "rating": "fear",
+    "timestamp": "2026-03-04T00:00:00Z",
+    "previous_close": null,
+    "previous_1_week": null,
+    "previous_1_month": null,
+    "previous_1_year": null
+  },
+  {
+    "score": 31.62857142857143,
+    "rating": "fear",
+    "timestamp": "2026-03-05T00:00:00Z",
+    "previous_close": null,
+    "previous_1_week": null,
+    "previous_1_month": null,
+    "previous_1_year": null
+  },
+  {
+    "score": 25.25714285714286,
+    "rating": "fear",
+    "timestamp": "2026-03-06T00:00:00Z",
+    "previous_close": null,
+    "previous_1_week": null,
+    "previous_1_month": null,
+    "previous_1_year": null
+  },
+  {
+    "score": 22.228571428571428,
+    "rating": "extreme fear",
+    "timestamp": "2026-03-09T00:00:00Z",
+    "previous_close": null,
+    "previous_1_week": null,
+    "previous_1_month": null,
+    "previous_1_year": null
+  },
+  {
+    "score": 20.271428571428572,
+    "rating": "extreme fear",
+    "timestamp": "2026-03-10T00:00:00Z",
+    "previous_close": null,
+    "previous_1_week": null,
+    "previous_1_month": null,
+    "previous_1_year": null
+  },
+  {
+    "score": 18.314285714285713,
+    "rating": "extreme fear",
+    "timestamp": "2026-03-11T00:00:00Z",
+    "previous_close": null,
+    "previous_1_week": null,
+    "previous_1_month": null,
+    "previous_1_year": null
+  },
+  {
+    "score": 16.671428571428574,
+    "rating": "extreme fear",
+    "timestamp": "2026-03-13T00:00:00Z",
+    "previous_close": null,
+    "previous_1_week": null,
+    "previous_1_month": null,
+    "previous_1_year": null
+  },
+  {
+    "score": 23.914285714285718,
+    "rating": "extreme fear",
+    "timestamp": "2026-03-16T00:00:00Z",
+    "previous_close": null,
+    "previous_1_week": null,
+    "previous_1_month": null,
+    "previous_1_year": null
+  },
+  {
+    "score": 22.88571428571429,
+    "rating": "extreme fear",
+    "timestamp": "2026-03-17T00:00:00Z",
+    "previous_close": null,
+    "previous_1_week": null,
+    "previous_1_month": null,
+    "previous_1_year": null
+  },
+  {
+    "score": 13.614285714285714,
+    "rating": "extreme fear",
+    "timestamp": "2026-03-18T00:00:00Z",
+    "previous_close": null,
+    "previous_1_week": null,
+    "previous_1_month": null,
+    "previous_1_year": null
+  },
+  {
+    "score": 18.314285714285713,
+    "rating": "extreme fear",
+    "timestamp": "2026-03-19T00:00:00Z",
+    "previous_close": null,
+    "previous_1_week": null,
+    "previous_1_month": null,
+    "previous_1_year": null
+  },
+  {
+    "score": 8.4,
+    "rating": "extreme fear",
+    "timestamp": "2026-03-20T00:00:00Z",
+    "previous_close": null,
+    "previous_1_week": null,
+    "previous_1_month": null,
+    "previous_1_year": null
+  },
+  {
+    "score": 11.62857142857143,
+    "rating": "extreme fear",
+    "timestamp": "2026-03-23T00:00:00Z",
+    "previous_close": null,
+    "previous_1_week": null,
+    "previous_1_month": null,
+    "previous_1_year": null
+  },
+  {
+    "score": 10.35714285714286,
+    "rating": "extreme fear",
+    "timestamp": "2026-03-24T00:00:00Z",
+    "previous_close": null,
+    "previous_1_week": null,
+    "previous_1_month": null,
+    "previous_1_year": null
+  },
+  {
+    "score": 16.542857142857144,
+    "rating": "extreme fear",
+    "timestamp": "2026-03-25T00:00:00Z",
+    "previous_close": null,
+    "previous_1_week": null,
+    "previous_1_month": null,
+    "previous_1_year": null
+  },
+  {
+    "score": 10.257142857142858,
+    "rating": "extreme fear",
+    "timestamp": "2026-03-26T00:00:00Z",
+    "previous_close": null,
+    "previous_1_week": null,
+    "previous_1_month": null,
+    "previous_1_year": null
+  },
+  {
+    "score": 8.171428571428573,
+    "rating": "extreme fear",
+    "timestamp": "2026-03-27T00:00:00Z",
+    "previous_close": null,
+    "previous_1_week": null,
+    "previous_1_month": null,
+    "previous_1_year": null
+  },
+  {
+    "score": 5.771428571428572,
+    "rating": "extreme fear",
+    "timestamp": "2026-03-30T00:00:00Z",
+    "previous_close": null,
+    "previous_1_week": null,
+    "previous_1_month": null,
+    "previous_1_year": null
+  },
+  {
+    "score": 14.885714285714284,
+    "rating": "extreme fear",
+    "timestamp": "2026-03-31T00:00:00Z",
+    "previous_close": null,
+    "previous_1_week": null,
+    "previous_1_month": null,
+    "previous_1_year": null
+  },
+  {
+    "score": 15.857142857142858,
+    "rating": "extreme fear",
+    "timestamp": "2026-04-01T00:00:00Z",
+    "previous_close": null,
+    "previous_1_week": null,
+    "previous_1_month": null,
+    "previous_1_year": null
+  },
+  {
+    "score": 18.285714285714285,
+    "rating": "extreme fear",
+    "timestamp": "2026-04-02T00:00:00Z",
+    "previous_close": null,
+    "previous_1_week": null,
+    "previous_1_month": null,
+    "previous_1_year": null
+  },
+  {
+    "score": 21.85714285714286,
+    "rating": "extreme fear",
+    "timestamp": "2026-04-06T00:00:00Z",
+    "previous_close": null,
+    "previous_1_week": null,
+    "previous_1_month": null,
+    "previous_1_year": null
+  },
+  {
+    "score": 21.571428571428573,
+    "rating": "extreme fear",
+    "timestamp": "2026-04-07T00:00:00Z",
+    "previous_close": null,
+    "previous_1_week": null,
+    "previous_1_month": null,
+    "previous_1_year": null
+  },
+  {
+    "score": 29.171428571428574,
+    "rating": "fear",
+    "timestamp": "2026-04-08T00:00:00Z",
+    "previous_close": null,
+    "previous_1_week": null,
+    "previous_1_month": null,
+    "previous_1_year": null
+  },
+  {
+    "score": 33.800000000000004,
+    "rating": "fear",
+    "timestamp": "2026-04-09T00:00:00Z",
+    "previous_close": null,
+    "previous_1_week": null,
+    "previous_1_month": null,
+    "previous_1_year": null
+  },
+  {
+    "score": 38.05714285714286,
+    "rating": "fear",
+    "timestamp": "2026-04-10T00:00:00Z",
+    "previous_close": null,
+    "previous_1_week": null,
+    "previous_1_month": null,
+    "previous_1_year": null
+  },
+  {
+    "score": 40.971428571428575,
+    "rating": "fear",
+    "timestamp": "2026-04-13T00:00:00Z",
+    "previous_close": null,
+    "previous_1_week": null,
+    "previous_1_month": null,
+    "previous_1_year": null
+  },
+  {
+    "score": 47.25714285714286,
+    "rating": "neutral",
+    "timestamp": "2026-04-14T00:00:00Z",
+    "previous_close": null,
+    "previous_1_week": null,
+    "previous_1_month": null,
+    "previous_1_year": null
+  },
+  {
+    "score": 56.2,
+    "rating": "greed",
+    "timestamp": "2026-04-15T00:00:00Z",
+    "previous_close": null,
+    "previous_1_week": null,
+    "previous_1_month": null,
+    "previous_1_year": null
+  },
+  {
+    "score": 61.48571428571429,
+    "rating": "greed",
+    "timestamp": "2026-04-16T00:00:00Z",
+    "previous_close": null,
+    "previous_1_week": null,
+    "previous_1_month": null,
+    "previous_1_year": null
+  },
+  {
+    "score": 68.57142857142858,
+    "rating": "greed",
+    "timestamp": "2026-04-17T00:00:00Z",
+    "previous_close": null,
+    "previous_1_week": null,
+    "previous_1_month": null,
+    "previous_1_year": null
+  },
+  {
+    "score": 69.97142857142858,
+    "rating": "greed",
+    "timestamp": "2026-04-20T00:00:00Z",
+    "previous_close": null,
+    "previous_1_week": null,
+    "previous_1_month": null,
+    "previous_1_year": null
+  },
+  {
+    "score": 67.57142857142858,
+    "rating": "greed",
+    "timestamp": "2026-04-21T00:00:00Z",
+    "previous_close": null,
+    "previous_1_week": null,
+    "previous_1_month": null,
+    "previous_1_year": null
+  },
+  {
+    "score": 68.45714285714286,
+    "rating": "greed",
+    "timestamp": "2026-04-22T00:00:00Z",
+    "previous_close": null,
+    "previous_1_week": null,
+    "previous_1_month": null,
+    "previous_1_year": null
+  },
+  {
+    "score": 66.17142857142856,
+    "rating": "greed",
+    "timestamp": "2026-04-23T00:00:00Z",
+    "previous_close": null,
+    "previous_1_week": null,
+    "previous_1_month": null,
+    "previous_1_year": null
+  },
+  {
+    "score": 65.4,
+    "rating": "greed",
+    "timestamp": "2026-04-24T00:00:00Z",
+    "previous_close": null,
+    "previous_1_week": null,
+    "previous_1_month": null,
+    "previous_1_year": null
+  },
+  {
+    "score": 66.28571428571429,
+    "rating": "greed",
+    "timestamp": "2026-04-27T00:00:00Z",
+    "previous_close": null,
+    "previous_1_week": null,
+    "previous_1_month": null,
+    "previous_1_year": null
+  },
+  {
+    "score": 67.42857142857142,
+    "rating": "greed",
+    "timestamp": "2026-04-28T00:00:00Z",
+    "previous_close": null,
+    "previous_1_week": null,
+    "previous_1_month": null,
+    "previous_1_year": null
+  },
+  {
+    "score": 66.22857142857143,
+    "rating": "greed",
+    "timestamp": "2026-04-29T00:00:00Z",
+    "previous_close": null,
+    "previous_1_week": null,
+    "previous_1_month": null,
+    "previous_1_year": null
+  },
+  {
+    "score": 69.51428571428572,
+    "rating": "greed",
+    "timestamp": "2026-04-30T00:00:00Z",
+    "previous_close": null,
+    "previous_1_week": null,
+    "previous_1_month": null,
+    "previous_1_year": null
+  },
+  {
+    "score": 71.17142857142856,
+    "rating": "greed",
+    "timestamp": "2026-05-01T00:00:00Z",
+    "previous_close": null,
+    "previous_1_week": null,
+    "previous_1_month": null,
+    "previous_1_year": null
+  },
+  {
+    "score": 66.88571428571429,
+    "rating": "greed",
+    "timestamp": "2026-05-04T00:00:00Z",
+    "previous_close": null,
+    "previous_1_week": null,
+    "previous_1_month": null,
+    "previous_1_year": null
+  },
+  {
+    "score": 67.25714285714287,
+    "rating": "greed",
+    "timestamp": "2026-05-05T00:00:00Z",
+    "previous_close": null,
+    "previous_1_week": null,
+    "previous_1_month": null,
+    "previous_1_year": null
+  },
+  {
+    "score": 68.74285714285715,
+    "rating": "greed",
+    "timestamp": "2026-05-06T00:00:00Z",
+    "previous_close": null,
+    "previous_1_week": null,
+    "previous_1_month": null,
+    "previous_1_year": null
+  },
+  {
+    "score": 66.4,
+    "rating": "greed",
+    "timestamp": "2026-05-07T00:00:00Z",
+    "previous_close": null,
+    "previous_1_week": null,
+    "previous_1_month": null,
+    "previous_1_year": null
+  },
+  {
+    "score": 66.9142857142857,
+    "rating": "greed",
+    "timestamp": "2026-05-08T23:59:55Z",
+    "previous_close": 67.5714285714286,
+    "previous_1_week": 71.17142857142856,
+    "previous_1_month": 29.171428571428574,
+    "previous_1_year": 57.65714285714286
+  }
+]
