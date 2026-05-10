@@ -5,7 +5,7 @@
 **Amends:** [ADR-0000](0000-remove-traderfox.md) §Decision (composite proxies);
 [ADR-0001](0001-defer-financetoolkit.md) §Accepted risks
 
-**Drives:** [#18](https://github.com/qte77/scrape-stock-kpi/issues/18)
+**Drives:** [#18](https://github.com/qte77/analyze-stock-kpi/issues/18)
 
 ## Context
 
@@ -107,7 +107,7 @@ use case demands them, but no such follow-up is committed by this ADR.
 
 ## References
 
-- [#18](https://github.com/qte77/scrape-stock-kpi/issues/18) — composite
+- [#18](https://github.com/qte77/analyze-stock-kpi/issues/18) — composite
   proxy scores
 - [`src/composite_scores.py`](../../src/composite_scores.py) — module
   docstring + per-function formulas

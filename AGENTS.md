@@ -1,4 +1,4 @@
-# Agent Instructions for scrape-stock-kpi
+# Agent Instructions for analyze-stock-kpi
 
 Behavioral rules for AI agents working on this library-based stock KPI CLI.
 For technical details and run instructions, see [README.md](README.md). For

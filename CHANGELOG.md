@@ -16,6 +16,29 @@ Types of changes:
 
 ## [Unreleased]
 
+### Added
+
+- `llms.txt` at the repository root — spec-compliant index per
+  [llmstxt.org](https://llmstxt.org/) pointing LLM consumers at the
+  authoritative README / AGENTS / architecture / ADR / source files.
+  Hand-curated rather than template-generated (KISS); update inline
+  when the documentation hierarchy moves.
+- `.github/workflows/sbom.yaml` — Software Bill of Materials generation
+  via [`qte77/gha-sbom-action@v0.1.1`](https://github.com/qte77/gha-sbom-action).
+  Runs on push to `pyproject.toml` / `uv.lock`, weekly Sunday cron,
+  and manual dispatch; opens an auto-PR with the SPDX SBOM and a
+  markdown summary under `docs/SBOM/` whenever the dependency graph
+  changes.
+
+### Changed
+
+- **Project renamed**: `scrape-stock-kpi` → `analyze-stock-kpi`. Reflects
+  the post-Traderfox reality — the codebase no longer scrapes anything
+  (yfinance is a library, CNN F&G is a documented JSON endpoint). The
+  GitHub repository was renamed in the same change; GitHub auto-redirects
+  the old URLs. `importlib.metadata.version("analyze-stock-kpi")` reads
+  from `[project].name` in `pyproject.toml`.
+
 ### Known issues
 
 - `FundamentalsSnapshot.dividend_yield` is currently a yfinance
@@ -23,7 +46,7 @@ Types of changes:
   fraction. The rich table's "Div Yield" column reads off by 100×
   and the `dividend` composite's yield term saturates against the
   `_YIELD_HI = 0.07` bound. To be normalized at the ingest boundary
-  in v0.5.1 — see [#43](https://github.com/qte77/scrape-stock-kpi/issues/43).
+  in v0.5.1 — see [#43](https://github.com/qte77/analyze-stock-kpi/issues/43).
 
 ## [0.5.0] - 2026-05-10
 
@@ -86,7 +109,7 @@ v0.5.0 per `docs/decisions/0001-defer-financetoolkit.md`.
   Sentiment section, drop pre-Phase-1 "Other possible packages" + "API"
   sections.
 - `src/__version__.py` now reads from package metadata via
-  `importlib.metadata.version("scrape-stock-kpi")` — `pyproject.toml` is
+  `importlib.metadata.version("analyze-stock-kpi")` — `pyproject.toml` is
   the single source of truth, no more triple-source drift.
 
 ### Added

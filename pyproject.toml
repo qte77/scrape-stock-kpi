@@ -1,7 +1,7 @@
 [project]
-name = "scrape-stock-kpi"
+name = "analyze-stock-kpi"
 version = "0.5.0"
-description = "Scrape the web for stock KPI without API keys"
+description = "Analyze stock KPI: per-ticker fundamentals + CNN Fear & Greed sentiment via libraries, no API keys"
 readme = "README.md"
 license = "Apache-2.0"
 requires-python = ">=3.12,<3.13"

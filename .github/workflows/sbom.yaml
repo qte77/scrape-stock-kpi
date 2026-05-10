@@ -1,0 +1,39 @@
+---
+# Software Bill of Materials generation via qte77/gha-sbom-action.
+# Action documentation: https://github.com/qte77/gha-sbom-action
+#
+# Triggers:
+#   - push to main on pyproject.toml / uv.lock (dep tree changed)
+#   - weekly Sunday 00:00 UTC cron (catches indirect-graph drift)
+#   - workflow_dispatch (manual)
+#
+# Outputs (committed under docs/SBOM/ via the action's auto-PR):
+#   - github-depgraph.spdx.json — GitHub dependency-graph SPDX export
+#   - syft-scan.spdx.json — Syft filesystem-scan SPDX export
+#   - sbom.md — human-readable combined report
+
+name: Generate SBOM
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "pyproject.toml"
+      - "uv.lock"
+  schedule:
+    - cron: "0 0 * * 0"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  sbom:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: qte77/gha-sbom-action@v0.1.1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}

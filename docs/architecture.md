@@ -59,7 +59,7 @@ v0.5.0 attaches a `CompositeScores` object to every `FundamentalsSnapshot` after
 
 ## External boundaries
 
-- **`yfinance`** — fundamentals (`Ticker.info`) + price history (`Ticker.history`); rate-limit risk; live tests tagged `@pytest.mark.network` (excluded from default `make test`, opt in via `pytest -m network`). **Schema drift**: current yfinance ships `info["dividendYield"]` as a percentage value rather than the older fractional convention; pending normalization at ingest — see [#43](https://github.com/qte77/scrape-stock-kpi/issues/43).
+- **`yfinance`** — fundamentals (`Ticker.info`) + price history (`Ticker.history`); rate-limit risk; live tests tagged `@pytest.mark.network` (excluded from default `make test`, opt in via `pytest -m network`). **Schema drift**: current yfinance ships `info["dividendYield"]` as a percentage value rather than the older fractional convention; pending normalization at ingest — see [#43](https://github.com/qte77/analyze-stock-kpi/issues/43).
 - **CNN F&G JSON endpoint** — `production.dataviz.cnn.io/index/fearandgreed/graphdata`; requires browser-shape headers (UA + `Accept` + `Referer`; returns 418 otherwise); stdlib `urllib.request`, no extra deps. Observed schema in [`cnn-fg-api.md`](cnn-fg-api.md).
 - **GitHub Actions cron** — `.github/workflows/fear-greed.yaml` runs daily at 21:30 UTC; commits per-year history files `results/cnn_fg/YYYY.json` via `stefanzweifel/git-auto-commit-action@v5`
 - **`financetoolkit`** — *not used; v0.5.0 composites use simplified formulas with point-in-time `FundamentalsSnapshot` inputs only. See [`decisions/0001-defer-financetoolkit.md`](decisions/0001-defer-financetoolkit.md) and [`decisions/0002-simplified-composites.md`](decisions/0002-simplified-composites.md).*
