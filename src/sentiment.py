@@ -3,7 +3,7 @@
 Public API:
     - :func:`fetch_fear_greed` returns the headline :class:`FearGreedSnapshot`
       (used by the ``make run`` banner).
-    - ``python -m app.sentiment`` fetches the full payload and merges the
+    - ``python -m src.sentiment`` fetches the full payload and merges the
       headline + ~1y historical points + per-day subindicator readings into
       per-year files at ``results/cnn_fg/YYYY.json`` — sorted-by-date JSON
       arrays. Today's entry is always overwritten with the live headline
