@@ -1,6 +1,6 @@
 """Smoke test: verifies pytest + coverage + pythonpath wiring is functional."""
 
-from app import __version__
+from src import __version__
 
 
 def test_version_is_string():

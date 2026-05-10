@@ -1,17 +1,17 @@
-"""Tests for :mod:`app.fundamentals`."""
+"""Tests for :mod:`src.fundamentals`."""
 
 from __future__ import annotations
 
 from unittest.mock import patch
 
 import pytest
-from app.fundamentals import (
+from pydantic import ValidationError
+from src.fundamentals import (
     FundamentalsSnapshot,
     fetch_fundamentals,
     fetch_price_history,
     fetch_universe_fundamentals,
 )
-from pydantic import ValidationError
 
 from tests.conftest import load_fundamentals_fixture
 
@@ -73,8 +73,8 @@ def test_fetch_universe_continues_on_error(caplog: pytest.LogCaptureFixture) -> 
         return _FakeTicker(aapl_info if symbol == "AAPL" else gold_info)
 
     with (
-        caplog.at_level("WARNING", logger="app.fundamentals"),
-        patch("app.fundamentals.yf.Ticker", side_effect=fake_ticker),
+        caplog.at_level("WARNING", logger="src.fundamentals"),
+        patch("src.fundamentals.yf.Ticker", side_effect=fake_ticker),
     ):
         results = fetch_universe_fundamentals(
             ["AAPL", "BROKEN", "GC=F"], show_progress=False

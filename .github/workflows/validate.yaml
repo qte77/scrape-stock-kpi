@@ -33,13 +33,13 @@ jobs:
         run: uv run ruff check .
 
       - name: Pyright type check
-        run: uv run pyright app
+        run: uv run pyright src
 
       - name: Complexipy cognitive complexity (max 15)
-        run: uv run complexipy app --max-complexity-allowed 15
+        run: uv run complexipy src --max-complexity-allowed 15
 
       - name: Markdownlint
         run: npx --yes markdownlint-cli --config .markdownlint.json '**/*.md' --ignore '.venv/**' --ignore 'results/**' --ignore 'node_modules/**'
 
       - name: Pytest with coverage
-        run: uv run pytest --cov=app --cov-fail-under=0
+        run: uv run pytest --cov=src --cov-fail-under=0

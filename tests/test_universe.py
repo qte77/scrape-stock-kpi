@@ -1,4 +1,4 @@
-"""Tests for ``app.universe.resolve_universe``.
+"""Tests for ``src.universe.resolve_universe``.
 
 Per the project's "tests must add value" rule, these cover **only**
 non-trivial behavior: precedence, parsing edge cases, and error paths.
@@ -9,8 +9,8 @@ the input shape at the CliArgs boundary.
 from pathlib import Path
 
 import pytest
-from app.universe import UniverseError, resolve_universe
-from app.utils.parse_args import CliArgs
+from src.universe import UniverseError, resolve_universe
+from src.utils.parse_args import CliArgs
 
 
 def _args(**overrides: object) -> CliArgs:

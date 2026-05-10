@@ -51,11 +51,11 @@ autofix:  ## ruff format + ruff check --fix
 
 check_types:  ## pyright type check
 	echo "--- check_types"
-	uv run pyright app $(PYRIGHT_QUIET)
+	uv run pyright src $(PYRIGHT_QUIET)
 
 check_complexity:  ## complexipy cognitive complexity gate (max 15)
 	echo "--- check_complexity"
-	uv run complexipy app --max-complexity-allowed 15
+	uv run complexipy src --max-complexity-allowed 15
 
 lint_md:  ## markdownlint *.md (uses .markdownlint.json)
 	echo "--- lint_md"
@@ -72,7 +72,7 @@ test:  ## pytest
 
 test_cov:  ## pytest with coverage (--cov-fail-under=0; raise once tests exist)
 	echo "--- test_cov"
-	uv run pytest --cov=app --cov-fail-under=0 $(PYTEST_QUIET)
+	uv run pytest --cov=src --cov-fail-under=0 $(PYTEST_QUIET)
 
 retest:  ## rerun last failed tests only
 	uv run pytest --lf -x
@@ -90,7 +90,7 @@ validate:  ## CI gate: lint + check_types + check_complexity + lint_md + test_co
 
 
 run:  ## run fundamentals (UNIVERSE=qte77-watchlist | TICKERS=AAPL,MSFT | TICKERS_FILE=path | PERIOD=5y)
-	uv run python -m app \
+	uv run python -m src \
 	  $(if $(UNIVERSE),--universe $(UNIVERSE)) \
 	  $(if $(TICKERS),--tickers $(TICKERS)) \
 	  $(if $(TICKERS_FILE),--tickers-file $(TICKERS_FILE)) \

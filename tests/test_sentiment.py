@@ -1,4 +1,4 @@
-"""Tests for :mod:`app.sentiment`."""
+"""Tests for :mod:`src.sentiment`."""
 
 from __future__ import annotations
 
@@ -9,7 +9,8 @@ from typing import Any
 from unittest.mock import patch
 
 import pytest
-from app.sentiment import (
+from pydantic import ValidationError
+from src.sentiment import (
     ACCEPT,
     REFERER,
     SUBINDICATOR_KEYS,
@@ -24,7 +25,6 @@ from app.sentiment import (
     merge_payload_into_years,
     parse_historical,
 )
-from pydantic import ValidationError
 
 from tests.conftest import load_fear_greed_fixture
 
@@ -88,7 +88,7 @@ def test_snapshot_is_frozen() -> None:
 def test_fetch_fear_greed_returns_snapshot_from_payload() -> None:
     payload = load_fear_greed_fixture("current")
 
-    with patch("app.sentiment.urllib.request.urlopen", return_value=_FakeResponse(payload)):
+    with patch("src.sentiment.urllib.request.urlopen", return_value=_FakeResponse(payload)):
         snap = fetch_fear_greed()
 
     assert snap.score == 56.42
@@ -103,7 +103,7 @@ def test_fetch_fear_greed_sends_browser_headers() -> None:
         captured["request"] = request
         return _FakeResponse(payload)
 
-    with patch("app.sentiment.urllib.request.urlopen", side_effect=fake_urlopen):
+    with patch("src.sentiment.urllib.request.urlopen", side_effect=fake_urlopen):
         fetch_fear_greed()
 
     assert captured["request"].get_header("User-agent") == USER_AGENT

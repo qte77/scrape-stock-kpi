@@ -19,7 +19,7 @@ module map and data flow, see [docs/architecture.md](docs/architecture.md).
 ## Architecture Overview
 
 Single-purpose CLI fetching fundamentals via yfinance for any Yahoo symbol
-(stocks, ETFs, FX, futures, crypto, indices). `app/__main__.py` prints a
+(stocks, ETFs, FX, futures, crypto, indices). `src/__main__.py` prints a
 CNN Fear & Greed banner, resolves a universe → fetches per-ticker → prints
 a rich summary table → writes `results/fundamentals_<UTC>.json`. A
 separate daily GitHub Actions cron (`fear-greed.yaml`) merges the live
@@ -30,12 +30,12 @@ overwritten with the live headline, older dates are gap-filled). See
 
 Active modules:
 
-- `app/__main__.py` — entrypoint
-- `app/universe.py` — universe resolver (presets in `app/assets/universes/*.txt`)
-- `app/fundamentals.py` — `FundamentalsSnapshot(BaseModel)` + fetchers
-- `app/sentiment.py` — `FearGreedSnapshot(BaseModel)` + CNN F&G fetcher
-- `app/utils/parse_args.py` — `CliArgs(BaseSettings)`
-- `app/assets/universes/` — preset ticker lists
+- `src/__main__.py` — entrypoint
+- `src/universe.py` — universe resolver (presets in `src/assets/universes/*.txt`)
+- `src/fundamentals.py` — `FundamentalsSnapshot(BaseModel)` + fetchers
+- `src/sentiment.py` — `FearGreedSnapshot(BaseModel)` + CNN F&G fetcher
+- `src/utils/parse_args.py` — `CliArgs(BaseSettings)`
+- `src/assets/universes/` — preset ticker lists
 
 ## Decision Framework
 
@@ -45,7 +45,7 @@ Active modules:
 
 - Requirements: task description (primary)
 - Run/lint/test commands: `make help`
-- Project version: `app/__version__.py`
+- Project version: `src/__version__.py`
 - Library API shapes (yfinance, pydantic, etc.): `context7` MCP, not training data
 
 **Anti-scope-creep:** Implement only what is explicitly requested. Prefer
@@ -83,4 +83,4 @@ more context or ask the user.
 - Run `make validate` — must pass (lint + types + complexity + lint_md + tests)
 - `make lint_links` — opt-in locally; mandatory in CI via `links-fail-fast.yml`
 - Update `CHANGELOG.md` `[Unreleased]` section for non-trivial changes
-- Bump `app/__version__.py` only at the end of a feature branch (semver)
+- Bump `src/__version__.py` only at the end of a feature branch (semver)

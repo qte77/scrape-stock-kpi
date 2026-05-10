@@ -12,13 +12,13 @@ High-level sketch of modules + data flow. See [`UserStory.md`](UserStory.md) for
 ## Modules
 
 ```text
-app/
+src/
 ├── __main__.py            entrypoint: resolve universe -> per-ticker fetch -> rich table + results/fundamentals_<UTC>.json
-├── universe.py            resolve_universe(args) -> list[ticker]; presets in app/assets/universes/*.txt
+├── universe.py            resolve_universe(args) -> list[ticker]; presets in src/assets/universes/*.txt
 ├── fundamentals.py        fetch_fundamentals(ticker) -> FundamentalsSnapshot
 │                          fetch_price_history(ticker, period) -> DataFrame
 │                          fetch_universe_fundamentals(tickers) -> list[FundamentalsSnapshot]
-├── sentiment.py           fetch_fear_greed() -> FearGreedSnapshot; `python -m app.sentiment` merges headline + ~1y history into per-year files results/cnn_fg/YYYY.json (sorted JSON arrays, upsert-by-date)
+├── sentiment.py           fetch_fear_greed() -> FearGreedSnapshot; `python -m src.sentiment` merges headline + ~1y history into per-year files results/cnn_fg/YYYY.json (sorted JSON arrays, upsert-by-date)
 ├── composite_scores.py    quality/dividend/growth/big_call/aaqs/hgi   [v0.5.0 / #18 — not yet implemented]
 ├── assets/
 │   └── universes/         preset *.txt ticker lists (one per universe name)
@@ -44,7 +44,7 @@ CLI args  ──► CliArgs(BaseSettings)
    rich table (equities + ETFs only)  +  json.dumps -> results/fundamentals_<UTC>.json
 ```
 
-A separate daily GitHub Actions cron (`.github/workflows/fear-greed.yaml`) runs `python -m app.sentiment`, which loads each affected per-year history file (`results/cnn_fg/YYYY.json` — a date-sorted JSON array), upserts the live headline (force, since CNN updates intraday) plus any historical points CNN now exposes that are missing or stale on disk, and rewrites only the year files that changed. The first cron run on a fresh checkout creates the year files from scratch (~1y of CNN history in one go). `stefanzweifel/git-auto-commit-action@v5` commits the rewritten year files, scoped to `file_pattern: results/cnn_fg/[0-9][0-9][0-9][0-9].json`.
+A separate daily GitHub Actions cron (`.github/workflows/fear-greed.yaml`) runs `python -m src.sentiment`, which loads each affected per-year history file (`results/cnn_fg/YYYY.json` — a date-sorted JSON array), upserts the live headline (force, since CNN updates intraday) plus any historical points CNN now exposes that are missing or stale on disk, and rewrites only the year files that changed. The first cron run on a fresh checkout creates the year files from scratch (~1y of CNN history in one go). `stefanzweifel/git-auto-commit-action@v5` commits the rewritten year files, scoped to `file_pattern: results/cnn_fg/[0-9][0-9][0-9][0-9].json`.
 
 v0.5.0 additions (deferred): `composite_scores` aggregates `FundamentalsSnapshot` fields into 0-100 proxy scores merged into per-asset output.
 
