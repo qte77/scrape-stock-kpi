@@ -1,6 +1,6 @@
 # ADR-0000 — Remove Traderfox scraper, adopt library-based KPIs
 
-**Status:** Accepted (2026-05-09)
+**Status:** Accepted (2026-05-09); [ADR-0001](0001-defer-financetoolkit.md) amends §Decision re: `financetoolkit`
 
 **Drives:** [#19](https://github.com/qte77/scrape-stock-kpi/issues/19) (decommission), [#16](https://github.com/qte77/scrape-stock-kpi/issues/16) (fundamentals replacement), [#17](https://github.com/qte77/scrape-stock-kpi/issues/17) (sentiment), [#18](https://github.com/qte77/scrape-stock-kpi/issues/18) (composite proxies)
 
