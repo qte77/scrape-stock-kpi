@@ -12,8 +12,11 @@ import pytest
 from app.sentiment import (
     ACCEPT,
     REFERER,
+    SUBINDICATOR_KEYS,
     USER_AGENT,
     FearGreedSnapshot,
+    SubindicatorReading,
+    _build_today_subindicators,
     _load_year,
     _upsert,
     _write_year,
@@ -249,6 +252,89 @@ def test_merge_payload_does_not_clobber_today_with_stale_historical(
     assert today.rating == "neutral"
     assert today.previous_close == 55.10
     assert today_dt - today.timestamp == timedelta(0)
+
+
+def test_subindicator_keys_cover_all_known_blocks() -> None:
+    # Guard against accidental drops; the inspector confirmed these 9 keys
+    # on 2026-05-10 (CNN exposes 10 subindicator-shaped blocks total — the
+    # 10th is `fear_and_greed_historical`, modeled separately).
+    assert SUBINDICATOR_KEYS == (
+        "market_momentum_sp500",
+        "market_momentum_sp125",
+        "stock_price_strength",
+        "stock_price_breadth",
+        "put_call_options",
+        "market_volatility_vix",
+        "market_volatility_vix_50",
+        "junk_bond_demand",
+        "safe_haven_demand",
+    )
+
+
+def test_build_today_subindicators_includes_score_rating_and_latest_raw() -> None:
+    payload = load_fear_greed_fixture("current")
+    bundle = _build_today_subindicators(payload)
+
+    assert set(bundle) == set(SUBINDICATOR_KEYS)
+    sp500 = bundle["market_momentum_sp500"]
+    # Top-level score + rating travel as-is; raw_value comes from the
+    # latest data[] point (timestamp 1762560000000, y=5844.19).
+    assert sp500.score == 99.6
+    assert sp500.rating == "extreme greed"
+    assert sp500.raw_value == 5844.19
+
+
+def test_build_today_subindicators_skips_blocks_without_data() -> None:
+    payload = load_fear_greed_fixture("current")
+    payload["junk_bond_demand"]["data"] = []
+    bundle = _build_today_subindicators(payload)
+    # Block stays in bundle (it has score+rating); raw_value is None
+    # because there's no data[] to pull from.
+    assert bundle["junk_bond_demand"].raw_value is None
+    assert bundle["junk_bond_demand"].score == 24.0
+
+
+def test_merge_payload_today_has_full_subindicators(tmp_path: Path) -> None:
+    payload = load_fear_greed_fixture("current")
+    by_year = merge_payload_into_years(payload, root=tmp_path)
+
+    today = by_year[2026]["2026-05-09"]
+    assert today.subindicators is not None
+    sp500 = today.subindicators["market_momentum_sp500"]
+    assert sp500.score == 99.6  # precise per-day score available only for today
+    assert sp500.rating == "extreme greed"
+    assert sp500.raw_value == 5844.19
+
+
+def test_merge_payload_historical_subindicators_have_no_score(tmp_path: Path) -> None:
+    payload = load_fear_greed_fixture("current")
+    by_year = merge_payload_into_years(payload, root=tmp_path)
+
+    historical = by_year[2025]["2025-05-05"]
+    assert historical.subindicators is not None
+    sp500 = historical.subindicators["market_momentum_sp500"]
+    # CNN's historical data[] carries only `{x, y, rating}` per point —
+    # the precise 0-100 score is unrecoverable for past days.
+    assert sp500.score is None
+    assert sp500.rating == "extreme greed"
+    assert sp500.raw_value == 5800.0
+
+
+def test_subindicator_reading_score_field_is_optional() -> None:
+    # Historical readings construct without a score; today's with one.
+    SubindicatorReading(rating="greed", raw_value=5800.0)
+    SubindicatorReading(score=99.6, rating="greed", raw_value=5800.0)
+
+
+def test_year_file_roundtrip_preserves_subindicators(tmp_path: Path) -> None:
+    payload = load_fear_greed_fixture("current")
+    by_year = merge_payload_into_years(payload, root=tmp_path)
+    _write_year(2026, by_year[2026], root=tmp_path)
+    reloaded = _load_year(2026, root=tmp_path)
+
+    sp500 = reloaded["2026-05-09"].subindicators["market_momentum_sp500"]
+    assert sp500.score == 99.6
+    assert sp500.raw_value == 5844.19
 
 
 @pytest.mark.network
