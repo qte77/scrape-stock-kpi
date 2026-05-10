@@ -22,15 +22,18 @@ fundamentals + sentiment + composites stack. See
 
 ### Added
 
-- `app/sentiment.py` — `FearGreedSnapshot(BaseModel)` + `fetch_fear_greed()`
-  via stdlib `urllib.request`; `User-Agent` header sent to satisfy the CNN
-  endpoint (returns 418 without one). Subindicators ignored via
-  `extra="ignore"` in v0.4.0. `python -m app.sentiment` writes
-  `results/fear_greed_<UTC>.json` (#17).
+- `app/sentiment.py` — `FearGreedSnapshot(BaseModel)`, `fetch_fear_greed()`,
+  and `parse_historical()` via stdlib `urllib.request`. CNN's WAF requires a
+  current desktop-browser UA + `Accept` + `Referer: https://edition.cnn.com/`
+  (returns 418 otherwise); all three are sent. Subindicators ignored via
+  `extra="ignore"` in v0.4.0. `python -m app.sentiment` writes one
+  date-keyed snapshot per CNN reading to `results/cnn_fg/YYYY-MM-DD.json`,
+  including ~1y of historical backfill on the first run (#17).
 - `.github/workflows/fear-greed.yaml` — daily cron at 21:30 UTC (~30 min
-  after NYSE close, year-round) plus `workflow_dispatch`; commits the
-  snapshot via `stefanzweifel/git-auto-commit-action@v5` scoped to
-  `results/fear_greed_*.json` (#17).
+  after NYSE close, year-round) plus `workflow_dispatch`; commits new/
+  modified files via `stefanzweifel/git-auto-commit-action@v5` scoped to
+  `results/cnn_fg/*.json`. Today's file is rewritten each run; historical
+  files are immutable and skipped if already present (#17).
 - `app/fundamentals.py` — `FundamentalsSnapshot(BaseModel)` plus
   `fetch_fundamentals` / `fetch_price_history` /
   `fetch_universe_fundamentals`. yfinance-backed, ~30 aliased fields,
@@ -65,8 +68,9 @@ fundamentals + sentiment + composites stack. See
   summary table (#28). A CNN Fear & Greed banner now precedes the table;
   fetch failure logs a warning and continues (#17).
 - `results/` is no longer gitignored — cron-committed F&G snapshots live
-  there. The cron's `file_pattern` is scoped narrowly so locally-produced
-  fundamentals files are never accidentally swept into a CI commit (#17).
+  under `results/cnn_fg/`. The cron's `file_pattern` is scoped narrowly
+  so locally-produced fundamentals files are never accidentally swept
+  into a CI commit (#17).
 - Default `pytest` excludes `@pytest.mark.network` tests via
   `-m 'not network'` in addopts. Opt in with `pytest -m network`
   (#28).
