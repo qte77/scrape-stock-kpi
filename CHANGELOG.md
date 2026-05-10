@@ -23,6 +23,12 @@ Types of changes:
   authoritative README / AGENTS / architecture / ADR / source files.
   Hand-curated rather than template-generated (KISS); update inline
   when the documentation hierarchy moves.
+- `.github/workflows/sbom.yaml` — Software Bill of Materials generation
+  via [`qte77/gha-sbom-action@v0.1.1`](https://github.com/qte77/gha-sbom-action).
+  Runs on push to `pyproject.toml` / `uv.lock`, weekly Sunday cron,
+  and manual dispatch; opens an auto-PR with the SPDX SBOM and a
+  markdown summary under `docs/SBOM/` whenever the dependency graph
+  changes.
 
 ### Changed
 
