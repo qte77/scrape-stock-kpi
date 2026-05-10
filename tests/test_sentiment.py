@@ -14,6 +14,7 @@ from app.sentiment import (
     USER_AGENT,
     FearGreedSnapshot,
     fetch_fear_greed,
+    parse_historical,
 )
 from pydantic import ValidationError
 
@@ -64,7 +65,9 @@ def test_snapshot_extra_keys_ignored() -> None:
 
 def test_snapshot_is_frozen() -> None:
     snap = FearGreedSnapshot(
-        score=50.0, rating="neutral", timestamp=datetime.fromisoformat("2026-05-09T20:00:00+00:00")
+        score=50.0,
+        rating="neutral",
+        timestamp=datetime.fromisoformat("2026-05-09T20:00:00+00:00"),
     )
     with pytest.raises(ValidationError):
         snap.score = 99.0  # type: ignore[misc]
@@ -98,6 +101,26 @@ def test_fetch_fear_greed_sends_browser_headers() -> None:
     # WAF rejects any UA containing the bot-style "(compatible;"
     # parenthetical.
     assert "(compatible;" not in USER_AGENT
+
+
+def test_parse_historical_dedups_same_day_keeps_latest() -> None:
+    payload = load_fear_greed_fixture("current")
+    by_date = parse_historical(payload)
+
+    # Fixture has 4 entries spanning 3 dates (two share 2025-05-05);
+    # the later same-day entry (score=60.5) must win.
+    assert set(by_date) == {"2025-05-05", "2025-05-06", "2025-05-07"}
+    assert by_date["2025-05-05"].score == 60.5
+    assert by_date["2025-05-05"].rating == "greed"
+    assert by_date["2025-05-06"].score == 58.2
+    assert by_date["2025-05-07"].rating == "neutral"
+    # Historical points carry no `previous_*` data — they default to None.
+    assert all(snap.previous_close is None for snap in by_date.values())
+
+
+def test_parse_historical_handles_empty() -> None:
+    assert parse_historical({}) == {}
+    assert parse_historical({"fear_and_greed_historical": {"data": []}}) == {}
 
 
 @pytest.mark.network

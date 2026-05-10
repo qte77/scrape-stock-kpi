@@ -22,8 +22,9 @@ Single-purpose CLI fetching fundamentals via yfinance for any Yahoo symbol
 (stocks, ETFs, FX, futures, crypto, indices). `app/__main__.py` prints a
 CNN Fear & Greed banner, resolves a universe → fetches per-ticker → prints
 a rich summary table → writes `results/fundamentals_<UTC>.json`. A
-separate daily GitHub Actions cron (`fear-greed.yaml`) commits a
-`results/fear_greed_<UTC>.json` snapshot back to the repo. See
+separate daily GitHub Actions cron (`fear-greed.yaml`) commits one
+date-keyed snapshot per CNN reading to `results/cnn_fg/YYYY-MM-DD.json`
+(today's file is rewritten each run; historical files are immutable). See
 [docs/architecture.md](docs/architecture.md) for the module map.
 
 Active modules:

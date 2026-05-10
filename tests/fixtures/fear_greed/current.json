@@ -9,7 +9,14 @@
     "previous_1_year": 72.40,
     "_unknown_subindicator_pointer": "should be ignored by extra='ignore'"
   },
-  "fear_and_greed_historical": {"data": []},
+  "fear_and_greed_historical": {
+    "data": [
+      {"x": 1746475200000, "y": 60.5, "rating": "greed"},
+      {"x": 1746474600000, "y": 60.1, "rating": "greed"},
+      {"x": 1746561600000, "y": 58.2, "rating": "greed"},
+      {"x": 1746648000000, "y": 55.0, "rating": "neutral"}
+    ]
+  },
   "market_momentum_sp500": {"score": 50.0, "rating": "neutral"},
   "market_momentum_sp125": {"score": 50.0, "rating": "neutral"},
   "stock_price_strength": {"score": 50.0, "rating": "neutral"},

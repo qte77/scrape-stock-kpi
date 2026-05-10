@@ -18,7 +18,7 @@ app/
 ├── fundamentals.py        fetch_fundamentals(ticker) -> FundamentalsSnapshot
 │                          fetch_price_history(ticker, period) -> DataFrame
 │                          fetch_universe_fundamentals(tickers) -> list[FundamentalsSnapshot]
-├── sentiment.py           fetch_fear_greed() -> FearGreedSnapshot; `python -m app.sentiment` writes results/fear_greed_<UTC>.json
+├── sentiment.py           fetch_fear_greed() -> FearGreedSnapshot; `python -m app.sentiment` writes one date-keyed file per CNN reading to results/cnn_fg/YYYY-MM-DD.json (incl. ~1y historical backfill)
 ├── composite_scores.py    quality/dividend/growth/big_call/aaqs/hgi   [v0.5.0 / #18 — not yet implemented]
 ├── assets/
 │   └── universes/         preset *.txt ticker lists (one per universe name)
@@ -44,7 +44,7 @@ CLI args  ──► CliArgs(BaseSettings)
    rich table (equities + ETFs only)  +  json.dumps -> results/fundamentals_<UTC>.json
 ```
 
-A separate daily GitHub Actions cron (`.github/workflows/fear-greed.yaml`) runs `python -m app.sentiment` and commits the resulting `results/fear_greed_<UTC>.json` back to the repo via `stefanzweifel/git-auto-commit-action@v5`, scoped to `file_pattern: results/fear_greed_*.json`.
+A separate daily GitHub Actions cron (`.github/workflows/fear-greed.yaml`) runs `python -m app.sentiment`, which writes one date-keyed snapshot per CNN reading to `results/cnn_fg/YYYY-MM-DD.json` (today's file is rewritten each run; older files are immutable and skipped if present). The first cron run on a fresh checkout backfills ~1 year of historical points in one go. `stefanzweifel/git-auto-commit-action@v5` commits the new/modified files back, scoped to `file_pattern: results/cnn_fg/*.json`.
 
 v0.5.0 additions (deferred): `composite_scores` aggregates `FundamentalsSnapshot` fields into 0-100 proxy scores merged into per-asset output.
 
@@ -61,7 +61,7 @@ v0.5.0 additions (deferred): `composite_scores` aggregates `FundamentalsSnapshot
 
 - **`yfinance`** — fundamentals (`Ticker.info`) + price history (`Ticker.history`); rate-limit risk; live tests tagged `@pytest.mark.network` (excluded from default `make test`, opt in via `pytest -m network`)
 - **CNN F&G JSON endpoint** — `production.dataviz.cnn.io/index/fearandgreed/graphdata`; requires `User-Agent` header (returns 418 without one); stdlib `urllib.request`, no extra deps
-- **GitHub Actions cron** — `.github/workflows/fear-greed.yaml` runs daily at 21:30 UTC; commits `results/fear_greed_<UTC>.json` via `stefanzweifel/git-auto-commit-action@v5`
+- **GitHub Actions cron** — `.github/workflows/fear-greed.yaml` runs daily at 21:30 UTC; commits date-keyed snapshots under `results/cnn_fg/` via `stefanzweifel/git-auto-commit-action@v5`
 - **`financetoolkit`** — *deferred to v0.5.0 (#18); see [`decisions/0001-defer-financetoolkit.md`](decisions/0001-defer-financetoolkit.md)*
 
 ## What's not here
