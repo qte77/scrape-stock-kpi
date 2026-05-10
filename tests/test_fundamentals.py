@@ -27,6 +27,12 @@ def test_snapshot_parses_full_info_dict() -> None:
     assert snap.trailing_pe == 32.5
     assert snap.return_on_equity == 1.45
     assert snap.dividend_yield == 0.0048
+    assert snap.beta == 1.24
+
+
+def test_snapshot_beta_defaults_to_none_when_missing() -> None:
+    snap = FundamentalsSnapshot.model_validate({"symbol": "X"})
+    assert snap.beta is None
 
 
 def test_snapshot_handles_sparse_info() -> None:

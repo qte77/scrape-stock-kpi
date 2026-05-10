@@ -19,14 +19,14 @@ src/
 │                          fetch_price_history(ticker, period) -> DataFrame
 │                          fetch_universe_fundamentals(tickers) -> list[FundamentalsSnapshot]
 ├── sentiment.py           fetch_fear_greed() -> FearGreedSnapshot; `python -m src.sentiment` merges headline + ~1y history into per-year files results/cnn_fg/YYYY.json (sorted JSON arrays, upsert-by-date)
-├── composite_scores.py    quality/dividend/growth/big_call/aaqs/hgi   [v0.5.0 / #18 — not yet implemented]
+├── composite_scores.py    quality/dividend/growth/big_call/aaqs/hgi 0-100 proxies; `compute_scores(snap) -> CompositeScores`
 ├── assets/
 │   └── universes/         preset *.txt ticker lists (one per universe name)
 └── utils/
     └── parse_args.py      CliArgs(BaseSettings) — pydantic-settings CLI + env (env_prefix="SSK_")
 ```
 
-## Data flow (v0.4.0 current)
+## Data flow (v0.5.0 current)
 
 ```text
 CLI args  ──► CliArgs(BaseSettings)
@@ -46,7 +46,7 @@ CLI args  ──► CliArgs(BaseSettings)
 
 A separate daily GitHub Actions cron (`.github/workflows/fear-greed.yaml`) runs `python -m src.sentiment`, which loads each affected per-year history file (`results/cnn_fg/YYYY.json` — a date-sorted JSON array), upserts the live headline (force, since CNN updates intraday) plus any historical points CNN now exposes that are missing or stale on disk, and rewrites only the year files that changed. The first cron run on a fresh checkout creates the year files from scratch (~1y of CNN history in one go). `stefanzweifel/git-auto-commit-action@v5` commits the rewritten year files, scoped to `file_pattern: results/cnn_fg/[0-9][0-9][0-9][0-9].json`.
 
-v0.5.0 additions (deferred): `composite_scores` aggregates `FundamentalsSnapshot` fields into 0-100 proxy scores merged into per-asset output.
+v0.5.0 attaches a `CompositeScores` object to every `FundamentalsSnapshot` after fetch via `model_copy(update={"composite_scores": compute_scores(snap)})`. The rich summary table appends Quality / Div / Growth columns only when `--show-scores` is passed; persistence carries the composites unconditionally.
 
 ## Public types (`pydantic.BaseModel`)
 
@@ -55,14 +55,14 @@ v0.5.0 additions (deferred): `composite_scores` aggregates `FundamentalsSnapshot
 | `CliArgs(BaseSettings)` | `utils/parse_args.py` | CLI + env input — `cli_parse_args=True`, `extra="forbid"` |
 | `FundamentalsSnapshot` | `fundamentals.py` | Per-ticker fundamentals — ~30 aliased fields; sparse for non-equities |
 | `FearGreedSnapshot` | `sentiment.py` | CNN F&G headline (score, rating, timestamp, prev close/1w/1m/1y) + optional `subindicators` map of 9 named `SubindicatorReading` entries (score, rating, raw_value); see [`cnn-fg-api.md`](cnn-fg-api.md) for what's backfillable vs daily-only |
-| `CompositeScores` | `composite_scores.py` | Quality/dividend/growth/big_call/aaqs/hgi proxies — *v0.5.0 / #18, not yet implemented* |
+| `CompositeScores` | `composite_scores.py` | Quality/dividend/growth/big_call/aaqs/hgi 0-100 proxies derived from `FundamentalsSnapshot`; simplified formulas per [`decisions/0002-simplified-composites.md`](decisions/0002-simplified-composites.md) |
 
 ## External boundaries
 
 - **`yfinance`** — fundamentals (`Ticker.info`) + price history (`Ticker.history`); rate-limit risk; live tests tagged `@pytest.mark.network` (excluded from default `make test`, opt in via `pytest -m network`)
 - **CNN F&G JSON endpoint** — `production.dataviz.cnn.io/index/fearandgreed/graphdata`; requires browser-shape headers (UA + `Accept` + `Referer`; returns 418 otherwise); stdlib `urllib.request`, no extra deps. Observed schema in [`cnn-fg-api.md`](cnn-fg-api.md).
 - **GitHub Actions cron** — `.github/workflows/fear-greed.yaml` runs daily at 21:30 UTC; commits per-year history files `results/cnn_fg/YYYY.json` via `stefanzweifel/git-auto-commit-action@v5`
-- **`financetoolkit`** — *deferred to v0.5.0 (#18); see [`decisions/0001-defer-financetoolkit.md`](decisions/0001-defer-financetoolkit.md)*
+- **`financetoolkit`** — *not used; v0.5.0 composites use simplified formulas with point-in-time `FundamentalsSnapshot` inputs only. See [`decisions/0001-defer-financetoolkit.md`](decisions/0001-defer-financetoolkit.md) and [`decisions/0002-simplified-composites.md`](decisions/0002-simplified-composites.md).*
 
 ## What's not here
 
