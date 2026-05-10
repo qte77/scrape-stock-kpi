@@ -26,35 +26,37 @@ fundamentals + sentiment + composites stack. See
   `fetch_fundamentals` / `fetch_price_history` /
   `fetch_universe_fundamentals`. yfinance-backed, ~30 aliased fields,
   sparse snapshots for non-equities (FX/futures/crypto) valid by design
-  (PR 1D, closes #16, supersedes #7).
+  (#28, closes #16, supersedes #7).
 - `app/__main__.py` wires fundamentals end-to-end: fetch every resolved
   ticker, print a rich summary table (equities + ETFs), persist all
-  snapshots to `results/fundamentals_<UTC>.json` (PR 1D).
+  snapshots to `results/fundamentals_<UTC>.json` (#28).
 - `app/universe.py` — universe resolver with presets in
   `app/assets/universes/`, CSV/file/inline ticker sources, dedup with
   order preservation (#26, closes #20).
 - `app/utils/parse_args.py` — `CliArgs(BaseSettings)` typed CLI args + env
   vars (env prefix `SSK_`, kebab-case CLI flags, `extra="forbid"`); adds
-  `period` field reserved for the v0.5.0 composites PR (#26, PR 1D).
+  `period` field reserved for the v0.5.0 composites PR (#26, #28).
 - Governance scaffold: `docs/architecture.md`, `docs/UserStory.md`,
-  `docs/roadmap.md`, `docs/decisions/0000-remove-traderfox.md` (#24).
+  `docs/roadmap.md`, `docs/decisions/0000-remove-traderfox.md` (#24);
+  `docs/decisions/0001-defer-financetoolkit.md` documents the v0.4.0
+  yfinance-only scope amendment.
 - Complexity gates: `complexipy` cognitive ≤15 + `ruff` mccabe ≤10, both
   wired into `make validate` and CI (#24).
 - Mandatory markdown + link checks: `lint_md` (in `make validate` and CI),
   `lint_links` (CI workflow `links-fail-fast.yml` runs on push/PR/weekly).
   Adopts the qte77 Agents-eval convention; `.lychee.toml` cribbed from
-  sibling `llm-local-text` (#27 + PR 1D).
+  sibling `llm-local-text` (#27, #28).
 - Dependencies: `pydantic>=2.10`, `pydantic-settings>=2.6` (#26),
-  `yfinance>=0.2.40` (PR 1D).
+  `yfinance>=0.2.40` (#28).
 
 ### Changed
 
 - `make run` no longer scrapes via Playwright; runs fundamentals via
   yfinance and writes `results/fundamentals_<UTC>.json` plus a rich
-  summary table (PR 1D).
+  summary table (#28).
 - Default `pytest` excludes `@pytest.mark.network` tests via
   `-m 'not network'` in addopts. Opt in with `pytest -m network`
-  (PR 1D).
+  (#28).
 - `markdownlint` style: ATX headings via `.markdownlint.json` matching
   the qte77 ecosystem convention from sibling `llm-local-text` (#27).
 - Python 3.9 → 3.12 (`requires-python = ">=3.12,<3.13"`).
@@ -67,7 +69,7 @@ fundamentals + sentiment + composites stack. See
 - Dead config layer left over from the Traderfox era:
   `app/utils/handle_config.py`, `app/utils/handle_files.py`,
   `app/config/defaults.json`, the now-empty `app/config/` directory
-  (PR 1D).
+  (#28).
 - `Pipfile`, `.flake8`, `.cirrus.yml`, `.bumpversion.cfg`, `make.bat`
   — superseded by uv / ruff / GitHub Actions / no-release-yet (YAGNI).
 
@@ -77,7 +79,7 @@ fundamentals + sentiment + composites stack. See
   `mkdir -p results/` before write (#15).
 - File I/O utilities no longer return `Exception` objects from
   `except` blocks; errors propagate naturally so callers see the real
-  failure (later removed entirely in PR 1D).
+  failure (later removed entirely in #28).
 - Latent argument-order bug in `get_values_single_url`: `_get_result`
   was called with `headless` and `timeout` swapped (later removed via
   the Traderfox decommission in #25).
