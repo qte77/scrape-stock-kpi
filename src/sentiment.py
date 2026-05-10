@@ -103,7 +103,13 @@ def _fetch_payload() -> dict[str, Any]:
         ENDPOINT,
         headers={"User-Agent": USER_AGENT, "Accept": ACCEPT, "Referer": REFERER},
     )
-    with urllib.request.urlopen(request, timeout=REQUEST_TIMEOUT_SEC) as response:  # noqa: S310
+    # Defense-in-depth against Bandit B310: refuse any URL whose scheme is
+    # not HTTPS (e.g. file:, custom), even though ENDPOINT is a hardcoded
+    # module-level constant. If a future refactor ever lets external input
+    # flow into ENDPOINT, this guard fails loudly at the boundary.
+    if not request.full_url.startswith("https://"):
+        raise ValueError(f"Refusing non-HTTPS URL: {request.full_url!r}")
+    with urllib.request.urlopen(request, timeout=REQUEST_TIMEOUT_SEC) as response:  # nosec B310
         return json.loads(response.read())
 
 
