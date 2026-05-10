@@ -21,6 +21,8 @@ import yfinance as yf
 from pydantic import BaseModel, ConfigDict, Field
 from tqdm import tqdm
 
+from .composite_scores import CompositeScores
+
 if TYPE_CHECKING:
     import pandas as pd
 
@@ -93,6 +95,9 @@ class FundamentalsSnapshot(BaseModel):
 
     # -- volatility --
     beta: float | None = None
+
+    # -- enrichment (attached post-fetch via ``model_copy``) --
+    composite_scores: CompositeScores | None = None
 
 
 def fetch_fundamentals(ticker: str) -> FundamentalsSnapshot:
