@@ -1,12 +1,13 @@
 """scrape-stock-kpi entrypoint.
 
-Resolves the active asset universe, fetches fundamentals via yfinance,
-prints an equities/ETF summary table, and persists every snapshot
-(including sparse ones for FX/futures/crypto) to
-``results/fundamentals_<UTC>.json``.
+Resolves the active asset universe, prints a CNN Fear & Greed sentiment
+banner, fetches fundamentals via yfinance, prints an equities/ETF summary
+table, and persists every snapshot (including sparse ones for
+FX/futures/crypto) to ``results/fundamentals_<UTC>.json``.
 """
 
 import json
+import logging
 from datetime import UTC, datetime
 from pathlib import Path
 
@@ -14,11 +15,14 @@ from rich.console import Console
 from rich.table import Table
 
 from .fundamentals import FundamentalsSnapshot, fetch_universe_fundamentals
+from .sentiment import FearGreedSnapshot, fetch_fear_greed
 from .universe import resolve_universe
 from .utils.parse_args import CliArgs
 
 RESULTS_DIR = Path("results")
 _TABLE_QUOTE_TYPES = {"EQUITY", "ETF"}
+
+logger = logging.getLogger(__name__)
 
 
 def _format_market_cap(value: float | None) -> str:
@@ -39,6 +43,15 @@ def _format_ratio(value: float | None) -> str:
 
 def _format_percent(value: float | None) -> str:
     return f"{value * 100:.2f}%" if value is not None else "-"
+
+
+def _print_sentiment_banner(console: Console, snapshot: FearGreedSnapshot) -> None:
+    stamp = snapshot.timestamp.strftime("%Y-%m-%d %H:%M %Z").strip()
+    console.print(
+        f"[bold]Fear & Greed[/bold] "
+        f"[cyan]{snapshot.score:.1f}[/cyan] "
+        f"([italic]{snapshot.rating}[/italic]) as of {stamp}"
+    )
 
 
 def _print_summary_table(
@@ -78,6 +91,10 @@ def _persist_snapshots(snapshots: list[FundamentalsSnapshot]) -> Path:
 def main() -> None:
     console = Console()
     args = CliArgs()
+    try:
+        _print_sentiment_banner(console, fetch_fear_greed())
+    except Exception as exc:
+        logger.warning("Failed to fetch CNN Fear & Greed: %s", exc)
     tickers = resolve_universe(args)
     console.print(
         f"[green]scrape-stock-kpi[/green] resolving "
