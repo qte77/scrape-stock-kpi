@@ -1,6 +1,6 @@
 [project]
 name = "scrape-stock-kpi"
-version = "0.4.0"
+version = "0.5.0"
 description = "Scrape the web for stock KPI without API keys"
 readme = "README.md"
 license = "Apache-2.0"

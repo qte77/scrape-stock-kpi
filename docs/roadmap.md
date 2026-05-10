@@ -8,29 +8,29 @@ Adopt qte77 ecosystem conventions (uv, ruff, pyright, Makefile, AGENTS.md, valid
 
 **Shipped:** PR #2 (uv+ruff+pyright stack), #11 (plugins), #12 (orphan cleanup), #13 (pyright gate), #14 (Apache-2.0 + badges + `make run`), #15 (runtime fixes).
 
-## 0.4.0 — Library-based KPI architecture (in progress)
+## 0.4.0 — Library-based KPI architecture ✅
 
 Replace the Traderfox Playwright scraper with library-based fundamentals, asset-universe abstraction, and CNN F&G sentiment.
 
-**Goals:**
+**Shipped:**
 
 - Governance scaffold + complexity gates wired into CI — ✅ #24
 - Decommission Traderfox scraper — issue [#19](https://github.com/qte77/scrape-stock-kpi/issues/19) ✅ #25
 - Universe layer (stocks/ETFs/FX/commodities/crypto/indices via Yahoo symbology) — issue [#20](https://github.com/qte77/scrape-stock-kpi/issues/20) ✅ #26
 - Mandatory markdownlint + lychee link checking (qte77 convention) — ✅ #27 + #28
-- Fundamentals via yfinance — `FundamentalsSnapshot` with identity / valuation / profitability / financial health / growth / dividends / per-share / 52-week range fields. `financetoolkit` deferred to v0.5.0 per [ADR-0001](decisions/0001-defer-financetoolkit.md) — issue [#16](https://github.com/qte77/scrape-stock-kpi/issues/16) ✅ #28
-- CNN Fear & Greed sentiment + scheduled workflow — issue [#17](https://github.com/qte77/scrape-stock-kpi/issues/17)
-- README rewrite reflecting new architecture — issue [#3](https://github.com/qte77/scrape-stock-kpi/issues/3)
+- Fundamentals via yfinance — `FundamentalsSnapshot` with identity / valuation / profitability / financial health / growth / dividends / per-share / 52-week range fields. `financetoolkit` deferred per [ADR-0001](decisions/0001-defer-financetoolkit.md) — issue [#16](https://github.com/qte77/scrape-stock-kpi/issues/16) ✅ #28
+- CNN Fear & Greed sentiment + scheduled workflow — issue [#17](https://github.com/qte77/scrape-stock-kpi/issues/17) ✅ #30-#37
+- README rewrite reflecting new architecture — issue [#3](https://github.com/qte77/scrape-stock-kpi/issues/3) ✅ #40
 
 ## 0.5.0 — Composite proxy scores
 
-Reproduce Traderfox-style aggregate signals as transparent, formula-documented composites built on 0.4.0's fundamentals.
+Reproduce Traderfox-style aggregate signals as transparent, formula-documented composites built on v0.4.0's fundamentals. Simplified formulas use only point-in-time `FundamentalsSnapshot` inputs plus `info["beta"]`; multi-year trend formulas (Piotroski, CAGR, FCF coverage) are deliberately deferred per [ADR-0002](decisions/0002-simplified-composites.md).
 
 **Goals:**
 
-- `CompositeScores(BaseModel)` with quality / dividend / growth / big_call / aaqs / hgi proxies; each formula documented in docstrings. Adds `financetoolkit>=2.0` if `yf.Ticker.info` ratios prove insufficient for the proxy formulas — issue [#18](https://github.com/qte77/scrape-stock-kpi/issues/18)
+- `CompositeScores(BaseModel)` with quality / dividend / growth / big_call / aaqs / hgi proxies; each formula documented in docstrings — issue [#18](https://github.com/qte77/scrape-stock-kpi/issues/18)
 
-## 0.5.0+ — Deferred (revisit after composites ship)
+## 0.6.0+ — Deferred (revisit after composites ship)
 
 - Long/short hedging strategy: relative-strength + regime-split + ranking — epic [#4](https://github.com/qte77/scrape-stock-kpi/issues/4) with sub-issues [#8](https://github.com/qte77/scrape-stock-kpi/issues/8), [#9](https://github.com/qte77/scrape-stock-kpi/issues/9), [#10](https://github.com/qte77/scrape-stock-kpi/issues/10)
 

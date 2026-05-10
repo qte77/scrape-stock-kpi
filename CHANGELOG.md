@@ -16,6 +16,53 @@ Types of changes:
 
 ## [Unreleased]
 
+## [0.5.0] - 2026-05-10
+
+Adds composite proxy scores derived from each `FundamentalsSnapshot`.
+Six 0-100 proxies — Quality, Dividend, Growth, Big Call, AAQS, HGI —
+with simplified formulas using only point-in-time inputs plus
+`info["beta"]`. Multi-year trend formulas (Piotroski, CAGR, FCF
+coverage) are deliberately deferred per
+[`docs/decisions/0002-simplified-composites.md`](docs/decisions/0002-simplified-composites.md).
+
+### Added
+
+- `src/composite_scores.py` — `CompositeScores(BaseModel)` plus
+  `quality` / `dividend` / `growth` / `big_call` / `aaqs` / `hgi`
+  score functions and a `compute_scores(snap)` entry point. Each
+  score is a `float | None` in `[0, 100]`; `None` propagates from
+  missing inputs except `big_call`, which reweights proportionally
+  over its non-`None` Q/D/G components (#18).
+- `tests/test_composite_scores.py` — 29 unit tests with hand-computed
+  expectations covering saturation, midpoints, sparse-snapshot,
+  negative-D/E guard, and `beta=None` paths (#18).
+- `docs/decisions/0002-simplified-composites.md` — ADR documenting
+  simplified formulas as the deliberate v0.5.0 design (not a
+  placeholder); amends [ADR-0000](docs/decisions/0000-remove-traderfox.md)
+  and [ADR-0001](docs/decisions/0001-defer-financetoolkit.md) (#18).
+- `FundamentalsSnapshot.beta` — captures yfinance `info["beta"]`;
+  required input for the AAQS proxy (#18).
+- `FundamentalsSnapshot.composite_scores` — optional nested
+  `CompositeScores`; attached post-fetch via `model_copy(update=…)`
+  so JSON output schema stays additive (#18).
+- `CliArgs.show_scores` (`--show-scores` flag, off by default) —
+  appends Quality / Div / Growth columns to the rich summary table.
+  Composites are always computed and persisted regardless of the
+  flag (#18).
+
+### Changed
+
+- README adds a **Composite proxy scores** section + TOC entry under
+  Fundamentals (#18).
+- `docs/architecture.md` — composite_scores no longer marked as "not
+  yet implemented"; data-flow diagram bumped to v0.5.0; financetoolkit
+  reframed as not-used (per ADR-0002) (#18).
+- `docs/roadmap.md` — v0.4.0 marked shipped; v0.5.0 framing aligned
+  with ADR-0002 simplified composites (#18).
+- `docs/UserStory.md` — current milestone updated to v0.5.0 with
+  composite scores; corrects stale `results/fear_greed/` path to
+  `results/cnn_fg/YYYY.json` (#18).
+
 ## [0.4.0] - 2026-05-10
 
 Replaces the Traderfox scraper with a library-based fundamentals +

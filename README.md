@@ -18,6 +18,7 @@ Released — see [CHANGELOG.md](./CHANGELOG.md) for version history.
 * [Usage](#usage)
 * [Data providers](#data-providers)
 * [Fundamentals](#fundamentals)
+* [Composite proxy scores](#composite-proxy-scores)
 * [Sentiment](#sentiment)
 * [KPI TODO](#kpi-todo)
 * [Packages used](#packages-used)
@@ -30,6 +31,7 @@ Released — see [CHANGELOG.md](./CHANGELOG.md) for version history.
 make setup_dev                                  # uv sync (default groups: dev + test)
 make run UNIVERSE=qte77-watchlist               # fetch fundamentals (results/ JSON)
 make run TICKERS=AAPL,MSFT                      # ad-hoc ticker list
+make run TICKERS=AAPL --show-scores             # also append composite-score columns
 make help                                       # list available recipes
 make validate                                   # lint + types + complexity + md + tests
 ```
@@ -81,6 +83,31 @@ into per-year history files at `results/cnn_fg/YYYY.json`.
 
 Sparse snapshots (missing numerics) for non-equities (FX, futures,
 crypto) are valid by design.
+
+## Composite proxy scores
+
+Six 0-100 proxy scores computed from each `FundamentalsSnapshot` and
+attached to its JSON output:
+
+* **Quality** — mean of normalized ROE, ROA, operating margin, inverted
+  D/E (negative-D/E term dropped for distressed balance sheets)
+* **Dividend** — yield + payout-ratio sweet-spot at ~50 %
+* **Growth** — 1-year revenue and earnings growth (point-in-time
+  proxies for CAGR)
+* **Big Call** — weighted Quality / Dividend / Growth, reweighted
+  proportionally over non-`None` components so a tech stock with no
+  dividend still scores
+* **AAQS** — Quality combined with low-volatility (low beta is better)
+* **HGI** — growth components plus a fixed bonus when operating margin
+  clears 10 %
+
+Formulas are simplified relative to the Traderfox originals because
+`FundamentalsSnapshot` carries only point-in-time fields. See
+[`docs/decisions/0002-simplified-composites.md`](docs/decisions/0002-simplified-composites.md)
+for the full trade-off and per-composite formula. Composites are
+always computed and persisted; the rich summary table appends Quality
+/ Div / Growth columns only with `--show-scores` (off by default to
+keep the table readable on 80-column terminals).
 
 ## Sentiment
 
