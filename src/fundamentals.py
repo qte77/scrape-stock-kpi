@@ -91,6 +91,9 @@ class FundamentalsSnapshot(BaseModel):
     fifty_two_week_high: float | None = Field(default=None, alias="fiftyTwoWeekHigh")
     fifty_two_week_low: float | None = Field(default=None, alias="fiftyTwoWeekLow")
 
+    # -- volatility --
+    beta: float | None = None
+
 
 def fetch_fundamentals(ticker: str) -> FundamentalsSnapshot:
     """Fetch fundamentals for one ticker. Sparse for non-equities."""
