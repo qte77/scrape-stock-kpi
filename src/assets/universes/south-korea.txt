@@ -1,0 +1,23 @@
+# South Korea — top KOSPI names by market cap
+# Yahoo symbology (.KS suffix for KOSPI); one symbol per line; comments allowed
+# Source: KOSPI top constituents snapshot (canonical-at-curation)
+005930.KS
+000660.KS
+373220.KS
+207940.KS
+005380.KS
+005490.KS
+105560.KS
+035420.KS
+035720.KS
+051910.KS
+068270.KS
+006400.KS
+012330.KS
+055550.KS
+086790.KS
+033780.KS
+032830.KS
+017670.KS
+028260.KS
+015760.KS

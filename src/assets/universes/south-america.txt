@@ -1,0 +1,26 @@
+# South America — top Latam large caps (mostly Brazil B3 + a few Mexico)
+# Yahoo symbology (.SA = B3 Brazil, .MX = BMV Mexico); one symbol per line
+# Source: regional top-cap snapshot (canonical-at-curation)
+VALE3.SA
+PETR4.SA
+PETR3.SA
+ITUB4.SA
+BBDC4.SA
+ABEV3.SA
+BBAS3.SA
+B3SA3.SA
+JBSS3.SA
+WEGE3.SA
+SUZB3.SA
+CSNA3.SA
+EMBR3.SA
+ELET3.SA
+CMIG4.SA
+BPAC11.SA
+RENT3.SA
+LREN3.SA
+KLBN11.SA
+MGLU3.SA
+AMXB.MX
+WALMEX.MX
+GMEXICOB.MX
