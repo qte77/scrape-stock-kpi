@@ -16,6 +16,14 @@ Types of changes:
 
 ## [Unreleased]
 
+### Added
+
+- `llms.txt` at the repository root — spec-compliant index per
+  [llmstxt.org](https://llmstxt.org/) pointing LLM consumers at the
+  authoritative README / AGENTS / architecture / ADR / source files.
+  Hand-curated rather than template-generated (KISS); update inline
+  when the documentation hierarchy moves.
+
 ### Changed
 
 - **Project renamed**: `scrape-stock-kpi` → `analyze-stock-kpi`. Reflects
