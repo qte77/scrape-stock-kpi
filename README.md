@@ -31,7 +31,7 @@ Released — see [CHANGELOG.md](./CHANGELOG.md) for version history.
 make setup_dev                                  # uv sync (default groups: dev + test)
 make run UNIVERSE=qte77-watchlist               # fetch fundamentals (results/ JSON)
 make run TICKERS=AAPL,MSFT                      # ad-hoc ticker list
-make run TICKERS=AAPL --show-scores             # also append composite-score columns
+make run TICKERS=AAPL SHOW_SCORES=1             # also append composite-score columns
 make help                                       # list available recipes
 make validate                                   # lint + types + complexity + md + tests
 ```
@@ -106,8 +106,15 @@ Formulas are simplified relative to the Traderfox originals because
 [`docs/decisions/0002-simplified-composites.md`](docs/decisions/0002-simplified-composites.md)
 for the full trade-off and per-composite formula. Composites are
 always computed and persisted; the rich summary table appends Quality
-/ Div / Growth columns only with `--show-scores` (off by default to
+/ Div / Growth columns only with `SHOW_SCORES=1` (off by default to
 keep the table readable on 80-column terminals).
+
+**Known issue (v0.5.1 patch tracked at
+[#43](https://github.com/qte77/scrape-stock-kpi/issues/43))**: yfinance
+ships `dividendYield` as a percentage value rather than a fraction,
+so the table's "Div Yield" column currently reads off by 100× and the
+`dividend` composite over-rewards the yield term. Pending
+normalization at ingest.
 
 ## Sentiment
 

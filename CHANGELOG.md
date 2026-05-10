@@ -16,6 +16,15 @@ Types of changes:
 
 ## [Unreleased]
 
+### Known issues
+
+- `FundamentalsSnapshot.dividend_yield` is currently a yfinance
+  percentage value (e.g. `0.37` for AAPL's 0.37 % yield), not a
+  fraction. The rich table's "Div Yield" column reads off by 100×
+  and the `dividend` composite's yield term saturates against the
+  `_YIELD_HI = 0.07` bound. To be normalized at the ingest boundary
+  in v0.5.1 — see [#43](https://github.com/qte77/scrape-stock-kpi/issues/43).
+
 ## [0.5.0] - 2026-05-10
 
 Adds composite proxy scores derived from each `FundamentalsSnapshot`.
