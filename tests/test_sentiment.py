@@ -3,7 +3,8 @@
 from __future__ import annotations
 
 import json
-from datetime import datetime
+from datetime import UTC, datetime, timedelta
+from pathlib import Path
 from typing import Any
 from unittest.mock import patch
 
@@ -13,7 +14,11 @@ from app.sentiment import (
     REFERER,
     USER_AGENT,
     FearGreedSnapshot,
+    _load_year,
+    _upsert,
+    _write_year,
     fetch_fear_greed,
+    merge_payload_into_years,
     parse_historical,
 )
 from pydantic import ValidationError
@@ -35,6 +40,14 @@ class _FakeResponse:
 
     def __exit__(self, *_: object) -> bool:
         return False
+
+
+def _snap(date_str: str, *, score: float = 50.0, rating: str = "neutral") -> FearGreedSnapshot:
+    return FearGreedSnapshot(
+        score=score,
+        rating=rating,
+        timestamp=datetime.fromisoformat(f"{date_str}T20:00:00+00:00"),
+    )
 
 
 def test_snapshot_parses_fixture_payload() -> None:
@@ -64,11 +77,7 @@ def test_snapshot_extra_keys_ignored() -> None:
 
 
 def test_snapshot_is_frozen() -> None:
-    snap = FearGreedSnapshot(
-        score=50.0,
-        rating="neutral",
-        timestamp=datetime.fromisoformat("2026-05-09T20:00:00+00:00"),
-    )
+    snap = _snap("2026-05-09")
     with pytest.raises(ValidationError):
         snap.score = 99.0  # type: ignore[misc]
 
@@ -121,6 +130,125 @@ def test_parse_historical_dedups_same_day_keeps_latest() -> None:
 def test_parse_historical_handles_empty() -> None:
     assert parse_historical({}) == {}
     assert parse_historical({"fear_and_greed_historical": {"data": []}}) == {}
+
+
+def test_upsert_force_always_wins() -> None:
+    bucket: dict[str, FearGreedSnapshot] = {"2026-05-09": _snap("2026-05-09", score=10.0)}
+    incoming = FearGreedSnapshot(
+        score=99.0,
+        rating="greed",
+        timestamp=datetime.fromisoformat("2026-05-09T19:00:00+00:00"),
+    )
+
+    changed = _upsert(bucket, incoming, force=True)
+
+    assert changed is True
+    assert bucket["2026-05-09"].score == 99.0
+
+
+def test_upsert_gapfill_skips_when_existing_is_newer() -> None:
+    bucket: dict[str, FearGreedSnapshot] = {"2026-05-09": _snap("2026-05-09", score=10.0)}
+    older = FearGreedSnapshot(
+        score=99.0,
+        rating="greed",
+        timestamp=datetime.fromisoformat("2026-05-09T19:00:00+00:00"),
+    )
+
+    changed = _upsert(bucket, older, force=False)
+
+    assert changed is False
+    assert bucket["2026-05-09"].score == 10.0
+
+
+def test_upsert_gapfill_inserts_when_missing() -> None:
+    bucket: dict[str, FearGreedSnapshot] = {}
+    snap = _snap("2026-05-09")
+
+    changed = _upsert(bucket, snap, force=False)
+
+    assert changed is True
+    assert bucket["2026-05-09"] is snap
+
+
+def test_write_then_load_year_roundtrip(tmp_path: Path) -> None:
+    by_date = {
+        "2026-01-15": _snap("2026-01-15", score=30.0, rating="fear"),
+        "2026-03-02": _snap("2026-03-02", score=70.0, rating="greed"),
+    }
+    _write_year(2026, by_date, root=tmp_path)
+    reloaded = _load_year(2026, root=tmp_path)
+
+    assert set(reloaded) == set(by_date)
+    assert reloaded["2026-01-15"].score == 30.0
+    assert reloaded["2026-03-02"].rating == "greed"
+
+
+def test_write_year_sorts_entries_by_date(tmp_path: Path) -> None:
+    by_date = {
+        "2026-03-02": _snap("2026-03-02"),
+        "2026-01-15": _snap("2026-01-15"),
+        "2026-02-20": _snap("2026-02-20"),
+    }
+    path = _write_year(2026, by_date, root=tmp_path)
+    raw = json.loads(path.read_text())
+
+    assert [item["timestamp"][:10] for item in raw] == [
+        "2026-01-15",
+        "2026-02-20",
+        "2026-03-02",
+    ]
+
+
+def test_load_year_returns_empty_when_file_missing(tmp_path: Path) -> None:
+    assert _load_year(2099, root=tmp_path) == {}
+
+
+def test_merge_payload_into_years_groups_and_forces_today(tmp_path: Path) -> None:
+    payload = load_fear_greed_fixture("current")
+    by_year = merge_payload_into_years(payload, root=tmp_path)
+
+    # Headline is dated 2026-05-09; historical spans 2025-05-{05,06,07}.
+    assert set(by_year) == {2025, 2026}
+    assert set(by_year[2025]) == {"2025-05-05", "2025-05-06", "2025-05-07"}
+    assert "2026-05-09" in by_year[2026]
+    today = by_year[2026]["2026-05-09"]
+    assert today.previous_close == 55.10
+    assert by_year[2025]["2025-05-05"].previous_close is None
+
+
+def test_merge_payload_preserves_existing_dates_outside_history(tmp_path: Path) -> None:
+    """Year files CNN no longer ships are untouched (main() never writes them)."""
+    long_ago = _snap("2024-01-15", score=12.34, rating="extreme fear")
+    _write_year(2024, {"2024-01-15": long_ago}, root=tmp_path)
+
+    payload = load_fear_greed_fixture("current")
+    by_year = merge_payload_into_years(payload, root=tmp_path)
+
+    # 2024 is not in the returned mapping (no upsert touched it),
+    # and the on-disk file is unchanged.
+    assert 2024 not in by_year
+    assert _load_year(2024, root=tmp_path)["2024-01-15"].score == 12.34
+
+
+def test_merge_payload_does_not_clobber_today_with_stale_historical(
+    tmp_path: Path,
+) -> None:
+    """If CNN's historical block also lists today, the live headline wins."""
+    payload = load_fear_greed_fixture("current")
+    today_iso = payload["fear_and_greed"]["timestamp"]
+    today_dt = datetime.fromisoformat(today_iso).astimezone(UTC)
+    payload["fear_and_greed_historical"]["data"].append(
+        {"x": int(today_dt.timestamp() * 1000) - 60_000, "y": 1.0, "rating": "extreme fear"}
+    )
+
+    by_year = merge_payload_into_years(payload, root=tmp_path)
+
+    today_key = today_dt.strftime("%Y-%m-%d")
+    today = by_year[2026][today_key]
+    assert today.score == 56.42
+    assert today.rating == "neutral"
+    assert today.previous_close == 55.10
+    assert today_dt - today.timestamp == timedelta(0)
 
 
 @pytest.mark.network
