@@ -109,6 +109,13 @@ always computed and persisted; the rich summary table appends Quality
 / Div / Growth columns only with `SHOW_SCORES=1` (off by default to
 keep the table readable on 80-column terminals).
 
+**Known issue (v0.5.1 patch tracked at
+[#43](https://github.com/qte77/scrape-stock-kpi/issues/43))**: yfinance
+ships `dividendYield` as a percentage value rather than a fraction,
+so the table's "Div Yield" column currently reads off by 100× and the
+`dividend` composite over-rewards the yield term. Pending
+normalization at ingest.
+
 ## Sentiment
 
 `FearGreedSnapshot` (CNN F&G headline, captured daily):
