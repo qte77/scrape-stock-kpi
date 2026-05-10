@@ -1,0 +1,68 @@
+---
+name: bump-my-version
+
+# Manually-triggered version bump. Updates pyproject.toml, the README
+# version badge and CHANGELOG via [tool.bumpversion] in pyproject.toml,
+# creates a `v{new}` tag and a `chore(release): bump ...` commit, pushes
+# both on a `bump-<run>-main` branch, and opens a PR for review.
+
+on:
+  workflow_dispatch:
+    inputs:
+      bump_type:
+        description: "Semver part to bump"
+        required: true
+        default: patch
+        type: choice
+        options:
+          - major
+          - minor
+          - patch
+
+permissions:
+  contents: write
+  pull-requests: write
+
+env:
+  BRANCH_NEW: bump-${{ github.run_number }}-${{ github.ref_name }}
+
+jobs:
+  bump:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Configure git
+        run: |
+          git config user.email "bumped@qte77.gha"
+          git config user.name "bump-my-version"
+          git checkout -b "${{ env.BRANCH_NEW }}"
+
+      - uses: callowayproject/bump-my-version@0.29.0
+        id: bump
+        with:
+          args: ${{ inputs.bump_type }}
+          branch: ${{ env.BRANCH_NEW }}
+
+      - name: Push branch and tag
+        if: steps.bump.outputs.bumped == 'true'
+        run: |
+          git push origin "${{ env.BRANCH_NEW }}"
+          git push origin "v${{ steps.bump.outputs.current-version }}"
+
+      - name: Open release PR
+        if: steps.bump.outputs.bumped == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BASE_BRANCH: ${{ github.ref_name }}
+          HEAD_BRANCH: ${{ env.BRANCH_NEW }}
+          PREV_VERSION: ${{ steps.bump.outputs.previous-version }}
+          NEW_VERSION: ${{ steps.bump.outputs.current-version }}
+        run: |
+          gh pr create \
+            --base "$BASE_BRANCH" \
+            --head "$HEAD_BRANCH" \
+            --title "chore(release): bump $PREV_VERSION -> $NEW_VERSION" \
+            --body "Automated bump via bump-my-version.yaml workflow_dispatch. Updates pyproject.toml, README version badge and CHANGELOG.md; tag v$NEW_VERSION already pushed."
