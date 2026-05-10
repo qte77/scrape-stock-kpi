@@ -89,11 +89,12 @@ validate:  ## CI gate: lint + check_types + check_complexity + lint_md + test_co
 # MARK: RUN
 
 
-run:  ## run the scraper (UNIVERSE=qte77-watchlist | TICKERS=AAPL,MSFT | TICKERS_FILE=path)
+run:  ## run fundamentals (UNIVERSE=qte77-watchlist | TICKERS=AAPL,MSFT | TICKERS_FILE=path | PERIOD=5y)
 	uv run python -m app \
 	  $(if $(UNIVERSE),--universe $(UNIVERSE)) \
 	  $(if $(TICKERS),--tickers $(TICKERS)) \
-	  $(if $(TICKERS_FILE),--tickers-file $(TICKERS_FILE))
+	  $(if $(TICKERS_FILE),--tickers-file $(TICKERS_FILE)) \
+	  $(if $(PERIOD),--period $(PERIOD))
 
 
 # MARK: CLEAN
