@@ -31,8 +31,8 @@ jobs:
       - name: Fetch Fear & Greed snapshot
         run: uv run python -m app.sentiment
 
-      - name: Commit snapshots
+      - name: Commit per-year history files
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "chore(sentiment): daily CNN Fear & Greed snapshot"
-          file_pattern: "results/cnn_fg/*.json"
+          file_pattern: "results/cnn_fg/[0-9][0-9][0-9][0-9].json"
