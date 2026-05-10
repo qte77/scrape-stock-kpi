@@ -16,9 +16,22 @@ Types of changes:
 
 ## [Unreleased]
 
-v0.4.0 in flight: replaces the Traderfox scraper with a library-based
-fundamentals + sentiment + composites stack. See
-`docs/decisions/0000-remove-traderfox.md`.
+## [0.4.0] - 2026-05-10
+
+Replaces the Traderfox scraper with a library-based fundamentals +
+sentiment stack (yfinance + CNN F&G). See
+`docs/decisions/0000-remove-traderfox.md`. Composites deferred to
+v0.5.0 per `docs/decisions/0001-defer-financetoolkit.md`.
+
+### Documentation
+
+- README cleanup (#3): drop `[DRAFT]/[WIP]/<0.0.0>` markers, replace
+  static version badge with dynamic GitHub-tag badge, fill TOC, add a
+  Sentiment section, drop pre-Phase-1 "Other possible packages" + "API"
+  sections.
+- `src/__version__.py` now reads from package metadata via
+  `importlib.metadata.version("scrape-stock-kpi")` — `pyproject.toml` is
+  the single source of truth, no more triple-source drift.
 
 ### Added
 
