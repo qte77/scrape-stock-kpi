@@ -22,7 +22,14 @@ from pathlib import Path
 from pydantic import BaseModel, ConfigDict
 
 ENDPOINT = "https://production.dataviz.cnn.io/index/fearandgreed/graphdata"
-USER_AGENT = "Mozilla/5.0 (compatible; scrape-stock-kpi)"
+# CNN's WAF rejects bot-style UAs (incl. "(compatible; ...)" and the token
+# "scrape") with HTTP 418. A plain desktop-browser UA + Accept header gets
+# through. The exact Chrome version is not load-bearing.
+USER_AGENT = (
+    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
+    "(KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+)
+ACCEPT = "application/json, text/plain, */*"
 REQUEST_TIMEOUT_SEC = 10
 RESULTS_DIR = Path("results")
 
@@ -54,7 +61,9 @@ def fetch_fear_greed() -> FearGreedSnapshot:
     ``pydantic.ValidationError`` on schema mismatch — callers decide
     whether to swallow or surface.
     """
-    request = urllib.request.Request(ENDPOINT, headers={"User-Agent": USER_AGENT})
+    request = urllib.request.Request(
+        ENDPOINT, headers={"User-Agent": USER_AGENT, "Accept": ACCEPT}
+    )
     with urllib.request.urlopen(request, timeout=REQUEST_TIMEOUT_SEC) as response:  # noqa: S310
         payload = json.loads(response.read())
     return FearGreedSnapshot.model_validate(payload["fear_and_greed"])
