@@ -26,12 +26,17 @@ fundamentals + sentiment + composites stack. See
   `parse_historical()`, and `merge_payload_into_years()` via stdlib
   `urllib.request`. CNN's WAF requires a current desktop-browser UA +
   `Accept` + `Referer: https://edition.cnn.com/` (returns 418 otherwise);
-  all three are sent. Subindicators ignored via `extra="ignore"` in
-  v0.4.0. `python -m app.sentiment` merges the live headline + ~1y of
-  historical readings into per-year JSON files at
+  all three are sent. Each daily entry now also carries a
+  `subindicators: dict[str, SubindicatorReading]` map covering CNN's 9
+  subindicator blocks (S&P momentum, breadth, VIX, etc.). Today's row
+  has the precise 0-100 score per subindicator; historical rows have
+  rating + raw value but no per-day score (CNN doesn't ship that). See
+  [`docs/cnn-fg-api.md`](docs/cnn-fg-api.md) for the backfillable-vs-
+  daily-only breakdown. `python -m app.sentiment` merges the live
+  headline + ~1y of historical readings into per-year JSON files at
   `results/cnn_fg/YYYY.json` (sorted by date; today's entry is force-
-  overwritten with the live headline so its `previous_*` deltas survive
-  intraday CNN updates) (#17).
+  overwritten with the live headline so its `previous_*` deltas and
+  per-subindicator scores survive intraday CNN updates) (#17).
 - `.github/workflows/fear-greed.yaml` — daily cron at 21:30 UTC (~30 min
   after NYSE close, year-round) plus `workflow_dispatch`; commits the
   rewritten year files via `stefanzweifel/git-auto-commit-action@v5`,

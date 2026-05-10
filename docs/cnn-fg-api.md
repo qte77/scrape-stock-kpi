@@ -100,16 +100,61 @@ captured 2026-05-08:
 | `junk_bond_demand` | 24.0 | High-yield vs investment-grade spread (e.g. 1.394) |
 | `safe_haven_demand` | 93.6 | Stocks-vs-bonds 20-day return spread (e.g. 8.701) |
 
+## What can be gathered later vs only on the day it happened
+
+This is the most-load-bearing distinction; design the cron around it.
+
+### Backfillable on any cron run (~1 year window)
+
+These flow from CNN's `*.data[]` arrays — every cron run sees the same ~250
+daily points, so a missed day repopulates on the next run.
+
+- Headline daily **score** (`fear_and_greed_historical.data[].y`)
+- Headline daily **rating** bucket (`fear_and_greed_historical.data[].rating`)
+- Each subindicator's daily **raw value** (e.g. S&P 500 level, VIX,
+  put/call ratio) — `<subindicator>.data[].y`
+- Each subindicator's daily **rating** bucket — `<subindicator>.data[].rating`
+- The headline's `previous_*` fields are derivable from the headline history
+  array (a `previous_close` value is just the score on the previous trading
+  day), so they're effectively backfillable too.
+
+### Captured-day-only (lost forever if missed)
+
+These exist only at the top level of each subindicator block, which is
+**today's reading**. CNN's historical arrays carry rating + raw value but no
+per-day score.
+
+- Each subindicator's precise **0-100 score** (e.g. `market_momentum_sp500.score`)
+- The exact wall-clock **timestamp** of each subindicator update
+  (sub-day precision; not load-bearing for daily series)
+
+### Bounded backfill window
+
+CNN's `data[]` arrays cap at ~250 entries (~1 trading year). Anything older
+than that is gone from the API entirely — the cron can't recover what was
+never shipped. If you want a multi-year archive, the cron has to keep
+running before the data falls out of the window.
+
 ## What we model in `FearGreedSnapshot`
 
-Only the headline's seven fields. Subindicators are accessible from
-`_fetch_payload()` but not modeled — add fields when a downstream consumer
-needs them.
+| Field | Source | Today | Historical |
+|---|---|---|---|
+| `score` (headline) | `fear_and_greed.score` / `historical.data[].y` | yes | yes |
+| `rating` (headline) | `fear_and_greed.rating` / `historical.data[].rating` | yes | yes |
+| `timestamp` | `fear_and_greed.timestamp` / `historical.data[].x` | yes | yes |
+| `previous_close` / `previous_1_week` / `_1_month` / `_1_year` | `fear_and_greed.*` | yes | **null** (CNN doesn't ship them historically) |
+| `subindicators[k].score` | `<k>.score` (top-level only) | yes | **null** (CNN doesn't ship them historically) |
+| `subindicators[k].rating` | `<k>.rating` / `<k>.data[].rating` | yes | yes |
+| `subindicators[k].raw_value` | `<k>.data[]` (latest for today) | yes | yes |
 
-For historical entries written to `results/cnn_fg/YYYY.json`, the
-`previous_*` fields are `null` because CNN's `data` points don't carry them.
-Only the **today** entry — written from the headline block — has populated
-`previous_*` values, and only on the day the cron ran.
+The cron's behavior follows from this table:
+
+- **Today's row** is force-overwritten on every run because its
+  `previous_*` and `subindicators[*].score` are unrecoverable later.
+- **Historical rows** are gap-filled (only inserted if missing or
+  superseded by a fresher CNN timestamp) — no risk to existing data.
+- Year files are committed via `git-auto-commit-action`, so missed days
+  are still missed if the cron itself fails to run.
 
 ## How to refresh this doc
 

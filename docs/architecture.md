@@ -54,7 +54,7 @@ v0.5.0 additions (deferred): `composite_scores` aggregates `FundamentalsSnapshot
 |---|---|---|
 | `CliArgs(BaseSettings)` | `utils/parse_args.py` | CLI + env input — `cli_parse_args=True`, `extra="forbid"` |
 | `FundamentalsSnapshot` | `fundamentals.py` | Per-ticker fundamentals — ~30 aliased fields; sparse for non-equities |
-| `FearGreedSnapshot` | `sentiment.py` | CNN F&G headline fields (score, rating, timestamp, prev close/1w/1m/1y); subindicators ignored via `extra="ignore"` |
+| `FearGreedSnapshot` | `sentiment.py` | CNN F&G headline (score, rating, timestamp, prev close/1w/1m/1y) + optional `subindicators` map of 9 named `SubindicatorReading` entries (score, rating, raw_value); see [`cnn-fg-api.md`](cnn-fg-api.md) for what's backfillable vs daily-only |
 | `CompositeScores` | `composite_scores.py` | Quality/dividend/growth/big_call/aaqs/hgi proxies — *v0.5.0 / #18, not yet implemented* |
 
 ## External boundaries
