@@ -1,0 +1,38 @@
+---
+name: fear-greed-snapshot
+
+on:
+  schedule:
+    # 21:30 UTC daily (~30 min after NYSE 16:00 ET close, year-round)
+    - cron: "30 21 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  snapshot:
+    name: fetch + commit CNN F&G snapshot
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v4
+        with:
+          enable-cache: true
+          cache-dependency-glob: "uv.lock"
+
+      - name: Set up Python
+        run: uv python install 3.12
+
+      - name: Install runtime dependencies
+        run: uv sync
+
+      - name: Fetch Fear & Greed snapshot
+        run: uv run python -m app.sentiment
+
+      - name: Commit snapshot
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "chore(sentiment): daily CNN Fear & Greed snapshot"
+          file_pattern: "results/fear_greed_*.json"
