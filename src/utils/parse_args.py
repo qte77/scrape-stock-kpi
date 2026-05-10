@@ -46,5 +46,12 @@ class CliArgs(BaseSettings):
 
     Accepts any value yfinance accepts (``1d``/``5d``/``1mo``/``1y``/``5y``
     /``max`` etc.). Not consumed by the default fundamentals flow in
-    :mod:`src.__main__`; reserved for the v0.5.0 composites PR (#18).
+    :mod:`src.__main__`.
+    """
+
+    show_scores: bool = False
+    """Append composite-score columns to the rich summary table.
+
+    Off by default to keep the table fitting on 80-column terminals.
+    Composites are always computed and persisted regardless of this flag.
     """
