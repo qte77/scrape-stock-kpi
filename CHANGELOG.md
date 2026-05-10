@@ -16,48 +16,85 @@ Types of changes:
 
 ## [Unreleased]
 
+v0.4.0 in flight: replaces the Traderfox scraper with a library-based
+fundamentals + sentiment + composites stack. See
+`docs/decisions/0000-remove-traderfox.md`.
+
 ### Added
 
-- Tooling adoption per qte77 ecosystem conventions: `uv` (replaces Pipfile),
-  `ruff` (replaces black + flake8 + isort + pyupgrade), `pyright` (replaces
-  mypy), `Makefile` with `validate` target chaining lint + check_types +
-  test_cov, `AGENTS.md` + `CLAUDE.md` agent docs, `.claude/settings.json`
-  with marketplace plugins (`cc-meta`, `python-dev`, `docs-governance`,
-  `commit-helper`, `codebase-tools`, `tdd-core`, `makefile-core`,
-  `planning`, `readme-generator`), GitHub Actions `validate.yaml` workflow.
-- `[tool.uv].exclude-newer` pinned to 2026-05-08 for reproducible
-  dependency resolution.
-- `MEMORY.md` and bwrap sandbox phantom block in `.gitignore` (so101
-  pattern); `.gitmessage` conventional-commit template tracked.
-- `tests/` scaffold with smoke test; pytest + coverage config.
-- Earlier: providers for stock data — [Traderfox](https://aktie.traderfox.com)
-  KPI, [Portfolio Visualizer](https://www.portfoliovisualizer.com/optimize-portfolio)
-  optim. `tqdm` progress bar, `rich` color print/table, asset shuffling,
-  `time.perf_counter()` tracing, performance-measuring with delay.
+- `app/fundamentals.py` — `FundamentalsSnapshot(BaseModel)` plus
+  `fetch_fundamentals` / `fetch_price_history` /
+  `fetch_universe_fundamentals`. yfinance-backed, ~30 aliased fields,
+  sparse snapshots for non-equities (FX/futures/crypto) valid by design
+  (PR 1D, closes #16, supersedes #7).
+- `app/__main__.py` wires fundamentals end-to-end: fetch every resolved
+  ticker, print a rich summary table (equities + ETFs), persist all
+  snapshots to `results/fundamentals_<UTC>.json` (PR 1D).
+- `app/universe.py` — universe resolver with presets in
+  `app/assets/universes/`, CSV/file/inline ticker sources, dedup with
+  order preservation (#26, closes #20).
+- `app/utils/parse_args.py` — `CliArgs(BaseSettings)` typed CLI args + env
+  vars (env prefix `SSK_`, kebab-case CLI flags, `extra="forbid"`); adds
+  `period` field reserved for the v0.5.0 composites PR (#26, PR 1D).
+- Governance scaffold: `docs/architecture.md`, `docs/UserStory.md`,
+  `docs/roadmap.md`, `docs/decisions/0000-remove-traderfox.md` (#24).
+- Complexity gates: `complexipy` cognitive ≤15 + `ruff` mccabe ≤10, both
+  wired into `make validate` and CI (#24).
+- Mandatory markdown + link checks: `lint_md` (in `make validate` and CI),
+  `lint_links` (CI workflow `links-fail-fast.yml` runs on push/PR/weekly).
+  Adopts the qte77 Agents-eval convention; `.lychee.toml` cribbed from
+  sibling `llm-local-text` (#27 + PR 1D).
+- Dependencies: `pydantic>=2.10`, `pydantic-settings>=2.6` (#26),
+  `yfinance>=0.2.40` (PR 1D).
 
 ### Changed
 
+- `make run` no longer scrapes via Playwright; runs fundamentals via
+  yfinance and writes `results/fundamentals_<UTC>.json` plus a rich
+  summary table (PR 1D).
+- Default `pytest` excludes `@pytest.mark.network` tests via
+  `-m 'not network'` in addopts. Opt in with `pytest -m network`
+  (PR 1D).
+- `markdownlint` style: ATX headings via `.markdownlint.json` matching
+  the qte77 ecosystem convention from sibling `llm-local-text` (#27).
 - Python 3.9 → 3.12 (`requires-python = ">=3.12,<3.13"`).
-- `parse_args()` now returns a `TypedDict` (`CliArgs`) instead of a
-  loose `dict[str, str | bool]`; `__main__.py` accesses values by
-  explicit key rather than positional `.values()` unpack.
-- `_get_results` portfolio-visualizer branch (`get_values_single_url`)
-  now returns a dict keyed by `batch_<n>`, matching the multiple-URL
-  branch shape.
-
-### Fixed
-
-- File I/O utilities (`handle_files.py`, `handle_assets.py`,
-  `handle_config.py`) no longer return Exception objects from `except`
-  blocks; errors propagate naturally so callers see the real failure.
-- Latent argument-order bug in `get_values_single_url`: `_get_result`
-  was being called with `headless` and `timeout` swapped.
-- Optional parameter types in `_handle_page_cookies`
-  (`cookie_frame: str | None`, `timeout: int | None`).
-- 22 pre-existing pyright errors cleared; pyright now gates `make
-  validate` and CI.
 
 ### Removed
 
-- `Pipfile`, `.flake8`, `.cirrus.yml`, `.bumpversion.cfg`, `make.bat` —
-  superseded by uv / ruff / GitHub Actions / no-release-yet (YAGNI).
+- Traderfox provider end-to-end: `app/utils/handle_playwright.py`,
+  `app/config/dom.json`, the Playwright dependency, traderfox dispatch
+  in `__main__.py` (#25, closes #19).
+- Dead config layer left over from the Traderfox era:
+  `app/utils/handle_config.py`, `app/utils/handle_files.py`,
+  `app/config/defaults.json`, the now-empty `app/config/` directory
+  (PR 1D).
+- `Pipfile`, `.flake8`, `.cirrus.yml`, `.bumpversion.cfg`, `make.bat`
+  — superseded by uv / ruff / GitHub Actions / no-release-yet (YAGNI).
+
+### Fixed
+
+- Runtime orphan `title=` kwarg on Playwright page calls and missing
+  `mkdir -p results/` before write (#15).
+- File I/O utilities no longer return `Exception` objects from
+  `except` blocks; errors propagate naturally so callers see the real
+  failure (later removed entirely in PR 1D).
+- Latent argument-order bug in `get_values_single_url`: `_get_result`
+  was called with `headless` and `timeout` swapped (later removed via
+  the Traderfox decommission in #25).
+- 22 pre-existing pyright errors cleared; pyright gates `make validate`
+  and CI.
+
+### Earlier
+
+Pre-Phase-1 setup work — kept here for traceability.
+
+- Tooling adoption per qte77 ecosystem conventions: `uv` (replaces
+  Pipfile), `ruff` (replaces black + flake8 + isort + pyupgrade),
+  `pyright` (replaces mypy), `Makefile` with `validate` target,
+  `AGENTS.md` + `CLAUDE.md` agent docs, `.claude/settings.json` with
+  marketplace plugins, GitHub Actions `validate.yaml` workflow.
+- `[tool.uv].exclude-newer` pinned for reproducible dependency
+  resolution.
+- `MEMORY.md` and bwrap sandbox phantom block in `.gitignore`;
+  `.gitmessage` conventional-commit template tracked.
+- `tests/` scaffold with smoke test; pytest + coverage config.
