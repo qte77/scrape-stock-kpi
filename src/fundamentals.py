@@ -100,10 +100,34 @@ class FundamentalsSnapshot(BaseModel):
     composite_scores: CompositeScores | None = None
 
 
+def _normalize_yfinance_info(info: dict[str, Any]) -> dict[str, Any]:
+    """Apply yfinance schema-drift normalizations at the fetch boundary.
+
+    Current yfinance ships ``info["dividendYield"]`` as a **percentage**
+    value (e.g. ``0.37`` for AAPL's actual 0.37 % yield); the rest of
+    the codebase assumes the older fractional convention
+    (``_format_percent`` multiplies by 100 for display;
+    ``composite_scores._YIELD_HI = 0.07`` is a 7 % fractional ceiling).
+    Divide by 100 unconditionally so every downstream consumer sees one
+    convention.
+
+    Placed at the fetch boundary rather than as a pydantic
+    ``field_validator`` so tests constructing ``FundamentalsSnapshot``
+    directly with fractional snake_case kwargs (``dividend_yield=0.07``)
+    keep working without going through this normalization.
+    """
+    out = dict(info)
+    raw_yield = out.get("dividendYield")
+    if raw_yield is not None:
+        out["dividendYield"] = raw_yield / 100
+    return out
+
+
 def fetch_fundamentals(ticker: str) -> FundamentalsSnapshot:
     """Fetch fundamentals for one ticker. Sparse for non-equities."""
     info: dict[str, Any] = yf.Ticker(ticker).info
-    return FundamentalsSnapshot.model_validate({**info, "symbol": ticker})
+    normalized = _normalize_yfinance_info(info)
+    return FundamentalsSnapshot.model_validate({**normalized, "symbol": ticker})
 
 
 def fetch_price_history(ticker: str, period: str = "5y") -> pd.DataFrame:

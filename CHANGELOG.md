@@ -39,14 +39,15 @@ Types of changes:
   the old URLs. `importlib.metadata.version("analyze-stock-kpi")` reads
   from `[project].name` in `pyproject.toml`.
 
-### Known issues
+### Fixed
 
-- `FundamentalsSnapshot.dividend_yield` is currently a yfinance
-  percentage value (e.g. `0.37` for AAPL's 0.37 % yield), not a
-  fraction. The rich table's "Div Yield" column reads off by 100×
-  and the `dividend` composite's yield term saturates against the
-  `_YIELD_HI = 0.07` bound. To be normalized at the ingest boundary
-  in v0.5.1 — see [#43](https://github.com/qte77/analyze-stock-kpi/issues/43).
+- `FundamentalsSnapshot.dividend_yield` is now normalized at the fetch
+  boundary via a new `_normalize_yfinance_info` helper called from
+  `fetch_fundamentals`. Current yfinance ships `info["dividendYield"]`
+  as a percentage (e.g. `0.37` for AAPL's 0.37 % yield); the helper
+  divides by 100 so downstream consumers (rich table, JSON output,
+  `composite_scores._YIELD_HI` bound, `_format_percent`) see one
+  consistent fractional convention (#43).
 
 ## [0.5.0] - 2026-05-10
 
