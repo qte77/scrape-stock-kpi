@@ -11,6 +11,8 @@ retry_wait_time = 2
 exclude = [
     # Shields.io badges — rate-limited
     "^https://img\\.shields\\.io",
+    # CodeFactor — 404 for repos not yet analyzed
+    "^https://www\\.codefactor\\.io",
     # LinkedIn — auth required
     "^https://(www|bg|[a-z]{2})\\.linkedin\\.com",
     # X / Twitter — auth required, also returns 402
