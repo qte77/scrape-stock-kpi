@@ -1,6 +1,6 @@
 # RPA Stock KPI
 
-[![version](https://img.shields.io/github/v/tag/qte77/scrape-stock-kpi?label=version&color=blue)](https://github.com/qte77/scrape-stock-kpi/tags)
+[![version](https://img.shields.io/badge/version-0.5.0-blue.svg)](https://github.com/qte77/scrape-stock-kpi/blob/main/CHANGELOG.md)
 [![validate](https://github.com/qte77/scrape-stock-kpi/actions/workflows/validate.yaml/badge.svg)](https://github.com/qte77/scrape-stock-kpi/actions/workflows/validate.yaml)
 [![Links (Fail Fast)](https://github.com/qte77/scrape-stock-kpi/actions/workflows/links-fail-fast.yml/badge.svg)](https://github.com/qte77/scrape-stock-kpi/actions/workflows/links-fail-fast.yml)
 [![CodeFactor](https://www.codefactor.io/repository/github/qte77/scrape-stock-kpi/badge)](https://www.codefactor.io/repository/github/qte77/scrape-stock-kpi)
