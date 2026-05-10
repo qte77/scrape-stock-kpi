@@ -1,0 +1,32 @@
+# Lychee link checker config
+# https://lychee.cli.rs/usage/config/
+
+accept = [200, 201, 204, 429]
+timeout = 30
+max_retries = 4
+retry_wait_time = 2
+
+# Exclude URLs that are auth-walled, rate-limit bots, or are
+# documented elsewhere as inaccessible to scrapers.
+exclude = [
+    # Shields.io badges — rate-limited
+    "^https://img\\.shields\\.io",
+    # LinkedIn — auth required
+    "^https://(www|bg|[a-z]{2})\\.linkedin\\.com",
+    # X / Twitter — auth required, also returns 402
+    "^https://x\\.com",
+    "^https://twitter\\.com",
+    # Reddit — 403 to bots
+    "^https://www\\.reddit\\.com",
+    # Vendor / cloud catalogs that 403 to bots
+    "^https://catalog\\.ngc\\.nvidia\\.com",
+    "^https://ai\\.azure\\.com",
+    "^https://www\\.ibm\\.com",
+    "^https://allenai\\.org",
+    "^https://console\\.mistral\\.ai",
+    "^https://www\\.kaggle\\.com",
+    # Closed Thunderbird add-on store — sometimes returns 403 in CI
+    "^https://services\\.addons\\.thunderbird\\.net",
+    # Hugging Face — heavy rate-limiting on model-card URLs
+    "^https://huggingface\\.co",
+]
