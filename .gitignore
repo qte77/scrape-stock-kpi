@@ -1,9 +1,6 @@
 # ignores for building the README dir tree
 .git
 
-# leftover sandbox artifacts from the decommissioned Traderfox era (#25)
-app/results/
-
 # editors
 .vscode/
 .idea/
