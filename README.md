@@ -1,18 +1,28 @@
 # RPA Stock KPI
 
-![version](https://img.shields.io/badge/version-0.2.0-blue)
-[![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
+[![version](https://img.shields.io/github/v/tag/qte77/scrape-stock-kpi?label=version&color=blue)](https://github.com/qte77/scrape-stock-kpi/tags)
 [![validate](https://github.com/qte77/scrape-stock-kpi/actions/workflows/validate.yaml/badge.svg)](https://github.com/qte77/scrape-stock-kpi/actions/workflows/validate.yaml)
-[![CodeFactor](https://www.codefactor.io/repository/github/qte77/scrape-stock-kpi/badge)](https://www.codefactor.io/repository/github/qte77/scrape-stock-kpi)
 [![Links (Fail Fast)](https://github.com/qte77/scrape-stock-kpi/actions/workflows/links-fail-fast.yml/badge.svg)](https://github.com/qte77/scrape-stock-kpi/actions/workflows/links-fail-fast.yml)
+[![CodeFactor](https://www.codefactor.io/repository/github/qte77/scrape-stock-kpi/badge)](https://www.codefactor.io/repository/github/qte77/scrape-stock-kpi)
 
-Scrape the web for stock KPI without API-keys.
+Library-based stock KPI CLI: per-ticker fundamentals via yfinance plus a
+daily CNN Fear & Greed sentiment snapshot. No API keys, no scraping.
 
 ## Status
 
-**[DRAFT]** **[WIP]** **----> Not fully implemented yet**
+Released — see [CHANGELOG.md](./CHANGELOG.md) for version history.
 
-The current version is <0.0.0>. For version history have a look at [CHANGELOG.md](./CHANGELOG.md).
+## TOC
+
+* [Quickstart](#quickstart)
+* [Usage](#usage)
+* [Data providers](#data-providers)
+* [Fundamentals](#fundamentals)
+* [Sentiment](#sentiment)
+* [KPI TODO](#kpi-todo)
+* [Packages used](#packages-used)
+* [Quality tooling](#quality-tooling)
+* [License](#license)
 
 ## Quickstart
 
@@ -24,34 +34,44 @@ make help                                       # list available recipes
 make validate                                   # lint + types + complexity + md + tests
 ```
 
-<!--
-## TOC
+## Usage
 
-* [Usage](#usage-)
-* [Install](#install-)
-* [Reason](#reason-)
-* [Purpose](#purpose-)
-* [Paradigms](#paradigms-)
-* [App Structure](#app-structure-)
-* [App Details](#app-details-)
-* [TODO](#todo-)
-* [Inspirations](#inspirations-)
-* [Rescources](#resources-)
+`make run` resolves a universe, fetches fundamentals for each ticker via
+yfinance, prints a CNN Fear & Greed banner plus a rich summary table for
+equities and ETFs, and writes all snapshots to
+`results/fundamentals_<UTC>.json`.
 
-## Usage [↑](#rpa-stock-kpi)
+Universe sources (in priority order):
 
--->
+* `TICKERS=AAPL,MSFT` — inline comma-separated list
+* `TICKERS_FILE=path/to/list.txt` — one ticker per line
+* `UNIVERSE=<name>` — preset under `src/assets/universes/<name>.txt`
+  (`qte77-watchlist`, `dax40`, `crypto-top10`)
+* `PERIOD=5y` — reserved for v0.5.0 composites; ignored by fundamentals
+
+CLI args double as env vars with the `SSK_` prefix
+(e.g. `SSK_TICKERS=AAPL,MSFT`).
+
+A separate GitHub Actions cron (`fear-greed.yaml`) runs daily at 21:30
+UTC and merges the live CNN headline plus ~1y of historical readings
+into per-year history files at `results/cnn_fg/YYYY.json`.
 
 ## Data providers
 
-* [Yahoo Finance](https://finance.yahoo.com) — via [yfinance](https://pypi.org/project/yfinance/)
+* [Yahoo Finance](https://finance.yahoo.com) — fundamentals + price
+  history via [yfinance](https://pypi.org/project/yfinance/)
+* [CNN Fear & Greed Index](https://edition.cnn.com/markets/fear-and-greed)
+  — sentiment headline + 9 subindicators via the public
+  `production.dataviz.cnn.io` JSON endpoint (no API key); see
+  [`docs/cnn-fg-api.md`](docs/cnn-fg-api.md)
 
-## KPI
+## Fundamentals
 
 `FundamentalsSnapshot` (per ticker, point-in-time):
 
 * **Identity** — symbol, sector, industry, currency, exchange, quoteType
-* **Valuation** — market cap, P/E (trailing/forward), P/B, P/S TTM, EV, EV/EBITDA
+* **Valuation** — market cap, P/E (trailing/forward), P/B, P/S TTM, EV,
+  EV/EBITDA
 * **Profitability** — ROE, ROA, profit/gross/operating margins
 * **Financial health** — debt/equity, current ratio, quick ratio
 * **Growth** — revenue growth, earnings growth
@@ -59,13 +79,31 @@ make validate                                   # lint + types + complexity + md
 * **Per-share** — trailing/forward EPS, book value
 * **52-week range** — high, low
 
-Sparse snapshots (missing numerics) for non-equities (FX, futures, crypto)
-are valid by design.
+Sparse snapshots (missing numerics) for non-equities (FX, futures,
+crypto) are valid by design.
+
+## Sentiment
+
+`FearGreedSnapshot` (CNN F&G headline, captured daily):
+
+* **Headline** — score (0-100), rating (`extreme fear` → `extreme
+  greed`), timestamp
+* **Deltas** — previous close, 1-week, 1-month, 1-year scores
+* **Subindicators** — 9 named `SubindicatorReading` entries (S&P
+  momentum, breadth, VIX, put/call, junk-bond demand, market momentum,
+  safe-haven demand, stock-price strength, market volatility); rating +
+  raw value for every day in history, plus a 0-100 score for today only
+  (CNN doesn't ship per-day subindicator scores in their `data[]` arrays
+  — see [`docs/cnn-fg-api.md`](docs/cnn-fg-api.md))
+
+Per-year files at `results/cnn_fg/YYYY.json` are date-sorted JSON
+arrays; today's entry is force-overwritten on every cron run so deltas
+and subindicator scores survive intraday CNN updates.
 
 ## KPI TODO
 
-* [CNN Fear and Greed Index](https://edition.cnn.com/markets/fear-and-greed) — see [#17](https://github.com/qte77/scrape-stock-kpi/issues/17)
-* Composite scores (Quality / Dividend / Growth / Big Call / AAQS / HGI) — see [#18](https://github.com/qte77/scrape-stock-kpi/issues/18)
+* Composite scores (Quality / Dividend / Growth / Big Call / AAQS /
+  HGI) — see [#18](https://github.com/qte77/scrape-stock-kpi/issues/18)
 * Beta, PEG
 * Stock CDS and yield (paid data; out of scope for now)
 
@@ -73,29 +111,26 @@ are valid by design.
 
 * [yfinance](https://pypi.org/project/yfinance/) — Yahoo Finance data
 * [pydantic](https://pypi.org/project/pydantic/) — typed data models
-* [pydantic-settings](https://pypi.org/project/pydantic-settings/) — CLI args + env vars
+* [pydantic-settings](https://pypi.org/project/pydantic-settings/) —
+  CLI args + env vars
 * [rich](https://pypi.org/project/rich/) — console output + tables
 * [tqdm](https://pypi.org/project/tqdm/) — progress bars
+
+CNN F&G uses the stdlib `urllib.request` only — no extra dependency.
 
 ## Quality tooling
 
 * [uv](https://docs.astral.sh/uv/) — package + venv manager
 * [ruff](https://docs.astral.sh/ruff/) — linter + formatter
 * [pyright](https://microsoft.github.io/pyright/) — static type checker
-* [complexipy](https://pypi.org/project/complexipy/) — cognitive complexity gate
-* [pytest](https://docs.pytest.org/) + [pytest-cov](https://pypi.org/project/pytest-cov/) — tests + coverage
-* [markdownlint](https://github.com/igorshubovych/markdownlint-cli) — markdown style
+* [complexipy](https://pypi.org/project/complexipy/) — cognitive
+  complexity gate
+* [pytest](https://docs.pytest.org/) +
+  [pytest-cov](https://pypi.org/project/pytest-cov/) — tests + coverage
+* [markdownlint](https://github.com/igorshubovych/markdownlint-cli) —
+  markdown style
 * [lychee](https://lychee.cli.rs/) — broken-link checker
 
-## Other possible packages
+## License
 
-* [yahoofinancials](https://pypi.org/project/yahoofinancials/)
-* [fundamentalanalysis](https://pypi.org/project/fundamentalanalysis/)
-* [Quandl](https://pypi.org/project/world-bank-data/)
-* [fredapi](https://pypi.org/project/world-bank-data/)
-* [world_bank_data](https://pypi.org/project/world-bank-data/)
-* [PyPortfolioOpt](https://pypi.org/project/pyportfolioopt/)
-
-## API
-
-* [Alpha Vantage](https://www.alphavantage.co/documentation/)
+[Apache 2.0](LICENSE)
