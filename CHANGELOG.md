@@ -22,7 +22,7 @@ fundamentals + sentiment + composites stack. See
 
 ### Added
 
-- `app/sentiment.py` — `FearGreedSnapshot(BaseModel)`, `fetch_fear_greed()`,
+- `src/sentiment.py` — `FearGreedSnapshot(BaseModel)`, `fetch_fear_greed()`,
   `parse_historical()`, and `merge_payload_into_years()` via stdlib
   `urllib.request`. CNN's WAF requires a current desktop-browser UA +
   `Accept` + `Referer: https://edition.cnn.com/` (returns 418 otherwise);
@@ -32,7 +32,7 @@ fundamentals + sentiment + composites stack. See
   has the precise 0-100 score per subindicator; historical rows have
   rating + raw value but no per-day score (CNN doesn't ship that). See
   [`docs/cnn-fg-api.md`](docs/cnn-fg-api.md) for the backfillable-vs-
-  daily-only breakdown. `python -m app.sentiment` merges the live
+  daily-only breakdown. `python -m src.sentiment` merges the live
   headline + ~1y of historical readings into per-year JSON files at
   `results/cnn_fg/YYYY.json` (sorted by date; today's entry is force-
   overwritten with the live headline so its `previous_*` deltas and
@@ -41,18 +41,18 @@ fundamentals + sentiment + composites stack. See
   after NYSE close, year-round) plus `workflow_dispatch`; commits the
   rewritten year files via `stefanzweifel/git-auto-commit-action@v5`,
   scoped to `results/cnn_fg/[0-9][0-9][0-9][0-9].json` (#17).
-- `app/fundamentals.py` — `FundamentalsSnapshot(BaseModel)` plus
+- `src/fundamentals.py` — `FundamentalsSnapshot(BaseModel)` plus
   `fetch_fundamentals` / `fetch_price_history` /
   `fetch_universe_fundamentals`. yfinance-backed, ~30 aliased fields,
   sparse snapshots for non-equities (FX/futures/crypto) valid by design
   (#28, closes #16, supersedes #7).
-- `app/__main__.py` wires fundamentals end-to-end: fetch every resolved
+- `src/__main__.py` wires fundamentals end-to-end: fetch every resolved
   ticker, print a rich summary table (equities + ETFs), persist all
   snapshots to `results/fundamentals_<UTC>.json` (#28).
-- `app/universe.py` — universe resolver with presets in
-  `app/assets/universes/`, CSV/file/inline ticker sources, dedup with
+- `src/universe.py` — universe resolver with presets in
+  `src/assets/universes/`, CSV/file/inline ticker sources, dedup with
   order preservation (#26, closes #20).
-- `app/utils/parse_args.py` — `CliArgs(BaseSettings)` typed CLI args + env
+- `src/utils/parse_args.py` — `CliArgs(BaseSettings)` typed CLI args + env
   vars (env prefix `SSK_`, kebab-case CLI flags, `extra="forbid"`); adds
   `period` field reserved for the v0.5.0 composites PR (#26, #28).
 - Governance scaffold: `docs/architecture.md`, `docs/UserStory.md`,
@@ -70,6 +70,11 @@ fundamentals + sentiment + composites stack. See
 
 ### Changed
 
+- **Renamed top-level package `app/` → `src/`.** All imports become
+  `from src.X import ...`; `make run` invokes `python -m src`; the
+  daily cron invokes `python -m src.sentiment`; pyright/complexipy/
+  coverage targets and pyproject build config all updated accordingly.
+  Mechanical: no behavior changes.
 - `make run` no longer scrapes via Playwright; runs fundamentals via
   yfinance and writes `results/fundamentals_<UTC>.json` plus a rich
   summary table (#28). A CNN Fear & Greed banner now precedes the table;
