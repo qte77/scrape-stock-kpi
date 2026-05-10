@@ -89,12 +89,13 @@ validate:  ## CI gate: lint + check_types + check_complexity + lint_md + test_co
 # MARK: RUN
 
 
-run:  ## run fundamentals (UNIVERSE=qte77-watchlist | TICKERS=AAPL,MSFT | TICKERS_FILE=path | PERIOD=5y)
+run:  ## run fundamentals (UNIVERSE=qte77-watchlist | TICKERS=AAPL,MSFT | TICKERS_FILE=path | PERIOD=5y | SHOW_SCORES=1)
 	uv run python -m src \
 	  $(if $(UNIVERSE),--universe $(UNIVERSE)) \
 	  $(if $(TICKERS),--tickers $(TICKERS)) \
 	  $(if $(TICKERS_FILE),--tickers-file $(TICKERS_FILE)) \
-	  $(if $(PERIOD),--period $(PERIOD))
+	  $(if $(PERIOD),--period $(PERIOD)) \
+	  $(if $(SHOW_SCORES),--show-scores)
 
 
 # MARK: CLEAN
