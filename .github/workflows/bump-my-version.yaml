@@ -44,13 +44,15 @@ jobs:
         id: bump
         with:
           args: ${{ inputs.bump_type }}
-          branch: ${{ env.BRANCH_NEW }}
 
       - name: Push branch and tag
         if: steps.bump.outputs.bumped == 'true'
+        env:
+          BRANCH: ${{ env.BRANCH_NEW }}
+          NEW_VERSION: ${{ steps.bump.outputs.current-version }}
         run: |
-          git push origin "${{ env.BRANCH_NEW }}"
-          git push origin "v${{ steps.bump.outputs.current-version }}"
+          git push origin "HEAD:refs/heads/$BRANCH"
+          git push origin "v$NEW_VERSION"
 
       - name: Open release PR
         if: steps.bump.outputs.bumped == 'true'
