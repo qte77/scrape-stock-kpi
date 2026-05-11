@@ -18,11 +18,11 @@ Solo investors building their own auditable, rule-based screening pipeline. Anyo
 ## Non-goals (explicit)
 
 - Replicate Traderfox's exact proprietary numerical scores (won't match byte-for-byte; composite proxies are documented approximations of the same signals)
-- Long/short hedging strategy execution (deferred — see roadmap §0.5+ and issues #4 / #8 / #9 / #10)
+- Long/short hedging strategy execution (deferred per [ADR-0003](decisions/0003-defer-rs-hedging-epic.md) — issues #4 / #8 / #9 / #10 stay open with the `deferred` label; behavioral price analytics fits a sibling repo)
 - Paid-data integrations (CDS spreads, Bloomberg, Refinitiv) — out of scope
 - Automated trade execution — analysis only
 
-## v0.5.1 done means (current milestone)
+## v0.5.1 done means
 
 - yfinance `info["dividendYield"]` is normalized at the fetch boundary so the rich table, JSON output and composite formulas all see one fractional convention (#43).
 - Inherits everything from v0.5.0 below.

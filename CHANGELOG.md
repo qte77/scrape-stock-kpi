@@ -16,6 +16,10 @@ Types of changes:
 
 ## [Unreleased]
 
+### Changed
+
+- Defer the v0.6.0 RS hedging epic per [ADR-0003](docs/decisions/0003-defer-rs-hedging-epic.md). Parent issue #4 and sub-issues #8 / #9 / #10 stay open with the `deferred` label; #55 (RS alternatives survey) closes as resolved by the ADR. v0.6.0 milestone reopens for a deliverable better aligned with the project's single-purpose stock-KPI tagline. Behavioral price analytics (pandas, time-series, regime classification) fits a sibling repo rather than this CLI.
+
 ## [0.5.1] - 2026-05-11
 
 ### Added

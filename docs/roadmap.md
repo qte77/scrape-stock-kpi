@@ -38,17 +38,13 @@ Patch release covering issues surfaced by the v0.5.0 composites work.
 
 - [x] Normalize `dividend_yield` at the fetch boundary so the table render, JSON output, and composite formulas all see one convention — issue [#43](https://github.com/qte77/analyze-stock-kpi/issues/43), PR #51
 
-## 0.6.0 — Long/short hedging analysis
+## 0.6.0 — TBD (repurposing)
 
-Relative-strength / regime-split / ranking pipeline. Strict TDD per AGENTS.md.
+The original v0.6.0 RS hedging scope was deferred per [ADR-0003](decisions/0003-defer-rs-hedging-epic.md). Milestone is open for a new direction aligned with the project's stock-KPI tagline.
 
-**Goals:**
+## Deferred
 
-- [ ] Mansfield Relative Strength vs SPY at `[63, 126, 252]` trading days — issue [#8](https://github.com/qte77/analyze-stock-kpi/issues/8)
-- [ ] Regime-split returns via 50-day MA slope — issue [#9](https://github.com/qte77/analyze-stock-kpi/issues/9)
-- [ ] Long/short ranking + `results/relative_strength_<UTC>.json` + `--with-rs` CLI flag — issue [#10](https://github.com/qte77/analyze-stock-kpi/issues/10)
-- [ ] Raise `--cov-fail-under` from 0 to 60 once all 4 land
-- [ ] Parent epic — issue [#4](https://github.com/qte77/analyze-stock-kpi/issues/4)
+- [ ] RS hedging epic — parent [#4](https://github.com/qte77/analyze-stock-kpi/issues/4); sub-issues [#8](https://github.com/qte77/analyze-stock-kpi/issues/8) (Mansfield RS), [#9](https://github.com/qte77/analyze-stock-kpi/issues/9) (regime-split returns), [#10](https://github.com/qte77/analyze-stock-kpi/issues/10) (long/short ranking + CLI). Deferred per [ADR-0003](decisions/0003-defer-rs-hedging-epic.md); behavioral price analytics fits a sibling repo (e.g. `qte77/regime-hedging`) consuming `results/fundamentals_<UTC>.json`.
 
 ## Open research (no milestone)
 
