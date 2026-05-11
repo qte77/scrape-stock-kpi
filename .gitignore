@@ -88,6 +88,10 @@ importtime/
 # Agent-managed working memory (per qte77 convention)
 MEMORY.md
 
+# Runtime artifacts from `make run` (per-invocation per-asset KPI snapshots).
+# results/cnn_fg/YYYY.json is committed (daily history, see sentiment.py).
+results/fundamentals_*.json
+
 # Claude Code sandbox bwrap phantom files
 # https://github.com/anthropics/claude-code/issues/17727
 /HEAD
