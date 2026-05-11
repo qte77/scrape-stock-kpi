@@ -16,6 +16,8 @@ Types of changes:
 
 ## [Unreleased]
 
+## [0.5.1] - 2026-05-11
+
 ### Added
 
 - `llms.txt` at the repository root — spec-compliant index per

@@ -1,6 +1,6 @@
 # RPA Stock KPI
 
-[![version](https://img.shields.io/badge/version-0.5.0-blue.svg)](https://github.com/qte77/analyze-stock-kpi/blob/main/CHANGELOG.md)
+[![version](https://img.shields.io/badge/version-0.5.1-blue.svg)](https://github.com/qte77/analyze-stock-kpi/blob/main/CHANGELOG.md)
 [![validate](https://github.com/qte77/analyze-stock-kpi/actions/workflows/validate.yaml/badge.svg)](https://github.com/qte77/analyze-stock-kpi/actions/workflows/validate.yaml)
 [![Links (Fail Fast)](https://github.com/qte77/analyze-stock-kpi/actions/workflows/links-fail-fast.yml/badge.svg)](https://github.com/qte77/analyze-stock-kpi/actions/workflows/links-fail-fast.yml)
 [![CodeFactor](https://www.codefactor.io/repository/github/qte77/analyze-stock-kpi/badge)](https://www.codefactor.io/repository/github/qte77/analyze-stock-kpi)
@@ -54,9 +54,9 @@ analyze-stock-kpi resolving 1 tickers
 ┃ Symbol ┃ Sector ┃  Market ┃   P/E ┃    ROE ┃     Div ┃ Quali… ┃ Div ┃ Growth ┃
 ┃        ┃        ┃     Cap ┃       ┃        ┃   Yield ┃        ┃     ┃        ┃
 ┡━━━━━━━━╇━━━━━━━━╇━━━━━━━━━╇━━━━━━━╇━━━━━━━━╇━━━━━━━━━╇━━━━━━━━╇━━━━━╇━━━━━━━━┩
-│ AAPL   │ Techn… │   4.31T │ 35.47 │ 141.4… │  37.00% │     90 │  63 │     56 │
+│ AAPL   │ Techn… │   4.31T │ 35.47 │ 141.4… │   0.37% │     90 │  20 │     56 │
 └────────┴────────┴─────────┴───────┴────────┴─────────┴────────┴─────┴────────┘
-Wrote results/fundamentals_2026-05-10T12-16-21Z.json
+Wrote results/fundamentals_2026-05-11T00-00-00Z.json
 ```
 
 The persisted JSON keeps every field plus the nested composite scores:
@@ -72,13 +72,13 @@ The persisted JSON keeps every field plus the nested composite scores:
   "debt_to_equity": 79.548,
   "revenue_growth": 0.166,
   "earnings_growth": 0.218,
-  "dividend_yield": 0.37,
+  "dividend_yield": 0.0037,
   "beta": 1.065,
   "composite_scores": {
     "quality": 90.06,
-    "dividend": 62.59,
+    "dividend": 20.0,
     "growth": 56.0,
-    "big_call": 71.6,
+    "big_call": 65.8,
     "aaqs": 68.4,
     "hgi": 66.0
   }
@@ -86,9 +86,9 @@ The persisted JSON keeps every field plus the nested composite scores:
 ```
 
 (Truncated for brevity — every `FundamentalsSnapshot` field is
-present.) The "Div Yield 37.00%" you see in the table is the
-[#43](https://github.com/qte77/analyze-stock-kpi/issues/43) yfinance
-percentage-vs-fraction drift, pending normalization.
+present.) `dividend_yield` is stored as a fraction; the
+`_normalize_yfinance_info` helper divides yfinance's current
+percentage-shaped value (`0.37`) at the fetch boundary.
 
 ## Universe sources
 
