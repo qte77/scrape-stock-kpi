@@ -30,6 +30,46 @@ def test_snapshot_parses_full_info_dict() -> None:
     assert snap.beta == 1.24
 
 
+def test_normalize_yfinance_info_divides_dividend_yield() -> None:
+    """Recent yfinance ships dividendYield as a percentage value (e.g.
+    0.37 for AAPL's 0.37 %). `_normalize_yfinance_info` divides by 100 at
+    the fetch boundary so the rest of the codebase sees a fraction.
+    """
+    from src.fundamentals import _normalize_yfinance_info
+
+    normalized = _normalize_yfinance_info({"dividendYield": 0.37, "trailingPE": 35.0})
+    assert normalized["dividendYield"] == 0.0037
+    assert normalized["trailingPE"] == 35.0  # untouched
+
+
+def test_normalize_yfinance_info_handles_missing_yield() -> None:
+    """Sparse snapshots (FX, futures, crypto) have no `dividendYield` key.
+    The normalizer leaves the input dict structurally unchanged.
+    """
+    from src.fundamentals import _normalize_yfinance_info
+
+    assert _normalize_yfinance_info({"symbol": "X"}) == {"symbol": "X"}
+
+
+def test_fetch_fundamentals_normalizes_live_yield() -> None:
+    """End-to-end: a mocked yf.Ticker.info shipping percentage-shaped
+    dividendYield (current schema) reaches `fetch_fundamentals` and
+    emerges with a fractional value on the snapshot.
+    """
+    from unittest.mock import patch
+
+    class _FakeTicker:
+        info = {
+            "symbol": "AAPL",
+            "shortName": "Apple Inc.",
+            "dividendYield": 0.37,  # current yfinance: percentage-shaped
+        }
+
+    with patch("src.fundamentals.yf.Ticker", return_value=_FakeTicker()):
+        snap = fetch_fundamentals("AAPL")
+    assert snap.dividend_yield == 0.0037
+
+
 def test_snapshot_beta_defaults_to_none_when_missing() -> None:
     snap = FundamentalsSnapshot.model_validate({"symbol": "X"})
     assert snap.beta is None
