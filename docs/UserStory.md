@@ -22,10 +22,15 @@ Solo investors building their own auditable, rule-based screening pipeline. Anyo
 - Paid-data integrations (CDS spreads, Bloomberg, Refinitiv) — out of scope
 - Automated trade execution — analysis only
 
-## v0.5.0 done means (current milestone)
+## v0.5.1 done means (current milestone)
+
+- yfinance `info["dividendYield"]` is normalized at the fetch boundary so the rich table, JSON output and composite formulas all see one fractional convention (#43).
+- Inherits everything from v0.5.0 below.
+
+## v0.5.0 done means
 
 - `make run UNIVERSE=<preset>` (or `TICKERS=...`, `TICKERS_FILE=...`) writes a single `results/fundamentals_<UTC>.json` containing one `FundamentalsSnapshot` per resolved ticker, with a nested `composite_scores` object (six 0-100 proxies). Sparse fields for non-equities are valid.
-- Stdout shows a rich summary table for equities + ETFs; pass `--show-scores` to append Quality / Div / Growth columns.
+- Stdout shows a rich summary table for equities + ETFs; pass `SHOW_SCORES=1` to append Quality / Div / Growth columns.
 - CNN F&G snapshot lands daily in `results/cnn_fg/YYYY.json` via cron (v0.4.0 #17).
 - `make validate` passes lint + types + complexity + lint_md + tests. CI green on push and PR (validate + links-fail-fast workflows).
 

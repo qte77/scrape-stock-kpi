@@ -30,17 +30,25 @@ Reproduce Traderfox-style aggregate signals as transparent, formula-documented c
 
 - [x] `CompositeScores(BaseModel)` with quality / dividend / growth / big_call / aaqs / hgi proxies; each formula documented in docstrings — issue [#18](https://github.com/qte77/analyze-stock-kpi/issues/18), PR #42
 
-## 0.5.1 — Data-quality follow-ups
+## 0.5.1 — Data-quality follow-ups [x]
 
 Patch release covering issues surfaced by the v0.5.0 composites work.
 
+**Shipped:**
+
+- [x] Normalize `dividend_yield` at the fetch boundary so the table render, JSON output, and composite formulas all see one convention — issue [#43](https://github.com/qte77/analyze-stock-kpi/issues/43), PR #51
+
+## 0.6.0 — Long/short hedging analysis
+
+Relative-strength / regime-split / ranking pipeline. Strict TDD per AGENTS.md.
+
 **Goals:**
 
-- [ ] Normalize `dividend_yield` at the ingest boundary so the table render, JSON output, and composite formulas all see one convention — issue [#43](https://github.com/qte77/analyze-stock-kpi/issues/43)
-
-## 0.6.0+ — Deferred (revisit after composites ship)
-
-- [ ] Long/short hedging strategy: relative-strength + regime-split + ranking — epic [#4](https://github.com/qte77/analyze-stock-kpi/issues/4) with sub-issues [#8](https://github.com/qte77/analyze-stock-kpi/issues/8), [#9](https://github.com/qte77/analyze-stock-kpi/issues/9), [#10](https://github.com/qte77/analyze-stock-kpi/issues/10)
+- [ ] Mansfield Relative Strength vs SPY at `[63, 126, 252]` trading days — issue [#8](https://github.com/qte77/analyze-stock-kpi/issues/8)
+- [ ] Regime-split returns via 50-day MA slope — issue [#9](https://github.com/qte77/analyze-stock-kpi/issues/9)
+- [ ] Long/short ranking + `results/relative_strength_<UTC>.json` + `--with-rs` CLI flag — issue [#10](https://github.com/qte77/analyze-stock-kpi/issues/10)
+- [ ] Raise `--cov-fail-under` from 0 to 60 once all 4 land
+- [ ] Parent epic — issue [#4](https://github.com/qte77/analyze-stock-kpi/issues/4)
 
 ## Open research (no milestone)
 
