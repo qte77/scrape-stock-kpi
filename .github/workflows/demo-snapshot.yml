@@ -1,0 +1,115 @@
+---
+# Weekly fundamentals snapshot for the demo dashboard (#59).
+#
+# Runs Sundays at 06:15 UTC (staggers from sbom 00:00 Sun). Fetches the
+# qte77-watchlist universe via `make run`, renames the timestamped output
+# to results/demo/<UNIVERSE>/<YYYY-MM-DD>.json, rebuilds the manifest,
+# and commits both files as a single verified commit via the REST Git
+# Data API (Blob -> Tree -> Commit -> Ref). The verified-commit path is
+# required by the repo's `required_signatures` ruleset; pushing via plain
+# `git push` would be rejected.
+#
+# 1p citation for the verified-commit mechanism:
+# https://github.com/iarekylew00t/verified-bot-commit (README)
+
+name: demo-snapshot
+
+on:
+  schedule:
+    - cron: "15 6 * * 0"
+  workflow_dispatch:
+    inputs:
+      universe:
+        description: "Universe preset (default qte77-watchlist)"
+        default: qte77-watchlist
+        required: false
+
+permissions:
+  contents: write
+
+concurrency:
+  group: demo-snapshot
+  cancel-in-progress: false
+
+jobs:
+  snapshot:
+    name: fetch + commit weekly fundamentals snapshot
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
+
+      - uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b  # v8.1.0
+        with:
+          enable-cache: true
+          cache-dependency-glob: "uv.lock"
+
+      - name: Set up Python
+        run: uv python install 3.12
+
+      - name: Install runtime dependencies
+        run: uv sync
+
+      - name: Run KPI snapshot
+        env:
+          UNIVERSE: ${{ inputs.universe || 'qte77-watchlist' }}
+        run: make run UNIVERSE="$UNIVERSE"
+
+      - name: Move output + rebuild manifest
+        id: prep
+        env:
+          UNIVERSE: ${{ inputs.universe || 'qte77-watchlist' }}
+        run: |
+          set -euo pipefail
+          DATE=$(date -u +%Y-%m-%d)
+          DEST="results/demo/$UNIVERSE"
+          mkdir -p "$DEST"
+          mv results/fundamentals_*.json "$DEST/$DATE.json"
+          uv run python scripts/build_demo_manifest.py "$DEST"
+          echo "date=$DATE" >> "$GITHUB_OUTPUT"
+          echo "snapshot=$DEST/$DATE.json" >> "$GITHUB_OUTPUT"
+          echo "manifest=$DEST/index.json" >> "$GITHUB_OUTPUT"
+
+      - name: Commit snapshot + manifest as a single verified commit
+        uses: actions/github-script@d746ffe35508b1917358783b479e04febd2b8f71  # v9.0.0
+        env:
+          UNIVERSE: ${{ inputs.universe || 'qte77-watchlist' }}
+          SNAPSHOT_PATH: ${{ steps.prep.outputs.snapshot }}
+          MANIFEST_PATH: ${{ steps.prep.outputs.manifest }}
+        with:
+          script: |
+            const fs = require('fs');
+            const { UNIVERSE, SNAPSHOT_PATH, MANIFEST_PATH } = process.env;
+            const { owner, repo } = context.repo;
+            const branch = 'main';
+
+            const ref = await github.rest.git.getRef({ owner, repo, ref: `heads/${branch}` });
+            const parentSha = ref.data.object.sha;
+            const parentCommit = await github.rest.git.getCommit({
+              owner, repo, commit_sha: parentSha,
+            });
+
+            const mkBlob = async (path) => {
+              const content = fs.readFileSync(path).toString('base64');
+              const blob = await github.rest.git.createBlob({
+                owner, repo, content, encoding: 'base64',
+              });
+              return { path, mode: '100644', type: 'blob', sha: blob.data.sha };
+            };
+            const tree = [await mkBlob(SNAPSHOT_PATH), await mkBlob(MANIFEST_PATH)];
+
+            const newTree = await github.rest.git.createTree({
+              owner, repo, base_tree: parentCommit.data.tree.sha, tree,
+            });
+
+            const commit = await github.rest.git.createCommit({
+              owner, repo,
+              message: `chore(demo): weekly snapshot ${UNIVERSE}`,
+              tree: newTree.data.sha,
+              parents: [parentSha],
+            });
+
+            await github.rest.git.updateRef({
+              owner, repo, ref: `heads/${branch}`, sha: commit.data.sha,
+            });
+
+            core.info(`Created verified commit ${commit.data.sha.slice(0, 8)} on ${branch}`);
