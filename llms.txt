@@ -35,7 +35,7 @@
 - [Makefile](Makefile): `make setup_dev`, `make run`, `make validate`, `make help`
 - [.github/workflows/](.github/workflows): `validate`, `fear-greed` daily cron + `demo-snapshot` weekly cron (both verified-commit pattern to the `data` branch), `gh-pages` Pages deploy, `links-fail-fast`, `bump-my-version`, `codeql`, `sbom`
 - [docs/demo/](docs/demo): Static GitHub Pages dashboard sources (`index.html`, `app.js`, `style.css`). Live at <https://qte77.github.io/analyze-stock-kpi/>; fetches data cross-origin from raw.githubusercontent.com on the `data` branch.
-- [scripts/build_demo_manifest.py](scripts/build_demo_manifest.py): Stdlib-only manifest builder for `results/demo/<UNIVERSE>/index.json` (universe / latest / dates / updated_at). Called by `demo-snapshot.yml` after each snapshot.
+- [scripts/build_demo_manifest.py](scripts/build_demo_manifest.py): Stdlib-only manifest builder for `results/demo/<UNIVERSE>/index.json` (universe / latest / dates / updated_at). Called by `demo-snapshot.yaml` after each snapshot.
 
 ## Optional
 

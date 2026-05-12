@@ -2,11 +2,11 @@
 
 [![version](https://img.shields.io/badge/version-0.5.1-blue.svg)](https://github.com/qte77/analyze-stock-kpi/blob/main/CHANGELOG.md)
 [![validate](https://github.com/qte77/analyze-stock-kpi/actions/workflows/validate.yaml/badge.svg)](https://github.com/qte77/analyze-stock-kpi/actions/workflows/validate.yaml)
-[![Links (Fail Fast)](https://github.com/qte77/analyze-stock-kpi/actions/workflows/links-fail-fast.yml/badge.svg)](https://github.com/qte77/analyze-stock-kpi/actions/workflows/links-fail-fast.yml)
+[![Links (Fail Fast)](https://github.com/qte77/analyze-stock-kpi/actions/workflows/links-fail-fast.yaml/badge.svg)](https://github.com/qte77/analyze-stock-kpi/actions/workflows/links-fail-fast.yaml)
 [![CodeFactor](https://www.codefactor.io/repository/github/qte77/analyze-stock-kpi/badge)](https://www.codefactor.io/repository/github/qte77/analyze-stock-kpi)
 [![CodeQL](https://github.com/qte77/analyze-stock-kpi/actions/workflows/codeql.yaml/badge.svg)](https://github.com/qte77/analyze-stock-kpi/actions/workflows/codeql.yaml)
 [![SBOM](https://github.com/qte77/analyze-stock-kpi/actions/workflows/sbom.yaml/badge.svg)](https://github.com/qte77/analyze-stock-kpi/actions/workflows/sbom.yaml)
-[![gh-pages](https://github.com/qte77/analyze-stock-kpi/actions/workflows/gh-pages.yml/badge.svg)](https://qte77.github.io/analyze-stock-kpi/)
+[![gh-pages](https://github.com/qte77/analyze-stock-kpi/actions/workflows/gh-pages.yaml/badge.svg)](https://qte77.github.io/analyze-stock-kpi/)
 
 [![vscode.dev](https://img.shields.io/static/v1?logo=visualstudiocode&label=&message=vscode.dev&labelColor=2c2c32&color=007acc&logoColor=007acc)](https://vscode.dev/github/qte77/analyze-stock-kpi)
 [![Codespace Dev](https://img.shields.io/static/v1?logo=visualstudiocode&label=&message=Codespace%20Dev&labelColor=2c2c32&color=007acc&logoColor=007acc)](https://github.com/codespaces/new?repo=qte77/analyze-stock-kpi)
