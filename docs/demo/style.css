@@ -67,7 +67,7 @@ section {
 h2 {
   font-size: 0.8125rem;
   font-weight: 600;
-  margin: 0 0 1rem 0;
+  margin: 0 0 1rem;
   color: var(--muted);
   text-transform: uppercase;
   letter-spacing: 0.06em;
@@ -199,7 +199,7 @@ tbody tr:hover { background: var(--bg); }
 }
 
 #row-detail h3 {
-  margin: 0 0 1rem 0;
+  margin: 0 0 1rem;
   font-size: 1.125rem;
 }
 

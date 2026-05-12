@@ -153,8 +153,12 @@ The cron's behavior follows from this table:
   `previous_*` and `subindicators[*].score` are unrecoverable later.
 - **Historical rows** are gap-filled (only inserted if missing or
   superseded by a fresher CNN timestamp) — no risk to existing data.
-- Year files are committed via `git-auto-commit-action`, so missed days
-  are still missed if the cron itself fails to run.
+- Year files are committed to the `data` branch via verified REST Git
+  Data API commits (`actions/github-script` calling
+  `git.createBlob` → `createTree` → `createCommit` → `updateRef`); this
+  satisfies the repo's `required_signatures` ruleset on `main` (the
+  `data` branch is outside its scope). Missed days are still missed if
+  the cron itself fails to run.
 
 ## How to refresh this doc
 

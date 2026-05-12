@@ -1,4 +1,4 @@
-# RPA Stock KPI
+# analyze-stock-kpi
 
 [![version](https://img.shields.io/badge/version-0.5.1-blue.svg)](https://github.com/qte77/analyze-stock-kpi/blob/main/CHANGELOG.md)
 [![validate](https://github.com/qte77/analyze-stock-kpi/actions/workflows/validate.yaml/badge.svg)](https://github.com/qte77/analyze-stock-kpi/actions/workflows/validate.yaml)
