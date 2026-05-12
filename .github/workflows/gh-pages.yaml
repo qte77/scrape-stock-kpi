@@ -21,7 +21,7 @@ on:
     branches: [main]
     paths:
       - "docs/demo/**"
-      - ".github/workflows/gh-pages.yml"
+      - ".github/workflows/gh-pages.yaml"
   workflow_dispatch:
 
 permissions:
