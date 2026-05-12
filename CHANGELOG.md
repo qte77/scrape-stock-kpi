@@ -16,9 +16,17 @@ Types of changes:
 
 ## [Unreleased]
 
+### Added
+
+- **Static demo dashboard on GitHub Pages** at `https://qte77.github.io/analyze-stock-kpi/` (#59) — F&G 2-year chart + sortable universe table with date selector. Vanilla HTML/JS/CSS in `docs/demo/`; Chart.js v4.5.1 via CDN; no build step. Deploys via modern `actions/upload-pages-artifact` + `actions/deploy-pages` in `.github/workflows/gh-pages.yml`.
+- **Weekly fundamentals snapshot workflow** `.github/workflows/demo-snapshot.yml` (Sunday 06:15 UTC) commits `results/demo/qte77-watchlist/YYYY-MM-DD.json` + `index.json` manifest to the `data` branch.
+- **`scripts/build_demo_manifest.py`** — stdlib-only Python that rebuilds the per-universe manifest from on-disk snapshot files.
+
 ### Changed
 
-- Defer the v0.6.0 RS hedging epic per [ADR-0003](docs/decisions/0003-defer-rs-hedging-epic.md). Parent issue #4 and sub-issues #8 / #9 / #10 stay open with the `deferred` label; #55 (RS alternatives survey) closes as resolved by the ADR. v0.6.0 milestone reopens for a deliverable better aligned with the project's single-purpose stock-KPI tagline. Behavioral price analytics (pandas, time-series, regime classification) fits a sibling repo rather than this CLI.
+- **`fear-greed.yaml` rewritten** to use the verified REST Git Data API commit pattern via `actions/github-script@v9`, targeting the `data` branch. Restores the cron that broke on 2026-05-11 when the `required_signatures` ruleset was activated and rejected `stefanzweifel/git-auto-commit-action@v5`'s unsigned pushes.
+- **All workflow actions pinned to full-length commit SHAs** per the repo's new "Require actions to be pinned to a full-length commit SHA" rule. Migrated `validate.yaml`, `sbom.yaml`, `bump-my-version.yaml`, `links-fail-fast.yml`, `codeql.yaml`.
+- Defer the v0.6.0 RS hedging epic per [ADR-0003](docs/decisions/0003-defer-rs-hedging-epic.md). Parent issue #4 and sub-issues #8 / #9 / #10 stay open with the `deferred` label; #55 (RS alternatives survey) closes as resolved by the ADR. v0.6.0 milestone repurposed to the demo dashboard above. Behavioral price analytics (pandas, time-series, regime classification) fits a sibling repo rather than this CLI.
 
 ## [0.5.1] - 2026-05-11
 

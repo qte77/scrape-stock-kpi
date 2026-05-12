@@ -38,9 +38,16 @@ Patch release covering issues surfaced by the v0.5.0 composites work.
 
 - [x] Normalize `dividend_yield` at the fetch boundary so the table render, JSON output, and composite formulas all see one convention — issue [#43](https://github.com/qte77/analyze-stock-kpi/issues/43), PR #51
 
-## 0.6.0 — TBD (repurposing)
+## 0.6.0 — Demo dashboard on GitHub Pages
 
-The original v0.6.0 RS hedging scope was deferred per [ADR-0003](decisions/0003-defer-rs-hedging-epic.md). Milestone is open for a new direction aligned with the project's stock-KPI tagline.
+The original v0.6.0 RS hedging scope was deferred per [ADR-0003](decisions/0003-defer-rs-hedging-epic.md); the milestone was repurposed for a read-only static dashboard that visualizes the repo's two existing committed datasets (CNN F&G + weekly fundamentals snapshots).
+
+**Goals:**
+
+- [x] Weekly fundamentals snapshot workflow (`demo-snapshot.yml`) committing to `results/demo/qte77-watchlist/YYYY-MM-DD.json` on a separate `data` branch via verified REST Git Data API commits — PR #60 + follow-up #61
+- [x] Rewrite `fear-greed.yaml` to the same verified-commit pattern, fixing the cron broken by the `required_signatures` ruleset — PR #60 + #61
+- [ ] GitHub Pages deploy (`gh-pages.yml`) using modern `actions/upload-pages-artifact` + `actions/deploy-pages` of `docs/demo/*` — issue [#59](https://github.com/qte77/analyze-stock-kpi/issues/59)
+- [ ] Static dashboard (`docs/demo/{index.html,app.js,style.css}`) — F&G 2-year chart + universe table with date selector, fetching cross-origin from `raw.githubusercontent.com/.../data/results/...`
 
 ## Deferred
 
@@ -57,4 +64,4 @@ The original v0.6.0 RS hedging scope was deferred per [ADR-0003](decisions/0003-
 - CDS spreads (paid data only)
 - Paid-API integrations (Tiingo, FMP premium, Alpha Vantage premium, Bloomberg)
 - Trade execution (analysis only)
-- Public release (repo stays private; CNN F&G remains an HTTP fetch from a non-public-API endpoint, no published artifacts on PyPI yet)
+- Published artifacts on PyPI (CNN F&G remains an HTTP fetch from a non-public-API endpoint)
