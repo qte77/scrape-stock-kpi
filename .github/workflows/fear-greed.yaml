@@ -1,4 +1,17 @@
 ---
+# Daily CNN Fear & Greed snapshot.
+#
+# Runs at 21:30 UTC (~30 min after NYSE 16:00 ET close, year-round).
+# Fetches the live CNN F&G headline + ~1y of historical readings, merges
+# into per-year history files at results/cnn_fg/YYYY.json, and commits
+# changed files as a single verified commit via the REST Git Data API
+# (Blob -> Tree -> Commit -> Ref). The verified-commit path is required
+# by the repo's `required_signatures` ruleset; pushing via plain
+# `git push` would be rejected.
+#
+# 1p citation for the verified-commit mechanism:
+# https://github.com/iarekylew00t/verified-bot-commit (README)
+
 name: fear-greed-snapshot
 
 on:
@@ -10,14 +23,18 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: fear-greed-snapshot
+  cancel-in-progress: false
+
 jobs:
   snapshot:
     name: fetch + commit CNN F&G snapshot
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
 
-      - uses: astral-sh/setup-uv@v4
+      - uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b  # v8.1.0
         with:
           enable-cache: true
           cache-dependency-glob: "uv.lock"
@@ -31,8 +48,61 @@ jobs:
       - name: Fetch Fear & Greed snapshot
         run: uv run python -m src.sentiment
 
-      - name: Commit per-year history files
-        uses: stefanzweifel/git-auto-commit-action@v5
+      - name: Detect changed history files
+        id: changed
+        run: |
+          set -euo pipefail
+          FILES=$(git status --porcelain results/cnn_fg/ \
+            | awk '$2 ~ /^results\/cnn_fg\/[0-9]{4}\.json$/ {print $2}' \
+            | paste -sd ',' -)
+          echo "files=$FILES" >> "$GITHUB_OUTPUT"
+          if [ -z "$FILES" ]; then
+            echo "no F&G history changes; skipping commit"
+          else
+            echo "changed: $FILES"
+          fi
+
+      - name: Commit history file(s) as a single verified commit
+        if: steps.changed.outputs.files != ''
+        uses: actions/github-script@d746ffe35508b1917358783b479e04febd2b8f71  # v9.0.0
+        env:
+          FILES: ${{ steps.changed.outputs.files }}
         with:
-          commit_message: "chore(sentiment): daily CNN Fear & Greed snapshot"
-          file_pattern: "results/cnn_fg/[0-9][0-9][0-9][0-9].json"
+          script: |
+            const fs = require('fs');
+            const { FILES } = process.env;
+            const paths = FILES.split(',').filter(Boolean);
+            const { owner, repo } = context.repo;
+            const branch = 'main';
+
+            const ref = await github.rest.git.getRef({ owner, repo, ref: `heads/${branch}` });
+            const parentSha = ref.data.object.sha;
+            const parentCommit = await github.rest.git.getCommit({
+              owner, repo, commit_sha: parentSha,
+            });
+
+            const mkBlob = async (path) => {
+              const content = fs.readFileSync(path).toString('base64');
+              const blob = await github.rest.git.createBlob({
+                owner, repo, content, encoding: 'base64',
+              });
+              return { path, mode: '100644', type: 'blob', sha: blob.data.sha };
+            };
+            const tree = await Promise.all(paths.map(mkBlob));
+
+            const newTree = await github.rest.git.createTree({
+              owner, repo, base_tree: parentCommit.data.tree.sha, tree,
+            });
+
+            const commit = await github.rest.git.createCommit({
+              owner, repo,
+              message: 'chore(sentiment): daily CNN Fear & Greed snapshot',
+              tree: newTree.data.sha,
+              parents: [parentSha],
+            });
+
+            await github.rest.git.updateRef({
+              owner, repo, ref: `heads/${branch}`, sha: commit.data.sha,
+            });
+
+            core.info(`Created verified commit ${commit.data.sha.slice(0, 8)} on ${branch}`);
