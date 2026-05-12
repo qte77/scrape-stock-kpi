@@ -1,10 +1,17 @@
 ---
 name: bump-my-version
 
-# Manually-triggered version bump. Updates pyproject.toml, the README
-# version badge and CHANGELOG via [tool.bumpversion] in pyproject.toml,
-# creates a `v{new}` tag and a `chore(release): bump ...` commit, pushes
-# both on a `bump-<run>-main` branch, and opens a PR for review.
+# Manually-triggered version bump. Invokes the `bump-my-version` CLI
+# directly (the package is already a dev dep — see
+# [dependency-groups].dev in pyproject.toml) rather than the
+# `callowayproject/bump-my-version` composite action, which transitively
+# uses tag-pinned subactions that the repo's "Require actions to be
+# pinned to a full-length commit SHA" rule rejects.
+#
+# Behavior matches the previous flow: bumps pyproject.toml +
+# README badge + CHANGELOG per [tool.bumpversion] config, creates a
+# `v{new}` tag locally, pushes a `bump-<run>-<base>` branch + the new
+# tag, and opens a PR for review.
 
 on:
   workflow_dispatch:
@@ -34,22 +41,42 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Configure git
+      - uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b  # v8.1.0
+        with:
+          enable-cache: true
+          cache-dependency-glob: "uv.lock"
+
+      - name: Set up Python + install dev deps (bump-my-version)
+        run: |
+          uv python install 3.12
+          uv sync --group dev
+
+      - name: Configure git + branch
+        env:
+          BRANCH: ${{ env.BRANCH_NEW }}
         run: |
           git config user.email "bumped@qte77.gha"
           git config user.name "bump-my-version"
-          git checkout -b "${{ env.BRANCH_NEW }}"
+          git checkout -b "$BRANCH"
 
-      - uses: callowayproject/bump-my-version@621b2ed57ac6bf20b5c9351e34854d97e4e3abbc  # 0.29.0
+      - name: Run bump-my-version
         id: bump
-        with:
-          args: ${{ inputs.bump_type }}
+        env:
+          BUMP_TYPE: ${{ inputs.bump_type }}
+        run: |
+          set -euo pipefail
+          PREV_VERSION=$(uv run bump-my-version show current_version)
+          uv run bump-my-version bump "$BUMP_TYPE"
+          NEW_VERSION=$(uv run bump-my-version show current_version)
+          echo "prev_version=$PREV_VERSION" >> "$GITHUB_OUTPUT"
+          echo "new_version=$NEW_VERSION" >> "$GITHUB_OUTPUT"
+          echo "bumped=true" >> "$GITHUB_OUTPUT"
 
-      - name: Push branch and tag
+      - name: Push branch + tag
         if: steps.bump.outputs.bumped == 'true'
         env:
           BRANCH: ${{ env.BRANCH_NEW }}
-          NEW_VERSION: ${{ steps.bump.outputs.current-version }}
+          NEW_VERSION: ${{ steps.bump.outputs.new_version }}
         run: |
           git push origin "HEAD:refs/heads/$BRANCH"
           git push origin "v$NEW_VERSION"
@@ -60,11 +87,11 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           BASE_BRANCH: ${{ github.ref_name }}
           HEAD_BRANCH: ${{ env.BRANCH_NEW }}
-          PREV_VERSION: ${{ steps.bump.outputs.previous-version }}
-          NEW_VERSION: ${{ steps.bump.outputs.current-version }}
+          PREV_VERSION: ${{ steps.bump.outputs.prev_version }}
+          NEW_VERSION: ${{ steps.bump.outputs.new_version }}
         run: |
           gh pr create \
             --base "$BASE_BRANCH" \
             --head "$HEAD_BRANCH" \
             --title "chore(release): bump $PREV_VERSION -> $NEW_VERSION" \
-            --body "Automated bump via bump-my-version.yaml workflow_dispatch. Updates pyproject.toml, README version badge and CHANGELOG.md; tag v$NEW_VERSION already pushed."
+            --body "Automated bump via bump-my-version.yaml workflow_dispatch. Updates pyproject.toml, README version badge, and CHANGELOG.md; tag v$NEW_VERSION already pushed."
