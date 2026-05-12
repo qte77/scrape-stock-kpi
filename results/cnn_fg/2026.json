@@ -3797,9 +3797,9 @@
     }
   },
   {
-    "score": 66.5142857142857,
+    "score": 66.6,
     "rating": "greed",
-    "timestamp": "2026-05-12T19:58:58Z",
+    "timestamp": "2026-05-12T21:34:35Z",
     "previous_close": 66.9714285714286,
     "previous_1_week": 67.25714285714287,
     "previous_1_month": 38.05714285714286,
@@ -3808,47 +3808,47 @@
       "market_momentum_sp500": {
         "score": 99.2,
         "rating": "extreme greed",
-        "raw_value": 7401.88
+        "raw_value": 7400.96
       },
       "market_momentum_sp125": {
         "score": 99.2,
         "rating": "extreme greed",
-        "raw_value": 6871.7356
+        "raw_value": 6871.72824
       },
       "stock_price_strength": {
         "score": 57.4,
         "rating": "greed",
-        "raw_value": 3.59106095587046
+        "raw_value": 3.58960034578026
       },
       "stock_price_breadth": {
-        "score": 52.0,
+        "score": 52.4,
         "rating": "neutral",
-        "raw_value": 1145.62725522281
+        "raw_value": 1148.42044377028
       },
       "put_call_options": {
         "score": 87.0,
         "rating": "extreme greed",
-        "raw_value": 0.649211591571138
+        "raw_value": 0.64955519060995
       },
       "market_volatility_vix": {
         "score": 50.0,
         "rating": "neutral",
-        "raw_value": 18.01
+        "raw_value": 17.99
       },
       "market_volatility_vix_50": {
         "score": 50.0,
         "rating": "neutral",
-        "raw_value": 21.852
+        "raw_value": 21.8516
       },
       "junk_bond_demand": {
         "score": 28.8,
         "rating": "fear",
-        "raw_value": 1.3078604188085101
+        "raw_value": 1.30780842734126
       },
       "safe_haven_demand": {
         "score": 91.4,
         "rating": "extreme greed",
-        "raw_value": 6.78899990391736
+        "raw_value": 6.792402551394471
       }
     }
   }
