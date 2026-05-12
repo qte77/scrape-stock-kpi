@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>analyze-stock-kpi · demo dashboard</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.umd.min.js" defer></script>
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <header>
+    <h1>
+      <a href="https://github.com/qte77/analyze-stock-kpi">analyze-stock-kpi</a>
+      · KPI demo dashboard
+    </h1>
+    <span id="updated" class="updated"></span>
+  </header>
+
+  <main>
+    <section id="fear-greed-section">
+      <h2>CNN Fear &amp; Greed · 2-Year History</h2>
+      <div id="fg-header">
+        <div id="fg-score">—</div>
+        <div id="fg-meta">
+          <span id="fg-rating" class="chip">loading…</span>
+          <span id="fg-deltas"></span>
+        </div>
+      </div>
+      <div id="fg-chart-wrap">
+        <canvas id="fg-chart"></canvas>
+      </div>
+    </section>
+
+    <section id="universe-section">
+      <div id="universe-header">
+        <h2>
+          Universe ·
+          <span id="universe-name">qte77-watchlist</span>
+          ·
+          <span id="universe-size">— tickers</span>
+        </h2>
+        <label>
+          Snapshot:
+          <select id="date-selector"></select>
+        </label>
+      </div>
+      <table id="universe-table">
+        <thead>
+          <tr>
+            <th data-key="symbol">Ticker</th>
+            <th data-key="long_name">Name</th>
+            <th data-key="sector">Sector</th>
+            <th data-key="trailing_pe" class="num">P/E</th>
+            <th data-key="return_on_equity" class="num">ROE %</th>
+            <th data-key="dividend_yield" class="num">Div %</th>
+            <th data-key="composite_scores.quality" class="num">Quality</th>
+            <th data-key="composite_scores.big_call" class="num">Big Call</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+      <aside id="row-detail" hidden></aside>
+    </section>
+  </main>
+
+  <footer>
+    Powered by
+    <a href="https://github.com/ranaroussi/yfinance">yfinance</a> +
+    <a href="https://edition.cnn.com/markets/fear-and-greed">CNN F&amp;G</a>
+    · source:
+    <a href="https://github.com/qte77/analyze-stock-kpi">qte77/analyze-stock-kpi</a>
+  </footer>
+</body>
+</html>
