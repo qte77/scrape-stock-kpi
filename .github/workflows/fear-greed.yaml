@@ -5,9 +5,14 @@
 # Fetches the live CNN F&G headline + ~1y of historical readings, merges
 # into per-year history files at results/cnn_fg/YYYY.json, and commits
 # changed files as a single verified commit via the REST Git Data API
-# (Blob -> Tree -> Commit -> Ref). The verified-commit path is required
-# by the repo's `required_signatures` ruleset; pushing via plain
-# `git push` would be rejected.
+# (Blob -> Tree -> Commit -> Ref).
+#
+# Target branch is `data` (not `main`). The repo's default-branch
+# ruleset (id 16200383) has a `pull_request` rule that rejects direct
+# ref updates on `main` even from verified API commits. The ruleset
+# scope is `~DEFAULT_BRANCH` only, so a `data` branch is unrestricted
+# and accepts verified-commit pushes. The static dashboard fetches
+# data files from raw.githubusercontent.com on the `data` branch.
 #
 # 1p citation for the verified-commit mechanism:
 # https://github.com/iarekylew00t/verified-bot-commit (README)
@@ -32,7 +37,13 @@ jobs:
     name: fetch + commit CNN F&G snapshot
     runs-on: ubuntu-latest
     steps:
+      # Check out the `data` branch so src/sentiment.py merges today's
+      # reading into the accumulated results/cnn_fg/YYYY.json files
+      # (older history would be lost if we checked out main, which has
+      # an older snapshot of cnn_fg/).
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
+        with:
+          ref: data
 
       - uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b  # v8.1.0
         with:
@@ -73,7 +84,7 @@ jobs:
             const { FILES } = process.env;
             const paths = FILES.split(',').filter(Boolean);
             const { owner, repo } = context.repo;
-            const branch = 'main';
+            const branch = 'data';
 
             const ref = await github.rest.git.getRef({ owner, repo, ref: `heads/${branch}` });
             const parentSha = ref.data.object.sha;
