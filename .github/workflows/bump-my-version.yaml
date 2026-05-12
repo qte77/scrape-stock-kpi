@@ -30,7 +30,7 @@ jobs:
   bump:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
         with:
           fetch-depth: 0
 
@@ -40,7 +40,7 @@ jobs:
           git config user.name "bump-my-version"
           git checkout -b "${{ env.BRANCH_NEW }}"
 
-      - uses: callowayproject/bump-my-version@0.29.0
+      - uses: callowayproject/bump-my-version@621b2ed57ac6bf20b5c9351e34854d97e4e3abbc  # 0.29.0
         id: bump
         with:
           args: ${{ inputs.bump_type }}
