@@ -40,7 +40,7 @@ jobs:
           git config user.name "bump-my-version"
           git checkout -b "${{ env.BRANCH_NEW }}"
 
-      - uses: callowayproject/bump-my-version@621b2ed57ac6bf20b5c9351e34854d97e4e3abbc  # 0.29.0
+      - uses: callowayproject/bump-my-version@e6ecdc3e573698766cd6c2112faeda50bcc2e56a  # 1.3
         id: bump
         with:
           args: ${{ inputs.bump_type }}
