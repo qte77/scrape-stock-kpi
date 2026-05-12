@@ -18,8 +18,8 @@ Types of changes:
 
 ### Added
 
-- **Static demo dashboard on GitHub Pages** at `https://qte77.github.io/analyze-stock-kpi/` (#59) — F&G 2-year chart + sortable universe table with date selector. Vanilla HTML/JS/CSS in `docs/demo/`; Chart.js v4.5.1 via CDN; no build step. Deploys via modern `actions/upload-pages-artifact` + `actions/deploy-pages` in `.github/workflows/gh-pages.yml`.
-- **Weekly fundamentals snapshot workflow** `.github/workflows/demo-snapshot.yml` (Sunday 06:15 UTC) commits `results/demo/qte77-watchlist/YYYY-MM-DD.json` + `index.json` manifest to the `data` branch.
+- **Static demo dashboard on GitHub Pages** at `https://qte77.github.io/analyze-stock-kpi/` (#59) — F&G 2-year chart + sortable universe table with date selector. Vanilla HTML/JS/CSS in `docs/demo/`; Chart.js v4.5.1 via CDN; no build step. Deploys via modern `actions/upload-pages-artifact` + `actions/deploy-pages` in `.github/workflows/gh-pages.yaml`.
+- **Weekly fundamentals snapshot workflow** `.github/workflows/demo-snapshot.yaml` (Sunday 06:15 UTC) commits `results/demo/qte77-watchlist/YYYY-MM-DD.json` + `index.json` manifest to the `data` branch.
 - **`scripts/build_demo_manifest.py`** — stdlib-only Python that rebuilds the per-universe manifest from on-disk snapshot files.
 
 ### Changed

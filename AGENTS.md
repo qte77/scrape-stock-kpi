@@ -25,9 +25,9 @@ a rich summary table → writes `results/fundamentals_<UTC>.json`. Two GHA
 crons feed a separate `data` branch (outside the default-branch ruleset
 scope) via verified REST Git Data API commits from `actions/github-script`:
 `fear-greed.yaml` (daily) merges the CNN F&G headline + ~1y of history
-into `results/cnn_fg/YYYY.json`; `demo-snapshot.yml` (weekly) writes one
+into `results/cnn_fg/YYYY.json`; `demo-snapshot.yaml` (weekly) writes one
 `results/demo/<UNIVERSE>/YYYY-MM-DD.json` snapshot plus `index.json`
-manifest. A third workflow (`gh-pages.yml`) deploys `docs/demo/*` to
+manifest. A third workflow (`gh-pages.yaml`) deploys `docs/demo/*` to
 GitHub Pages — the page fetches data cross-origin from
 raw.githubusercontent.com on the `data` branch. See
 [docs/architecture.md](docs/architecture.md) for the module map and
@@ -43,7 +43,7 @@ Active modules:
 - `src/utils/parse_args.py` — `CliArgs(BaseSettings)`
 - `src/assets/universes/` — preset ticker lists
 - `scripts/build_demo_manifest.py` — stdlib-only manifest builder for
-  `results/demo/<UNIVERSE>/index.json` (called by `demo-snapshot.yml`)
+  `results/demo/<UNIVERSE>/index.json` (called by `demo-snapshot.yaml`)
 - `docs/demo/{index.html,app.js,style.css}` — static dashboard sources
 
 ## Decision Framework
@@ -95,7 +95,7 @@ more context or ask the user.
   `pull_request` rules. Workflows that need to commit data must target
   the `data` branch via the verified-commit pattern
   (`actions/github-script` calling REST Git Data API: Blob → Tree →
-  Commit → Ref). See `demo-snapshot.yml` and `fear-greed.yaml` for the
+  Commit → Ref). See `demo-snapshot.yaml` and `fear-greed.yaml` for the
   template.
 
 **Post-task:**
