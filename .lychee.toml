@@ -31,4 +31,10 @@ exclude = [
     "^https://services\\.addons\\.thunderbird\\.net",
     # Hugging Face — heavy rate-limiting on model-card URLs
     "^https://huggingface\\.co",
+    # GitHub Pages site — 404 until the gh-pages workflow first deploys
+    # after PR #62 merge; remove this exclusion once the site is live.
+    "^https://qte77\\.github\\.io",
+    # gh-pages workflow badge — 404 until the workflow has at least one
+    # run on main (post-PR-#62 merge); remove once it has fired once.
+    "^https://github\\.com/qte77/analyze-stock-kpi/actions/workflows/gh-pages\\.yml/badge\\.svg",
 ]
