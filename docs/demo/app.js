@@ -140,10 +140,30 @@ function renderTable() {
   for (const row of sorted) {
     const tr = document.createElement("tr");
     const score = nested(row, "composite_scores.screener_score");
+    // Count screener inputs (same 9 fields screener_score reads from
+    // the snapshot; negative forward_pe is dropped to match the
+    // backend's negative-PE guard).
+    const coverage = [
+      "forward_pe",
+      "trailing_peg_ratio",
+      "beta",
+      "rd_to_revenue",
+      "operating_margins",
+      "return_on_equity",
+      "return_on_assets",
+      "current_ratio",
+      "sortino_ratio",
+    ].filter(
+      (k) => row[k] != null && !(k === "forward_pe" && row[k] <= 0),
+    ).length;
+    const parts = [];
     if (score != null && totalScore > 0) {
       const weightPct = ((100 * Number(score)) / totalScore).toFixed(1);
-      tr.title = `Weight ${weightPct} % (Score ${Number(score).toFixed(0)} / sum)`;
+      parts.push(`Weight ${weightPct} %`);
+      parts.push(`Score ${Number(score).toFixed(0)}`);
     }
+    parts.push(`${coverage}/9 inputs`);
+    tr.title = parts.join(" · ");
     tr.append(
       td(row.symbol ?? "—"),
       td(row.long_name ?? "—"),
