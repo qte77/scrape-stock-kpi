@@ -219,8 +219,20 @@ def test_screener_score_returns_none_when_all_missing() -> None:
 
 
 def test_screener_score_partial_inputs_renormalized() -> None:
-    """Only ROE + ROA at HI -> mean of [100, 100] = 100. Missing terms drop."""
-    snap = _snap(return_on_equity=0.30, return_on_assets=0.15)
+    """Partial-but-above-threshold inputs at HI -> mean of present terms.
+
+    Exactly 5 inputs at their HI bound (meets ``_SCREENER_MIN_TERMS``)
+    -> ``_mean([100] * 5) == 100``. Below the threshold the score
+    would return ``None`` instead — that path is covered by
+    ``test_screener_score_below_threshold_returns_none``.
+    """
+    snap = _snap(
+        return_on_equity=0.30,
+        return_on_assets=0.15,
+        operating_margins=0.30,
+        current_ratio=3.0,
+        sortino_ratio=3.0,
+    )
     assert screener_score(snap) == 100.0
 
 
@@ -244,12 +256,22 @@ def test_screener_score_below_threshold_returns_none() -> None:
 
 
 def test_screener_score_drops_negative_forward_pe() -> None:
-    """Loss-making company: forward_pe < 0 drops the term (no spurious saturation).
+    """Loss-making company: ``forward_pe < 0`` drops the term.
 
-    With only ROE present at midpoint, the score is 50 — the negative
-    forward_pe is silently dropped rather than rewarded.
+    Five non-PE inputs all at midpoint (-> 50 each) plus a negative
+    ``forward_pe`` that should be silently dropped (not saturated to
+    100 via the inverted cheapness rescale). Mean of present terms =
+    50; that the dropped negative-PE term doesn't pull the mean up
+    is the load-bearing behaviour.
     """
-    snap = _snap(forward_pe=-10.0, return_on_equity=0.15)
+    snap = _snap(
+        forward_pe=-10.0,
+        return_on_equity=0.15,
+        return_on_assets=0.075,
+        operating_margins=0.15,
+        current_ratio=2.0,
+        sortino_ratio=1.5,
+    )
     assert screener_score(snap) == 50.0
 
 
