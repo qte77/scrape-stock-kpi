@@ -63,6 +63,7 @@ class FundamentalsSnapshot(BaseModel):
     )
     enterprise_value: float | None = Field(default=None, alias="enterpriseValue")
     enterprise_to_ebitda: float | None = Field(default=None, alias="enterpriseToEbitda")
+    trailing_peg_ratio: float | None = Field(default=None, alias="trailingPegRatio")
 
     # -- profitability --
     return_on_equity: float | None = Field(default=None, alias="returnOnEquity")
