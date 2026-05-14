@@ -83,6 +83,97 @@ def test_fetch_fundamentals_normalizes_live_yield() -> None:
     assert snap.dividend_yield == 0.0037
 
 
+def test_compute_roi_full_inputs() -> None:
+    """ROI computed from five raw ``info`` keys.
+
+    Inputs chosen so the arithmetic is exact:
+    book_equity = marketCap / priceToBook = 1000 / 10 = 100
+    invested_capital = book_equity + totalDebt - totalCash = 100 + 50 - 30 = 120
+    roi = netIncomeToCommon / invested_capital = 24 / 120 = 0.20
+    """
+    from src.fundamentals import _compute_roi
+
+    info = {
+        "netIncomeToCommon": 24.0,
+        "marketCap": 1000.0,
+        "priceToBook": 10.0,
+        "totalDebt": 50.0,
+        "totalCash": 30.0,
+    }
+    assert _compute_roi(info) == 0.20
+
+
+def test_compute_roi_missing_input_returns_none() -> None:
+    """A single missing input collapses ROI to ``None``."""
+    from src.fundamentals import _compute_roi
+
+    info = {
+        "netIncomeToCommon": 24.0,
+        "marketCap": 1000.0,
+        # priceToBook missing — ROI is not computable
+        "totalDebt": 50.0,
+        "totalCash": 30.0,
+    }
+    assert _compute_roi(info) is None
+
+
+def test_compute_roi_zero_price_to_book_returns_none() -> None:
+    """Avoid ``ZeroDivisionError`` when book equity cannot be derived."""
+    from src.fundamentals import _compute_roi
+
+    info = {
+        "netIncomeToCommon": 24.0,
+        "marketCap": 1000.0,
+        "priceToBook": 0.0,
+        "totalDebt": 50.0,
+        "totalCash": 30.0,
+    }
+    assert _compute_roi(info) is None
+
+
+def test_compute_roi_zero_invested_capital_returns_none() -> None:
+    """``book_equity + totalDebt - totalCash == 0`` -> ``None``.
+
+    Inputs: book_equity = 100, debt = 0, cash = 100 -> invested_capital = 0.
+    """
+    from src.fundamentals import _compute_roi
+
+    info = {
+        "netIncomeToCommon": 24.0,
+        "marketCap": 1000.0,
+        "priceToBook": 10.0,
+        "totalDebt": 0.0,
+        "totalCash": 100.0,
+    }
+    assert _compute_roi(info) is None
+
+
+def test_snapshot_roi_defaults_to_none() -> None:
+    """``roi`` field defaults to ``None`` on direct snapshot construction."""
+    snap = FundamentalsSnapshot.model_validate({"symbol": "X"})
+    assert snap.roi is None
+
+
+def test_fetch_fundamentals_attaches_roi() -> None:
+    """End-to-end: a mocked yfinance ``info`` dict with the five ROI
+    inputs reaches the snapshot's ``roi`` field via ``model_copy``."""
+
+    class _FakeTicker:
+        info = {
+            "symbol": "AAPL",
+            "shortName": "Apple Inc.",
+            "netIncomeToCommon": 24.0,
+            "marketCap": 1000.0,
+            "priceToBook": 10.0,
+            "totalDebt": 50.0,
+            "totalCash": 30.0,
+        }
+
+    with patch("src.fundamentals.yf.Ticker", return_value=_FakeTicker()):
+        snap = fetch_fundamentals("AAPL")
+    assert snap.roi == 0.20
+
+
 def test_snapshot_beta_defaults_to_none_when_missing() -> None:
     snap = FundamentalsSnapshot.model_validate({"symbol": "X"})
     assert snap.beta is None
