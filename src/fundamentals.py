@@ -171,14 +171,22 @@ _TRADING_DAYS = 252
 _MIN_SORTINO_DATAPOINTS = 30
 
 
-def _compute_sortino(close_series: pd.Series) -> float | None:
-    """Annualized Sortino ratio from a daily close-price series.
+def _compute_sortino(
+    close_series: pd.Series, target_annual: float = 0.0
+) -> float | None:
+    """Annualized Sortino ratio ``S = (R - T) / DR`` from daily closes.
 
-    Uses risk-free rate = 0 and target = 0; annualizes the mean by
-    ``_TRADING_DAYS`` and the downside deviation by ``sqrt(_TRADING_DAYS)``.
+    Canonical Wikipedia definition with ``T`` = user-supplied annual
+    target / MAR / risk-free rate. Subtracts ``T / _TRADING_DAYS`` from
+    every daily return before computing both the mean and the downside
+    deviation; annualises mean by ``_TRADING_DAYS`` and downside dev by
+    ``sqrt(_TRADING_DAYS)``. Default ``target_annual = 0.0`` preserves
+    the prior T=0 behaviour byte-for-byte.
+
     Returns ``None`` when the sample has fewer than
-    ``_MIN_SORTINO_DATAPOINTS`` returns, no losing days (downside
-    deviation is undefined), or the input series is empty / all-NaN.
+    ``_MIN_SORTINO_DATAPOINTS`` returns, no losing days vs the target
+    (downside deviation is undefined), or the input series is empty /
+    all-NaN.
 
     Price-history-derived; see ADR-0004 for the rationale on
     extending composite-score inputs beyond point-in-time ``info``.
@@ -189,12 +197,13 @@ def _compute_sortino(close_series: pd.Series) -> float | None:
         return None
     if len(returns) < _MIN_SORTINO_DATAPOINTS:
         return None
-    downside = returns.where(returns < 0, 0.0)
+    excess = returns - (target_annual / _TRADING_DAYS)
+    downside = excess.where(excess < 0, 0.0)
     downside_dev_daily = float((downside**2).mean() ** 0.5)
     if downside_dev_daily == 0:
         return None
     downside_dev_annual = downside_dev_daily * (_TRADING_DAYS**0.5)
-    mean_annual = float(returns.mean()) * _TRADING_DAYS
+    mean_annual = float(excess.mean()) * _TRADING_DAYS
     return mean_annual / downside_dev_annual
 
 
