@@ -33,10 +33,11 @@ CLI args double as env vars with the `SSK_` prefix
 ## What it produces
 
 * **Fundamentals** — `results/fundamentals_<UTC>.json`: one
-  `FundamentalsSnapshot` per resolved ticker (~30 yfinance fields)
-  plus six 0-100 composite proxy scores (Quality / Dividend / Growth
-  / Big Call / AAQS / HGI). Sparse fields for non-equities (FX,
-  futures, crypto) are valid by design.
+  `FundamentalsSnapshot` per resolved ticker (~34 yfinance fields,
+  including the computed `roi`, `rd_to_revenue`, `sortino_ratio`
+  enrichments) plus seven 0-100 composite proxy scores (Quality /
+  Dividend / Growth / Big Call / AAQS / HGI / Screener). Sparse
+  fields for non-equities (FX, futures, crypto) are valid by design.
 * **Sentiment** — `results/cnn_fg/YYYY.json`: per-year date-sorted
   array of CNN Fear & Greed snapshots (headline + 9 subindicators).
   Updated daily by a GitHub Actions cron at 21:30 UTC.
@@ -77,13 +78,18 @@ The persisted JSON keeps every field plus the nested composite scores:
   "earnings_growth": 0.218,
   "dividend_yield": 0.0037,
   "beta": 1.065,
+  "trailing_peg_ratio": 1.4,
+  "roi": 0.7711,
+  "rd_to_revenue": 0.07,
+  "sortino_ratio": 1.85,
   "composite_scores": {
     "quality": 90.06,
     "dividend": 20.0,
     "growth": 56.0,
     "big_call": 65.8,
     "aaqs": 68.4,
-    "hgi": 66.0
+    "hgi": 66.0,
+    "screener_score": 72.4
   }
 }
 ```

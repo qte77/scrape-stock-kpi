@@ -21,12 +21,20 @@ Types of changes:
 - **Static demo dashboard on GitHub Pages** at `https://qte77.github.io/analyze-stock-kpi/` (#59) — F&G 2-year chart + sortable universe table with date selector. Vanilla HTML/JS/CSS in `docs/demo/`; Chart.js v4.5.1 via CDN; no build step. Deploys via modern `actions/upload-pages-artifact` + `actions/deploy-pages` in `.github/workflows/gh-pages.yaml`.
 - **Weekly fundamentals snapshot workflow** `.github/workflows/demo-snapshot.yaml` (Sunday 06:15 UTC) commits `results/demo/qte77-watchlist/YYYY-MM-DD.json` + `index.json` manifest to the `data` branch.
 - **`scripts/build_demo_manifest.py`** — stdlib-only Python that rebuilds the per-universe manifest from on-disk snapshot files.
+- **Snapshot enrichments** — `trailing_peg_ratio` (alias `trailingPegRatio`), `roi` (computed from `info`: NetIncome / (BookEquity + Debt - Cash)), `rd_to_revenue` (from `Ticker.income_stmt`, EQUITY-gated), `sortino_ratio` (annualized 1y, batched via `yf.download` at universe level). Per [ADR-0004](docs/decisions/0004-price-history-composite-input.md).
+- **7th composite score** `CompositeScores.screener_score` — aggregates the 9 visible main-table KPIs into a single 0-100 ranking.
+- **Dashboard KPI expansion** — `docs/demo/` main table goes 8 → 13 columns (P/E (fwd) · PEG · Beta · R&D/Rev % · Op M % · ROE % · ROA % · Current · Sortino · Score added; original `P/E` and `Div %` moved to detail panel). English `title=` tooltips on every column header and detail-panel label. Default sort: descending by Score. Per-row Weight % (= 100 × score / sum) shown in `<tr>` tooltip. Mobile-graceful CSS: sticky Ticker + Name columns, horizontal scroll, full-screen detail drawer at ≤640px.
 
 ### Changed
 
 - **`fear-greed.yaml` rewritten** to use the verified REST Git Data API commit pattern via `actions/github-script@v9`, targeting the `data` branch. Restores the cron that broke on 2026-05-11 when the `required_signatures` ruleset was activated and rejected `stefanzweifel/git-auto-commit-action@v5`'s unsigned pushes.
 - **All workflow actions pinned to full-length commit SHAs** per the repo's new "Require actions to be pinned to a full-length commit SHA" rule. Migrated `validate.yaml`, `sbom.yaml`, `bump-my-version.yaml`, `links-fail-fast.yml`, `codeql.yaml`.
 - Defer the v0.6.0 RS hedging epic per [ADR-0003](docs/decisions/0003-defer-rs-hedging-epic.md). Parent issue #4 and sub-issues #8 / #9 / #10 stay open with the `deferred` label; #55 (RS alternatives survey) closes as resolved by the ADR. v0.6.0 milestone repurposed to the demo dashboard above. Behavioral price analytics (pandas, time-series, regime classification) fits a sibling repo rather than this CLI.
+- **Composite-score inputs** extended to include price-history-derived terms ([ADR-0004](docs/decisions/0004-price-history-composite-input.md)), amending ADR-0002's point-in-time-only scope. `fetch_universe_fundamentals` now makes one batched `yf.download` per `make run` for the whole universe.
+
+### Fixed
+
+- **Detail-panel off-by-one** — the `dl()` helper in `docs/demo/app.js` emitted a stray `<dd>` for section-header rows, shifting every following label/value pair right by one cell. The Composite Scores block now lines up correctly.
 
 ## [0.5.1] - 2026-05-11
 
