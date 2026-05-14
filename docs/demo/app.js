@@ -20,8 +20,41 @@ const RATING_CLASSES = {
 
 const state = {
   snapshot: [],
-  sortKey: "symbol",
-  sortDir: 1,
+  sortKey: "composite_scores.screener_score",
+  sortDir: -1,
+};
+
+// English glossary for detail-panel tooltips (title= attributes on labels).
+const KPI_GLOSSARY = {
+  forward_pe: "Forward P/E = price / next-12mo EPS estimate. Lower = cheaper.",
+  trailing_pe: "Trailing P/E = price / past-12mo EPS. Lower = cheaper.",
+  trail_fwd_pe:
+    "Trailing P/E divided by Forward P/E. >1 = EPS growth expected; <1 = EPS contraction expected.",
+  trailing_peg_ratio:
+    "Trailing PEG = P/E adjusted for historical earnings growth. Lower better; <1 is the classic Peter Lynch threshold.",
+  beta: "5y market sensitivity. <1 = less volatile than market.",
+  rd_to_revenue:
+    "R&D expense / total revenue (latest annual income statement). EQUITY-only.",
+  operating_margins:
+    "Operating income / revenue. Pre-tax, pre-interest — comparable across countries.",
+  gross_margins: "(Revenue - COGS) / revenue. Pricing power / cost discipline.",
+  profit_margins:
+    "Net margin = net income / revenue. Bottom-line efficiency after tax + interest.",
+  return_on_equity:
+    "ROE = net income / equity. Profitability per equity dollar; sensitive to leverage.",
+  return_on_assets:
+    "ROA = net income / total assets. Leverage-neutral profitability per asset dollar.",
+  roi:
+    "Simplified ROIC = NetIncome / (BookEquity + TotalDebt - TotalCash). Screener-style; not company-filed ROIC.",
+  current_ratio:
+    "Current assets / current liabilities. Short-term liquidity (>1 = assets cover liabilities).",
+  quick_ratio:
+    "(Current assets - inventory) / current liabilities. Stricter liquidity than Current.",
+  debt_to_equity: "Total debt / equity. Leverage (higher = more leveraged).",
+  sortino_ratio:
+    "Annualized Sortino over 1y (rf=0). Higher = better upside vs downside skew.",
+  screener_score:
+    "Composite of the 9 visible main-table KPIs (0-100). Higher = better.",
 };
 
 async function fetchJson(url) {
@@ -81,17 +114,32 @@ function renderTable() {
   const sorted = [...state.snapshot].sort((a, b) =>
     compareValues(nested(a, state.sortKey), nested(b, state.sortKey), state.sortDir),
   );
+  // Per-row Weight % = score / sum(scores), shown as a row-level title=.
+  const totalScore = state.snapshot.reduce((acc, row) => {
+    const s = nested(row, "composite_scores.screener_score");
+    return acc + (s == null ? 0 : Number(s));
+  }, 0);
   for (const row of sorted) {
     const tr = document.createElement("tr");
+    const score = nested(row, "composite_scores.screener_score");
+    if (score != null && totalScore > 0) {
+      const weightPct = ((100 * Number(score)) / totalScore).toFixed(1);
+      tr.title = `Weight ${weightPct} % (Score ${Number(score).toFixed(0)} / sum)`;
+    }
     tr.append(
       td(row.symbol ?? "—"),
       td(row.long_name ?? "—"),
       td(row.sector ?? "—"),
-      td(fmtNum(row.trailing_pe, 2), "num"),
+      td(fmtNum(row.forward_pe, 2), "num"),
+      td(fmtNum(row.trailing_peg_ratio, 2), "num"),
+      td(fmtNum(row.beta, 2), "num"),
+      td(fmtPct(row.rd_to_revenue), "num"),
+      td(fmtPct(row.operating_margins), "num"),
       td(fmtPct(row.return_on_equity), "num"),
-      td(fmtPct(row.dividend_yield), "num"),
-      td(fmtNum(nested(row, "composite_scores.quality"), 0), "num"),
-      td(fmtNum(nested(row, "composite_scores.big_call"), 0), "num"),
+      td(fmtPct(row.return_on_assets), "num"),
+      td(fmtNum(row.current_ratio, 2), "num"),
+      td(fmtNum(row.sortino_ratio, 2), "num"),
+      td(fmtNum(score, 0), "num"),
     );
     tr.addEventListener("click", () => showDetail(row));
     tbody.appendChild(tr);
@@ -100,13 +148,17 @@ function renderTable() {
 
 function dl(pairs) {
   const frag = document.createDocumentFragment();
-  for (const [label, value, sectionHeader] of pairs) {
+  for (const [label, value, sectionHeader, tooltip] of pairs) {
     const dt = document.createElement("dt");
     dt.textContent = label;
     if (sectionHeader) {
       dt.className = "section";
       frag.append(dt);
       continue;
+    }
+    if (tooltip) {
+      dt.title = tooltip;
+      dt.tabIndex = 0;
     }
     const dd = document.createElement("dd");
     dd.textContent = value;
@@ -137,6 +189,12 @@ function showDetail(row) {
   h3.textContent = `${row.symbol ?? "—"} · ${row.long_name ?? ""}`;
   aside.append(h3);
 
+  const trail = row.trailing_pe;
+  const fwd = row.forward_pe;
+  const trailFwd =
+    trail != null && fwd != null && fwd !== 0
+      ? (trail / fwd).toFixed(2)
+      : "—";
   const list = document.createElement("dl");
   list.append(
     dl([
@@ -144,17 +202,70 @@ function showDetail(row) {
       ["Industry", row.industry ?? "—"],
       ["Exchange", `${row.exchange ?? "—"} (${row.currency ?? "—"})`],
       ["Market cap", mcap],
-      ["Trail / Fwd P/E", `${fmtNum(row.trailing_pe, 2)} / ${fmtNum(row.forward_pe, 2)}`],
+      [
+        "Trail / Fwd P/E",
+        `${fmtNum(row.trailing_pe, 2)} / ${fmtNum(row.forward_pe, 2)}`,
+        false,
+        KPI_GLOSSARY.trailing_pe,
+      ],
+      ["Trail/Fwd P/E ratio", trailFwd, false, KPI_GLOSSARY.trail_fwd_pe],
       ["P/B / P/S TTM", `${fmtNum(row.price_to_book, 2)} / ${fmtNum(row.price_to_sales_ttm, 2)}`],
-      ["ROE / ROA", `${fmtPct(row.return_on_equity)} % / ${fmtPct(row.return_on_assets)} %`],
-      ["Op / Profit margin", `${fmtPct(row.operating_margins)} % / ${fmtPct(row.profit_margins)} %`],
-      ["D/E", fmtNum(row.debt_to_equity, 2)],
-      ["Current ratio", fmtNum(row.current_ratio, 2)],
+      [
+        "Gross margin %",
+        fmtPct(row.gross_margins),
+        false,
+        KPI_GLOSSARY.gross_margins,
+      ],
+      [
+        "Net margin %",
+        fmtPct(row.profit_margins),
+        false,
+        KPI_GLOSSARY.profit_margins,
+      ],
+      [
+        "ROE / ROA",
+        `${fmtPct(row.return_on_equity)} % / ${fmtPct(row.return_on_assets)} %`,
+        false,
+        KPI_GLOSSARY.return_on_equity,
+      ],
+      ["ROI", fmtPct(row.roi), false, KPI_GLOSSARY.roi],
+      [
+        "R&D / Revenue %",
+        fmtPct(row.rd_to_revenue),
+        false,
+        KPI_GLOSSARY.rd_to_revenue,
+      ],
+      [
+        "Op margin %",
+        fmtPct(row.operating_margins),
+        false,
+        KPI_GLOSSARY.operating_margins,
+      ],
+      ["D/E", fmtNum(row.debt_to_equity, 2), false, KPI_GLOSSARY.debt_to_equity],
+      [
+        "Current ratio",
+        fmtNum(row.current_ratio, 2),
+        false,
+        KPI_GLOSSARY.current_ratio,
+      ],
+      ["Quick ratio", fmtNum(row.quick_ratio, 2), false, KPI_GLOSSARY.quick_ratio],
       ["Revenue growth", `${fmtPct(row.revenue_growth)} %`],
       ["Earnings growth", `${fmtPct(row.earnings_growth)} %`],
       ["Div yield / Payout", `${fmtPct(row.dividend_yield)} % / ${fmtPct(row.payout_ratio)} %`],
       ["52w high / low", `$${fmtNum(row.fifty_two_week_high, 2)} / $${fmtNum(row.fifty_two_week_low, 2)}`],
-      ["Beta", fmtNum(row.beta, 2)],
+      ["Beta", fmtNum(row.beta, 2), false, KPI_GLOSSARY.beta],
+      [
+        "PEG (trailing)",
+        fmtNum(row.trailing_peg_ratio, 2),
+        false,
+        KPI_GLOSSARY.trailing_peg_ratio,
+      ],
+      [
+        "Sortino (1y, rf=0)",
+        fmtNum(row.sortino_ratio, 2),
+        false,
+        KPI_GLOSSARY.sortino_ratio,
+      ],
       ["Composite scores", "", true],
       ["Quality", fmtNum(cs.quality, 0)],
       ["Dividend", fmtNum(cs.dividend, 0)],
@@ -162,6 +273,12 @@ function showDetail(row) {
       ["Big Call", fmtNum(cs.big_call, 0)],
       ["AAQS", fmtNum(cs.aaqs, 0)],
       ["HGI", fmtNum(cs.hgi, 0)],
+      [
+        "Screener",
+        fmtNum(cs.screener_score, 0),
+        false,
+        KPI_GLOSSARY.screener_score,
+      ],
     ]),
   );
   aside.append(list);
@@ -257,6 +374,12 @@ function bindTableSort() {
 
 async function init() {
   bindTableSort();
+  const initialSortTh = document.querySelector(
+    `#universe-table thead th[data-key="${state.sortKey}"]`,
+  );
+  if (initialSortTh) {
+    initialSortTh.classList.add(state.sortDir > 0 ? "sort-asc" : "sort-desc");
+  }
 
   let manifest;
   try {
