@@ -38,6 +38,7 @@ _PEG_LO, _PEG_HI = 0.0, 3.0
 _RD_REV_LO, _RD_REV_HI = 0.0, 0.20
 _CURRENT_LO, _CURRENT_HI = 1.0, 3.0
 _SORTINO_LO, _SORTINO_HI = 0.0, 3.0
+_SCREENER_MIN_TERMS = 5
 
 _HGI_MARGIN_THRESHOLD = 0.10
 _HGI_MARGIN_BONUS = 10.0
@@ -211,6 +212,11 @@ def screener_score(snap: FundamentalsSnapshot) -> float | None:
 
     Negative ``forward_pe`` (loss-making companies) drops the term
     rather than rewarding it via the inverted cheapness rescale.
+
+    Returns ``None`` when fewer than ``_SCREENER_MIN_TERMS`` (5) of the
+    9 KPIs are present — averaging a smaller subset would produce a
+    score driven by which terms happened to be available rather than
+    by the underlying signal.
     """
     forward_pe = (
         snap.forward_pe
@@ -233,7 +239,7 @@ def screener_score(snap: FundamentalsSnapshot) -> float | None:
         norm = _normalize_term(value, lo, hi, invert=invert)
         if norm is not None:
             terms.append(norm)
-    return _mean(terms) if terms else None
+    return _mean(terms) if len(terms) >= _SCREENER_MIN_TERMS else None
 
 
 def compute_scores(snap: FundamentalsSnapshot) -> CompositeScores:
