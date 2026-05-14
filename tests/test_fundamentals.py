@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from types import SimpleNamespace
 from unittest.mock import patch
 
 import pytest
@@ -172,6 +173,115 @@ def test_fetch_fundamentals_attaches_roi() -> None:
     with patch("src.fundamentals.yf.Ticker", return_value=_FakeTicker()):
         snap = fetch_fundamentals("AAPL")
     assert snap.roi == 0.20
+
+
+def test_fetch_rd_to_revenue_equity_happy_path() -> None:
+    """R&D / Total Revenue read from the latest income_stmt column.
+
+    Chosen so the arithmetic is exact: 20 / 100 = 0.20.
+    """
+    import pandas as pd
+
+    from src.fundamentals import _fetch_rd_to_revenue
+
+    income_stmt = pd.DataFrame(
+        {"latest": [20.0, 100.0]},
+        index=["Research And Development", "Total Revenue"],
+    )
+    fake = SimpleNamespace(income_stmt=income_stmt)
+    assert _fetch_rd_to_revenue(fake, {"quoteType": "EQUITY"}) == 0.20
+
+
+def test_fetch_rd_to_revenue_non_equity_skips_fetch() -> None:
+    """Non-EQUITY quote types must not touch ``.income_stmt``."""
+    from src.fundamentals import _fetch_rd_to_revenue
+
+    class _Tripwire:
+        @property
+        def income_stmt(self) -> None:
+            raise AssertionError("income_stmt accessed for non-EQUITY ticker")
+
+    assert _fetch_rd_to_revenue(_Tripwire(), {"quoteType": "ETF"}) is None
+
+
+def test_fetch_rd_to_revenue_missing_quote_type_returns_none() -> None:
+    """Missing ``quoteType`` is treated as non-EQUITY (defensive)."""
+    from src.fundamentals import _fetch_rd_to_revenue
+
+    class _Tripwire:
+        @property
+        def income_stmt(self) -> None:
+            raise AssertionError("income_stmt accessed when quoteType absent")
+
+    assert _fetch_rd_to_revenue(_Tripwire(), {}) is None
+
+
+def test_fetch_rd_to_revenue_missing_row_returns_none() -> None:
+    """``income_stmt`` without an ``Research And Development`` row -> ``None``."""
+    import pandas as pd
+
+    from src.fundamentals import _fetch_rd_to_revenue
+
+    income_stmt = pd.DataFrame(
+        {"latest": [100.0, 50.0]},
+        index=["Total Revenue", "Net Income"],
+    )
+    fake = SimpleNamespace(income_stmt=income_stmt)
+    assert _fetch_rd_to_revenue(fake, {"quoteType": "EQUITY"}) is None
+
+
+def test_fetch_rd_to_revenue_zero_revenue_returns_none() -> None:
+    """Avoid ``ZeroDivisionError`` when Total Revenue is zero."""
+    import pandas as pd
+
+    from src.fundamentals import _fetch_rd_to_revenue
+
+    income_stmt = pd.DataFrame(
+        {"latest": [20.0, 0.0]},
+        index=["Research And Development", "Total Revenue"],
+    )
+    fake = SimpleNamespace(income_stmt=income_stmt)
+    assert _fetch_rd_to_revenue(fake, {"quoteType": "EQUITY"}) is None
+
+
+def test_fetch_rd_to_revenue_exception_returns_none() -> None:
+    """Network errors / IFRS schema drift swallowed; returns ``None``."""
+    from src.fundamentals import _fetch_rd_to_revenue
+
+    class _Broken:
+        @property
+        def income_stmt(self) -> None:
+            raise RuntimeError("simulated yfinance failure")
+
+    assert _fetch_rd_to_revenue(_Broken(), {"quoteType": "EQUITY"}) is None
+
+
+def test_snapshot_rd_to_revenue_defaults_to_none() -> None:
+    """``rd_to_revenue`` defaults to ``None`` on direct snapshot construction."""
+    snap = FundamentalsSnapshot.model_validate({"symbol": "X"})
+    assert snap.rd_to_revenue is None
+
+
+def test_fetch_fundamentals_attaches_rd_to_revenue() -> None:
+    """End-to-end: rd_to_revenue lands on the snapshot for an EQUITY ticker."""
+    import pandas as pd
+
+    income_stmt_df = pd.DataFrame(
+        {"latest": [20.0, 100.0]},
+        index=["Research And Development", "Total Revenue"],
+    )
+
+    class _FakeTicker:
+        info = {
+            "symbol": "AAPL",
+            "shortName": "Apple Inc.",
+            "quoteType": "EQUITY",
+        }
+        income_stmt = income_stmt_df
+
+    with patch("src.fundamentals.yf.Ticker", return_value=_FakeTicker()):
+        snap = fetch_fundamentals("AAPL")
+    assert snap.rd_to_revenue == 0.20
 
 
 def test_snapshot_beta_defaults_to_none_when_missing() -> None:
