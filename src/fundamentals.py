@@ -10,6 +10,11 @@ Public API:
 All numeric snapshot fields are ``Optional[float]`` because yfinance
 returns sparse ``info`` for non-equities (FX ``EURUSD=X``, futures
 ``GC=F``, crypto ``BTC-USD``). Sparse snapshots are valid by design.
+
+Enrichment fields (``roi``, ``rd_to_revenue``, ``sortino_ratio``,
+``composite_scores``) are attached post-validate via ``model_copy``.
+``sortino_ratio`` is the first composite input derived from price
+history rather than ``Ticker.info``; see ADR-0004 for the rationale.
 """
 
 from __future__ import annotations
