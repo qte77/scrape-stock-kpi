@@ -101,6 +101,7 @@ class FundamentalsSnapshot(BaseModel):
     composite_scores: CompositeScores | None = None
     roi: float | None = None
     rd_to_revenue: float | None = None
+    sortino_ratio: float | None = None
 
 
 def _normalize_yfinance_info(info: dict[str, Any]) -> dict[str, Any]:
@@ -161,6 +162,35 @@ def _compute_roi(info: dict[str, Any]) -> float | None:
 
 _INCOME_STMT_RD_ROW = "Research And Development"
 _INCOME_STMT_REVENUE_ROW = "Total Revenue"
+_TRADING_DAYS = 252
+_MIN_SORTINO_DATAPOINTS = 30
+
+
+def _compute_sortino(close_series: pd.Series) -> float | None:
+    """Annualized Sortino ratio from a daily close-price series.
+
+    Uses risk-free rate = 0 and target = 0; annualizes the mean by
+    ``_TRADING_DAYS`` and the downside deviation by ``sqrt(_TRADING_DAYS)``.
+    Returns ``None`` when the sample has fewer than
+    ``_MIN_SORTINO_DATAPOINTS`` returns, no losing days (downside
+    deviation is undefined), or the input series is empty / all-NaN.
+
+    Price-history-derived; see ADR-0004 for the rationale on
+    extending composite-score inputs beyond point-in-time ``info``.
+    """
+    try:
+        returns = close_series.pct_change().dropna()
+    except Exception:
+        return None
+    if len(returns) < _MIN_SORTINO_DATAPOINTS:
+        return None
+    downside = returns.where(returns < 0, 0.0)
+    downside_dev_daily = float((downside**2).mean() ** 0.5)
+    if downside_dev_daily == 0:
+        return None
+    downside_dev_annual = downside_dev_daily * (_TRADING_DAYS**0.5)
+    mean_annual = float(returns.mean()) * _TRADING_DAYS
+    return mean_annual / downside_dev_annual
 
 
 def _read_rd_revenue(income_stmt: Any) -> tuple[float | None, float | None]:
