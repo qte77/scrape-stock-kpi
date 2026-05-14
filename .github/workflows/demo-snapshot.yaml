@@ -42,11 +42,27 @@ jobs:
     name: fetch + commit weekly fundamentals snapshot
     runs-on: ubuntu-latest
     steps:
-      # Check out the `data` branch so existing accumulated snapshots are
-      # present when scripts/build_demo_manifest.py scans the directory.
+      # Check out `main` for the latest source code (model schema, fetchers,
+      # composite-score logic). The `data` branch holds only accumulated
+      # snapshot files and lags `main`'s code arbitrarily — running off
+      # `data` produces stale-schema snapshots.
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
         with:
-          ref: data
+          ref: main
+          fetch-depth: 0
+
+      # Bring the data branch's accumulated snapshot directory into the
+      # workspace so build_demo_manifest.py sees existing dated files
+      # alongside the new one. Failure is non-fatal (first-ever run on
+      # a fresh universe has nothing to pull).
+      - name: Sparse-pull existing snapshots from data branch
+        env:
+          UNIVERSE: ${{ inputs.universe || 'qte77-watchlist' }}
+        run: |
+          set -euo pipefail
+          git fetch origin data
+          git checkout origin/data -- "results/demo/$UNIVERSE/" 2>/dev/null || \
+            echo "No existing demo dir for $UNIVERSE on data branch — first run."
 
       - uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b  # v8.1.0
         with:
