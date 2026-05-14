@@ -182,7 +182,6 @@ def test_fetch_rd_to_revenue_equity_happy_path() -> None:
     Chosen so the arithmetic is exact: 20 / 100 = 0.20.
     """
     import pandas as pd
-
     from src.fundamentals import _fetch_rd_to_revenue
 
     income_stmt = pd.DataFrame(
@@ -220,7 +219,6 @@ def test_fetch_rd_to_revenue_missing_quote_type_returns_none() -> None:
 def test_fetch_rd_to_revenue_missing_row_returns_none() -> None:
     """``income_stmt`` without an ``Research And Development`` row -> ``None``."""
     import pandas as pd
-
     from src.fundamentals import _fetch_rd_to_revenue
 
     income_stmt = pd.DataFrame(
@@ -234,7 +232,6 @@ def test_fetch_rd_to_revenue_missing_row_returns_none() -> None:
 def test_fetch_rd_to_revenue_zero_revenue_returns_none() -> None:
     """Avoid ``ZeroDivisionError`` when Total Revenue is zero."""
     import pandas as pd
-
     from src.fundamentals import _fetch_rd_to_revenue
 
     income_stmt = pd.DataFrame(
@@ -294,7 +291,6 @@ def test_compute_sortino_positive_skew_series() -> None:
     annualized ≈ 0.1449. Sortino ≈ 5.51.
     """
     import pandas as pd
-
     from src.fundamentals import _compute_sortino
 
     returns = [0.005] * 29 + [-0.05]
@@ -310,7 +306,6 @@ def test_compute_sortino_positive_skew_series() -> None:
 def test_compute_sortino_too_few_datapoints_returns_none() -> None:
     """Series shorter than 30 returns -> ``None`` (insufficient sample)."""
     import pandas as pd
-
     from src.fundamentals import _compute_sortino
 
     close = pd.Series([100.0 + i for i in range(20)])
@@ -320,7 +315,6 @@ def test_compute_sortino_too_few_datapoints_returns_none() -> None:
 def test_compute_sortino_all_positive_returns_none() -> None:
     """No losing days -> downside_dev is zero -> ``None`` (undefined)."""
     import pandas as pd
-
     from src.fundamentals import _compute_sortino
 
     close = pd.Series([100.0 * (1.001 ** i) for i in range(50)])
@@ -330,7 +324,6 @@ def test_compute_sortino_all_positive_returns_none() -> None:
 def test_compute_sortino_empty_series_returns_none() -> None:
     """Empty close-series -> ``None``."""
     import pandas as pd
-
     from src.fundamentals import _compute_sortino
 
     assert _compute_sortino(pd.Series([], dtype=float)) is None

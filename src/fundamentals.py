@@ -258,7 +258,7 @@ def fetch_price_history(ticker: str, period: str = "5y") -> pd.DataFrame:
     return yf.Ticker(ticker).history(period=period)
 
 
-def _batch_close_prices(tickers: list[str]) -> dict[str, pd.Series] | None:
+def _batch_close_prices(tickers: list[str]) -> dict[str, Any] | None:
     """One batched ``yf.download`` for the whole universe.
 
     Returns ``{ticker: close_series}`` so per-ticker Sortino can be
@@ -266,6 +266,9 @@ def _batch_close_prices(tickers: list[str]) -> dict[str, pd.Series] | None:
     (network error, empty result, unexpected DataFrame shape).
     Handles both single-ticker (flat columns) and multi-ticker
     (multi-index columns) shapes that ``yf.download`` produces.
+    Returned values are pandas Series of close prices; the loose
+    ``Any`` annotation accommodates pyright's narrowing of
+    ``DataFrame[...]`` lookups.
     """
     if not tickers:
         return None
@@ -285,7 +288,7 @@ def _batch_close_prices(tickers: list[str]) -> dict[str, pd.Series] | None:
         close_block = df["Close"]
     except Exception:
         return None
-    result: dict[str, pd.Series] = {
+    result: dict[str, Any] = {
         t: close_block[t] for t in tickers if t in close_block.columns
     }
     return result or None
