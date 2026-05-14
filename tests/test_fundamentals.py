@@ -30,6 +30,19 @@ def test_snapshot_parses_full_info_dict() -> None:
     assert snap.beta == 1.24
 
 
+def test_snapshot_parses_trailing_peg_ratio() -> None:
+    """Trailing PEG ratio populates via the yfinance ``trailingPegRatio`` alias.
+
+    yfinance ships ``info["pegRatio"]`` broken since June 2025 (issue #2570);
+    ``trailingPegRatio`` continues to work and is fetched from a separate
+    fundamentals-timeseries endpoint. We model only the working one.
+    """
+    snap = FundamentalsSnapshot.model_validate(
+        {"symbol": "X", "trailingPegRatio": 1.23}
+    )
+    assert snap.trailing_peg_ratio == 1.23
+
+
 def test_normalize_yfinance_info_divides_dividend_yield() -> None:
     """Recent yfinance ships dividendYield as a percentage value (e.g.
     0.37 for AAPL's 0.37 %). `_normalize_yfinance_info` divides by 100 at
