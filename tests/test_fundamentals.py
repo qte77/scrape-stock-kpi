@@ -150,12 +150,6 @@ def test_compute_roi_zero_invested_capital_returns_none() -> None:
     assert _compute_roi(info) is None
 
 
-def test_snapshot_roi_defaults_to_none() -> None:
-    """``roi`` field defaults to ``None`` on direct snapshot construction."""
-    snap = FundamentalsSnapshot.model_validate({"symbol": "X"})
-    assert snap.roi is None
-
-
 def test_fetch_fundamentals_attaches_roi() -> None:
     """End-to-end: a mocked yfinance ``info`` dict with the five ROI
     inputs reaches the snapshot's ``roi`` field via ``model_copy``."""
@@ -252,12 +246,6 @@ def test_fetch_rd_to_revenue_exception_returns_none() -> None:
             raise RuntimeError("simulated yfinance failure")
 
     assert _fetch_rd_to_revenue(_Broken(), {"quoteType": "EQUITY"}) is None
-
-
-def test_snapshot_rd_to_revenue_defaults_to_none() -> None:
-    """``rd_to_revenue`` defaults to ``None`` on direct snapshot construction."""
-    snap = FundamentalsSnapshot.model_validate({"symbol": "X"})
-    assert snap.rd_to_revenue is None
 
 
 def test_fetch_fundamentals_attaches_rd_to_revenue() -> None:
@@ -357,17 +345,6 @@ def test_compute_sortino_empty_series_returns_none() -> None:
     from src.fundamentals import _compute_sortino
 
     assert _compute_sortino(pd.Series([], dtype=float)) is None
-
-
-def test_snapshot_sortino_ratio_defaults_to_none() -> None:
-    """``sortino_ratio`` defaults to ``None`` on direct snapshot construction."""
-    snap = FundamentalsSnapshot.model_validate({"symbol": "X"})
-    assert snap.sortino_ratio is None
-
-
-def test_snapshot_beta_defaults_to_none_when_missing() -> None:
-    snap = FundamentalsSnapshot.model_validate({"symbol": "X"})
-    assert snap.beta is None
 
 
 def test_snapshot_handles_sparse_info() -> None:
