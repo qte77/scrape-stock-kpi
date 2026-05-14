@@ -258,15 +258,61 @@ def fetch_price_history(ticker: str, period: str = "5y") -> pd.DataFrame:
     return yf.Ticker(ticker).history(period=period)
 
 
+def _batch_close_prices(tickers: list[str]) -> dict[str, pd.Series] | None:
+    """One batched ``yf.download`` for the whole universe.
+
+    Returns ``{ticker: close_series}`` so per-ticker Sortino can be
+    computed without N HTTP roundtrips. ``None`` on any failure
+    (network error, empty result, unexpected DataFrame shape).
+    Handles both single-ticker (flat columns) and multi-ticker
+    (multi-index columns) shapes that ``yf.download`` produces.
+    """
+    if not tickers:
+        return None
+    try:
+        df = yf.download(
+            tickers, period="1y", progress=False, auto_adjust=True
+        )
+    except Exception:
+        return None
+    if df is None or df.empty:
+        return None
+    if len(tickers) == 1:
+        if "Close" in df.columns:
+            return {tickers[0]: df["Close"]}
+        return None
+    try:
+        close_block = df["Close"]
+    except Exception:
+        return None
+    result: dict[str, pd.Series] = {
+        t: close_block[t] for t in tickers if t in close_block.columns
+    }
+    return result or None
+
+
 def fetch_universe_fundamentals(
     tickers: list[str], *, show_progress: bool = True
 ) -> list[FundamentalsSnapshot]:
-    """Sequential fetch with tqdm. Per-ticker errors are logged and skipped."""
+    """Sequential fetch with tqdm. Per-ticker errors are logged and skipped.
+
+    Adds a single batched ``yf.download`` at the start to fetch 1y close
+    prices for the whole universe; Sortino is then computed per-ticker
+    from the matching column and attached via ``model_copy``. The batch
+    call is fault-tolerant — failure simply leaves every ``sortino_ratio``
+    as ``None``.
+    """
+    close_by_ticker = _batch_close_prices(tickers)
     iterable = tqdm(tickers, desc="fundamentals") if show_progress else tickers
     snapshots: list[FundamentalsSnapshot] = []
     for ticker in iterable:
         try:
-            snapshots.append(fetch_fundamentals(ticker))
+            snap = fetch_fundamentals(ticker)
         except Exception as exc:
             logger.warning("Failed to fetch %s: %s", ticker, exc)
+            continue
+        sortino: float | None = None
+        if close_by_ticker is not None and ticker in close_by_ticker:
+            sortino = _compute_sortino(close_by_ticker[ticker])
+        snapshots.append(snap.model_copy(update={"sortino_ratio": sortino}))
     return snapshots

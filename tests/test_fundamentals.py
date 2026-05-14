@@ -392,6 +392,10 @@ def test_fetch_universe_continues_on_error(caplog: pytest.LogCaptureFixture) -> 
     with (
         caplog.at_level("WARNING", logger="src.fundamentals"),
         patch("src.fundamentals.yf.Ticker", side_effect=fake_ticker),
+        patch(
+            "src.fundamentals.yf.download",
+            side_effect=RuntimeError("batch skipped in unit test"),
+        ),
     ):
         results = fetch_universe_fundamentals(
             ["AAPL", "BROKEN", "GC=F"], show_progress=False
