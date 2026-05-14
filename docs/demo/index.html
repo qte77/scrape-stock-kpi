@@ -6,6 +6,7 @@
   <title>analyze-stock-kpi · demo dashboard</title>
   <link rel="stylesheet" href="style.css" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.umd.min.js" defer></script>
+  <script src="vendor/fuse.min.js" defer></script>
   <script src="app.js" defer></script>
 </head>
 <body>
@@ -44,6 +45,12 @@
           Snapshot:
           <select id="date-selector"></select>
         </label>
+        <input
+          id="universe-filter"
+          type="search"
+          placeholder="Filter ticker / name / sector…"
+          aria-label="Filter universe by ticker, name, or sector"
+        />
       </div>
       <div class="table-wrap">
         <table id="universe-table">

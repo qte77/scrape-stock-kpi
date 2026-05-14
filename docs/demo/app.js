@@ -30,6 +30,26 @@ const state = {
   sortDir: -1,
 };
 
+// Fuse.js index over the current snapshot. Rebuilt every time
+// `state.snapshot` changes (init + snapshot-date change handler).
+let fuseIndex = null;
+let filterQuery = "";
+
+function rebuildFuseIndex() {
+  fuseIndex =
+    typeof Fuse !== "undefined" && state.snapshot.length
+      ? new Fuse(state.snapshot, {
+          keys: ["symbol", "long_name", "sector"],
+          threshold: 0.3,
+        })
+      : null;
+}
+
+function filteredSnapshot() {
+  if (!filterQuery || fuseIndex == null) return state.snapshot;
+  return fuseIndex.search(filterQuery).map((r) => r.item);
+}
+
 // English glossary for detail-panel tooltips (title= attributes on labels).
 const KPI_GLOSSARY = {
   forward_pe: "Forward P/E = price / next-12mo EPS estimate. Lower = cheaper.",
@@ -129,11 +149,13 @@ function td(text, cls) {
 function renderTable() {
   const tbody = document.querySelector("#universe-table tbody");
   tbody.replaceChildren();
-  const sorted = [...state.snapshot].sort((a, b) =>
+  const visible = filteredSnapshot();
+  const sorted = [...visible].sort((a, b) =>
     compareValues(nested(a, state.sortKey), nested(b, state.sortKey), state.sortDir),
   );
-  // Per-row Weight % = score / sum(scores), shown as a row-level title=.
-  const totalScore = state.snapshot.reduce((acc, row) => {
+  // Per-row Weight % = score / sum(scores) over the *visible* set so
+  // allocation hints stay relative to what the user is looking at.
+  const totalScore = visible.reduce((acc, row) => {
     const s = nested(row, "composite_scores.screener_score");
     return acc + (s == null ? 0 : Number(s));
   }, 0);
@@ -444,10 +466,19 @@ async function init() {
   selector.value = manifest.latest;
   selector.addEventListener("change", async () => {
     state.snapshot = await loadSnapshot(selector.value);
+    rebuildFuseIndex();
     renderTable();
   });
 
+  document
+    .getElementById("universe-filter")
+    .addEventListener("input", (e) => {
+      filterQuery = e.target.value.trim();
+      renderTable();
+    });
+
   state.snapshot = await loadSnapshot(manifest.latest);
+  rebuildFuseIndex();
   document.getElementById("universe-size").textContent =
     `${state.snapshot.length} tickers`;
   renderTable();

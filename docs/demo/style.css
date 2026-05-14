@@ -132,12 +132,18 @@ h2 {
 
 #universe-header h2 { margin: 0; }
 
-#date-selector {
+#date-selector,
+#universe-filter {
   padding: 0.3rem 0.5rem;
   border: 1px solid var(--border);
   border-radius: 4px;
   background: var(--panel);
   font: inherit;
+}
+
+#universe-filter {
+  min-width: 18rem;
+  max-width: 22rem;
 }
 
 .table-wrap {
