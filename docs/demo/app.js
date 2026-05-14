@@ -103,7 +103,11 @@ function dl(pairs) {
   for (const [label, value, sectionHeader] of pairs) {
     const dt = document.createElement("dt");
     dt.textContent = label;
-    if (sectionHeader) dt.className = "section";
+    if (sectionHeader) {
+      dt.className = "section";
+      frag.append(dt);
+      continue;
+    }
     const dd = document.createElement("dd");
     dd.textContent = value;
     frag.append(dt, dd);
