@@ -168,6 +168,9 @@ thead th {
   user-select: none;
   white-space: nowrap;
   background: var(--panel);
+  position: sticky;
+  top: 0;
+  z-index: 3;
 }
 
 /* Sticky first two columns (Ticker + Name) keep identity visible
@@ -186,6 +189,12 @@ thead th {
   left: 4.5rem;
   background: var(--panel);
   z-index: 1;
+}
+
+/* Corner cells (sticky row AND sticky column) must outrank both axes. */
+#universe-table thead th:nth-child(1),
+#universe-table thead th:nth-child(2) {
+  z-index: 4;
 }
 
 #universe-table tbody tr:hover td:nth-child(1),
