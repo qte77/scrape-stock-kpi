@@ -29,6 +29,7 @@ def test_snapshot_parses_full_info_dict() -> None:
     assert snap.return_on_equity == 1.45
     assert snap.dividend_yield == 0.0048
     assert snap.beta == 1.24
+    assert snap.trailing_peg_ratio == 1.4
 
 
 def test_snapshot_parses_trailing_peg_ratio() -> None:
