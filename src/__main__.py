@@ -26,18 +26,6 @@ _TABLE_QUOTE_TYPES = {"EQUITY", "ETF"}
 logger = logging.getLogger(__name__)
 
 
-def _format_market_cap(value: float | None) -> str:
-    if value is None:
-        return "-"
-    if value >= 1e12:
-        return f"{value / 1e12:.2f}T"
-    if value >= 1e9:
-        return f"{value / 1e9:.2f}B"
-    if value >= 1e6:
-        return f"{value / 1e6:.2f}M"
-    return f"{value:,.0f}"
-
-
 def _format_ratio(value: float | None) -> str:
     return f"{value:.2f}" if value is not None else "-"
 
@@ -69,13 +57,21 @@ def _score_columns(snap: FundamentalsSnapshot) -> list[str]:
 
 
 def _summary_row(snap: FundamentalsSnapshot, show_scores: bool) -> list[str]:
+    scores = snap.composite_scores or CompositeScores()
     row = [
         snap.symbol,
+        snap.long_name or "-",
         snap.sector or "-",
-        _format_market_cap(snap.market_cap),
-        _format_ratio(snap.trailing_pe),
+        _format_ratio(snap.forward_pe),
+        _format_ratio(snap.trailing_peg_ratio),
+        _format_ratio(snap.beta),
+        _format_percent(snap.rd_to_revenue),
+        _format_percent(snap.operating_margins),
         _format_percent(snap.return_on_equity),
-        _format_percent(snap.dividend_yield),
+        _format_percent(snap.return_on_assets),
+        _format_ratio(snap.current_ratio),
+        _format_ratio(snap.sortino_ratio),
+        _format_score(scores.screener_score),
     ]
     if show_scores:
         row += _score_columns(snap)
@@ -88,13 +84,26 @@ def _print_summary_table(
     *,
     show_scores: bool = False,
 ) -> None:
+    """Mirrors the demo dashboard's 13-column default view (`docs/demo/`).
+
+    With ``--show-scores`` (env ``SSK_SHOW_SCORES=1``) three legacy
+    composite columns (Quality / Dividend / Growth) are appended for
+    backwards compatibility.
+    """
     table = Table(title="Fundamentals (equities & ETFs)")
-    table.add_column("Symbol", style="bold")
+    table.add_column("Ticker", style="bold")
+    table.add_column("Name")
     table.add_column("Sector")
-    table.add_column("Market Cap", justify="right")
-    table.add_column("P/E", justify="right")
-    table.add_column("ROE", justify="right")
-    table.add_column("Div Yield", justify="right")
+    table.add_column("P/E (fwd)", justify="right")
+    table.add_column("PEG", justify="right")
+    table.add_column("Beta", justify="right")
+    table.add_column("R&D/Rev %", justify="right")
+    table.add_column("Op M %", justify="right")
+    table.add_column("ROE %", justify="right")
+    table.add_column("ROA %", justify="right")
+    table.add_column("Current", justify="right")
+    table.add_column("Sortino", justify="right")
+    table.add_column("Score", justify="right")
     if show_scores:
         table.add_column("Quality", justify="right")
         table.add_column("Div", justify="right")
