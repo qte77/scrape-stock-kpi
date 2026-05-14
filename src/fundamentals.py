@@ -100,6 +100,7 @@ class FundamentalsSnapshot(BaseModel):
     # -- enrichment (attached post-fetch via ``model_copy``) --
     composite_scores: CompositeScores | None = None
     roi: float | None = None
+    rd_to_revenue: float | None = None
 
 
 def _normalize_yfinance_info(info: dict[str, Any]) -> dict[str, Any]:
@@ -158,12 +159,63 @@ def _compute_roi(info: dict[str, Any]) -> float | None:
     return net_income / invested_capital
 
 
+_INCOME_STMT_RD_ROW = "Research And Development"
+_INCOME_STMT_REVENUE_ROW = "Total Revenue"
+
+
+def _read_rd_revenue(income_stmt: Any) -> tuple[float | None, float | None]:
+    """Extract latest R&D + Total Revenue from an income_stmt DataFrame.
+
+    Returns ``(None, None)`` on any structural issue (empty DataFrame,
+    missing rows, NaN cells). Float coercion only happens once both
+    values are present and non-NaN.
+    """
+    if income_stmt is None or income_stmt.empty:
+        return None, None
+    latest = income_stmt.iloc[:, 0]
+    rd = latest.get(_INCOME_STMT_RD_ROW)
+    revenue = latest.get(_INCOME_STMT_REVENUE_ROW)
+    if rd is None or revenue is None:
+        return None, None
+    if rd != rd or revenue != revenue:
+        return None, None
+    return float(rd), float(revenue)
+
+
+def _fetch_rd_to_revenue(
+    yf_ticker: Any, info: dict[str, Any]
+) -> float | None:
+    """R&D-as-share-of-revenue from ``Ticker.income_stmt`` latest column.
+
+    Gated on ``info["quoteType"] == "EQUITY"`` so ETFs / FX / futures /
+    crypto skip the extra HTTP fetch entirely. Returns ``None`` on any
+    failure or missing data — empty income_stmt, missing rows, NaN
+    cells, zero revenue, network error, or IFRS schema drift on
+    international filers.
+    """
+    if info.get("quoteType") != "EQUITY":
+        return None
+    try:
+        rd, revenue = _read_rd_revenue(yf_ticker.income_stmt)
+    except Exception:
+        return None
+    if rd is None or revenue is None or revenue == 0:
+        return None
+    return rd / revenue
+
+
 def fetch_fundamentals(ticker: str) -> FundamentalsSnapshot:
     """Fetch fundamentals for one ticker. Sparse for non-equities."""
-    info: dict[str, Any] = yf.Ticker(ticker).info
+    yf_ticker = yf.Ticker(ticker)
+    info: dict[str, Any] = yf_ticker.info
     normalized = _normalize_yfinance_info(info)
     snap = FundamentalsSnapshot.model_validate({**normalized, "symbol": ticker})
-    return snap.model_copy(update={"roi": _compute_roi(normalized)})
+    return snap.model_copy(
+        update={
+            "roi": _compute_roi(normalized),
+            "rd_to_revenue": _fetch_rd_to_revenue(yf_ticker, info),
+        }
+    )
 
 
 def fetch_price_history(ticker: str, period: str = "5y") -> pd.DataFrame:
