@@ -224,6 +224,25 @@ def test_screener_score_partial_inputs_renormalized() -> None:
     assert screener_score(snap) == 100.0
 
 
+def test_screener_score_below_threshold_returns_none() -> None:
+    """Four inputs at their HI bound -> ``None``.
+
+    Without the ``_SCREENER_MIN_TERMS`` threshold, mean-of-present-terms
+    would yield ``_mean([100, 100, 100, 100]) == 100`` — a high score
+    derived from only 4 of the 9 KPIs is misleading. The threshold
+    guards informationally-thin tickers (mostly FX / futures / crypto
+    / very sparse ADRs) from being ranked alongside fully-populated
+    equities.
+    """
+    snap = _snap(
+        return_on_equity=0.30,
+        return_on_assets=0.15,
+        operating_margins=0.30,
+        current_ratio=3.0,
+    )
+    assert screener_score(snap) is None
+
+
 def test_screener_score_drops_negative_forward_pe() -> None:
     """Loss-making company: forward_pe < 0 drops the term (no spurious saturation).
 
