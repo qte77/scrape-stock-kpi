@@ -55,6 +55,18 @@ const KPI_GLOSSARY = {
     "Annualized Sortino over 1y (rf=0). Higher = better upside vs downside skew.",
   screener_score:
     "Composite of the 9 visible main-table KPIs (0-100). Higher = better.",
+  quality:
+    "Mean of normalized ROE, ROA, operating margin, and inverted D/E. Higher = stronger fundamentals.",
+  dividend:
+    "Dividend yield + payout-ratio sweet spot (peaks near ~50% payout). Higher = healthier dividend profile.",
+  growth:
+    "Mean of normalized revenue + earnings growth. Higher = stronger top-line and bottom-line growth.",
+  big_call:
+    "Weighted Quality (40%) + Dividend (30%) + Growth (30%); reweights proportionally when a component is missing.",
+  aaqs:
+    "Quality combined with low-volatility (low beta is better). Higher = quality with stable beta.",
+  hgi:
+    "Growth-tilted score with a fixed bonus when operating margin clears ~10%.",
 };
 
 async function fetchJson(url) {
@@ -267,12 +279,12 @@ function showDetail(row) {
         KPI_GLOSSARY.sortino_ratio,
       ],
       ["Composite scores", "", true],
-      ["Quality", fmtNum(cs.quality, 0)],
-      ["Dividend", fmtNum(cs.dividend, 0)],
-      ["Growth", fmtNum(cs.growth, 0)],
-      ["Big Call", fmtNum(cs.big_call, 0)],
-      ["AAQS", fmtNum(cs.aaqs, 0)],
-      ["HGI", fmtNum(cs.hgi, 0)],
+      ["Quality", fmtNum(cs.quality, 0), false, KPI_GLOSSARY.quality],
+      ["Dividend", fmtNum(cs.dividend, 0), false, KPI_GLOSSARY.dividend],
+      ["Growth", fmtNum(cs.growth, 0), false, KPI_GLOSSARY.growth],
+      ["Big Call", fmtNum(cs.big_call, 0), false, KPI_GLOSSARY.big_call],
+      ["AAQS", fmtNum(cs.aaqs, 0), false, KPI_GLOSSARY.aaqs],
+      ["HGI", fmtNum(cs.hgi, 0), false, KPI_GLOSSARY.hgi],
       [
         "Screener",
         fmtNum(cs.screener_score, 0),
