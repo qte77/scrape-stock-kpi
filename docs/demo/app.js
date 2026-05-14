@@ -366,7 +366,13 @@ function findClosestScore(entries, latestMs, daysAgo) {
 }
 
 function renderFearGreedHeader(entries) {
-  if (!entries.length) return;
+  if (!entries.length) {
+    const chipEl = document.getElementById("fg-rating");
+    chipEl.textContent = "no data";
+    chipEl.className = "chip";
+    document.getElementById("fg-deltas").textContent = "";
+    return;
+  }
   const last = entries[entries.length - 1];
   document.getElementById("fg-score").textContent = fmtNum(last.score, 0);
   const rating = (last.rating ?? "").toLowerCase();
