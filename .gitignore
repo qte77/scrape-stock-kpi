@@ -89,8 +89,14 @@ importtime/
 MEMORY.md
 
 # Runtime artifacts from `make run` (per-invocation per-asset KPI snapshots).
-# results/cnn_fg/YYYY.json is committed (daily history, see sentiment.py).
 results/fundamentals_*.json
+# Local-preview shuffles from `make preview_local` (the production cron writes
+# these to the `data` branch via REST Git Data API, bypassing .gitignore).
+results/demo/
+# CNN Fear & Greed year files — production cron writes them to the `data`
+# branch only. Existing tracked files on `main` are legacy; new years won't be
+# accidentally committed from feature branches.
+results/cnn_fg/*.json
 
 # Claude Code sandbox bwrap phantom files
 # https://github.com/anthropics/claude-code/issues/17727

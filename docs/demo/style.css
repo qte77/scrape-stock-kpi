@@ -132,12 +132,18 @@ h2 {
 
 #universe-header h2 { margin: 0; }
 
-#date-selector {
+#date-selector,
+#universe-filter {
   padding: 0.3rem 0.5rem;
   border: 1px solid var(--border);
   border-radius: 4px;
   background: var(--panel);
   font: inherit;
+}
+
+#universe-filter {
+  min-width: 18rem;
+  max-width: 22rem;
 }
 
 .table-wrap {
@@ -162,6 +168,9 @@ thead th {
   user-select: none;
   white-space: nowrap;
   background: var(--panel);
+  position: sticky;
+  top: 0;
+  z-index: 3;
 }
 
 /* Sticky first two columns (Ticker + Name) keep identity visible
@@ -182,6 +191,12 @@ thead th {
   z-index: 1;
 }
 
+/* Corner cells (sticky row AND sticky column) must outrank both axes. */
+#universe-table thead th:nth-child(1),
+#universe-table thead th:nth-child(2) {
+  z-index: 4;
+}
+
 #universe-table tbody tr:hover td:nth-child(1),
 #universe-table tbody tr:hover td:nth-child(2) {
   background: var(--bg);
@@ -191,7 +206,7 @@ thead th:hover { color: var(--text); }
 thead th.sort-asc::after { content: " ↑"; color: var(--accent); }
 thead th.sort-desc::after { content: " ↓"; color: var(--accent); }
 
-.num { text-align: right; font-variant-numeric: tabular-nums; }
+.num { text-align: center; font-variant-numeric: tabular-nums; }
 
 tbody td {
   padding: 0.5rem 0.75rem;
@@ -200,6 +215,12 @@ tbody td {
 
 tbody tr { cursor: pointer; }
 tbody tr:hover { background: var(--bg); }
+
+/* Score cells carry an inline `background-color` heatmap; let row-hover
+   leave the cell's own colour intact so the gradient stays visible. */
+tbody tr:hover td.score-cell {
+  background-color: inherit;
+}
 
 #row-detail {
   position: fixed;
