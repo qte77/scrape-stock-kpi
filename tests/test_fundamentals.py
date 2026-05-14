@@ -321,6 +321,37 @@ def test_compute_sortino_all_positive_returns_none() -> None:
     assert _compute_sortino(close) is None
 
 
+def test_compute_sortino_with_target_annual_shifts_result() -> None:
+    """``target_annual`` subtracts a daily MAR from each return.
+
+    Same positive-skew series as ``test_compute_sortino_positive_skew_series``
+    (29 returns of +0.005, 1 of -0.05). With ``target_annual = 0`` the
+    Sortino is ≈ 5.51. With ``target_annual = 1.26`` (daily target
+    = 0.005) every "up" day becomes an excess of 0 and the single
+    down day becomes -0.055, flipping the sign:
+
+    mean(excess) * 252 = (-0.055 / 30) * 252 ≈ -0.4620
+    downside_dev_daily = sqrt((0.055^2) / 30) ≈ 0.01004
+    downside_dev_annual = 0.01004 * sqrt(252) ≈ 0.15942
+    sortino = -0.4620 / 0.15942 ≈ -2.898
+
+    Confirms the canonical Sortino convention `(R - T) / DR` rather
+    than our prior T=0-only behaviour.
+    """
+    import pandas as pd
+
+    from src.fundamentals import _compute_sortino
+
+    returns = [0.005] * 29 + [-0.05]
+    prices = [100.0]
+    for r in returns:
+        prices.append(prices[-1] * (1 + r))
+    close = pd.Series(prices)
+    sortino = _compute_sortino(close, target_annual=1.26)
+    assert sortino is not None
+    assert sortino == pytest.approx(-2.898, rel=1e-2)
+
+
 def test_compute_sortino_empty_series_returns_none() -> None:
     """Empty close-series -> ``None``."""
     import pandas as pd
