@@ -19,7 +19,7 @@ src/
 │                          fetch_price_history(ticker, period) -> DataFrame
 │                          fetch_universe_fundamentals(tickers) -> list[FundamentalsSnapshot]
 ├── sentiment.py           fetch_fear_greed() -> FearGreedSnapshot; `python -m src.sentiment` merges headline + ~1y history into per-year files results/cnn_fg/YYYY.json (sorted JSON arrays, upsert-by-date)
-├── composite_scores.py    quality/dividend/growth/big_call/aaqs/hgi 0-100 proxies; `compute_scores(snap) -> CompositeScores`
+├── composite_scores.py    quality/dividend/growth/big_call/aaqs/hgi/screener 0-100 proxies; `compute_scores(snap) -> CompositeScores`
 ├── assets/
 │   └── universes/         preset *.txt ticker lists (one per universe name)
 └── utils/
@@ -57,13 +57,13 @@ v0.5.0 attaches a `CompositeScores` object to every `FundamentalsSnapshot` after
 | Type | Module | Role |
 |---|---|---|
 | `CliArgs(BaseSettings)` | `utils/parse_args.py` | CLI + env input — `cli_parse_args=True`, `extra="forbid"` |
-| `FundamentalsSnapshot` | `fundamentals.py` | Per-ticker fundamentals — ~30 aliased fields; sparse for non-equities |
+| `FundamentalsSnapshot` | `fundamentals.py` | Per-ticker fundamentals — ~34 aliased fields including the post-fetch enrichments `roi`, `rd_to_revenue`, `sortino_ratio` (see [ADR-0004](decisions/0004-price-history-composite-input.md)); sparse for non-equities |
 | `FearGreedSnapshot` | `sentiment.py` | CNN F&G headline (score, rating, timestamp, prev close/1w/1m/1y) + optional `subindicators` map of 9 named `SubindicatorReading` entries (score, rating, raw_value); see [`cnn-fg-api.md`](cnn-fg-api.md) for what's backfillable vs daily-only |
-| `CompositeScores` | `composite_scores.py` | Quality/dividend/growth/big_call/aaqs/hgi 0-100 proxies derived from `FundamentalsSnapshot`; simplified formulas per [`decisions/0002-simplified-composites.md`](decisions/0002-simplified-composites.md) |
+| `CompositeScores` | `composite_scores.py` | Quality/dividend/growth/big_call/aaqs/hgi/screener 0-100 proxies derived from `FundamentalsSnapshot`; simplified formulas per [`decisions/0002-simplified-composites.md`](decisions/0002-simplified-composites.md) amended by [`decisions/0004-price-history-composite-input.md`](decisions/0004-price-history-composite-input.md) |
 
 ## External boundaries
 
-- **`yfinance`** — fundamentals (`Ticker.info`) + price history (`Ticker.history`); rate-limit risk; live tests tagged `@pytest.mark.network` (excluded from default `make test`, opt in via `pytest -m network`). `_normalize_yfinance_info` in `src/fundamentals.py` divides the current percentage-shaped `info["dividendYield"]` by 100 at the fetch boundary so the rest of the codebase sees fractional yields.
+- **`yfinance`** — fundamentals (`Ticker.info`) + price history (`Ticker.history`); rate-limit risk; live tests tagged `@pytest.mark.network` (excluded from default `make test`, opt in via `pytest -m network`). `_normalize_yfinance_info` in `src/fundamentals.py` divides the current percentage-shaped `info["dividendYield"]` by 100 at the fetch boundary so the rest of the codebase sees fractional yields. `fetch_universe_fundamentals` adds a batched `yf.download(tickers, period="1y")` once per run for Sortino — see [ADR-0004](decisions/0004-price-history-composite-input.md). `_fetch_rd_to_revenue` reads `Ticker.income_stmt` per EQUITY ticker for the R&D / Revenue ratio.
 - **CNN F&G JSON endpoint** — `production.dataviz.cnn.io/index/fearandgreed/graphdata`; requires browser-shape headers (UA + `Accept` + `Referer`; returns 418 otherwise); stdlib `urllib.request`, no extra deps. Observed schema in [`cnn-fg-api.md`](cnn-fg-api.md).
 - **GitHub Actions cron** — `.github/workflows/fear-greed.yaml` (daily 21:30 UTC) commits per-year history files `results/cnn_fg/YYYY.json`; `.github/workflows/demo-snapshot.yaml` (Sunday 06:15 UTC) commits per-week universe snapshots under `results/demo/<UNIVERSE>/`. Both target the `data` branch via verified REST Git Data API commits from `actions/github-script@v9`.
 - **`financetoolkit`** — *not used; v0.5.0 composites use simplified formulas with point-in-time `FundamentalsSnapshot` inputs only. See [`decisions/0001-defer-financetoolkit.md`](decisions/0001-defer-financetoolkit.md) and [`decisions/0002-simplified-composites.md`](decisions/0002-simplified-composites.md).*

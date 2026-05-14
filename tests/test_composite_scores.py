@@ -16,6 +16,7 @@ from src.composite_scores import (
     growth,
     hgi,
     quality,
+    screener_score,
 )
 from src.fundamentals import FundamentalsSnapshot
 
@@ -164,6 +165,75 @@ def test_hgi_returns_none_when_growth_missing() -> None:
     assert hgi(_snap(operating_margins=0.30)) is None
 
 
+def test_screener_score_saturates_to_100() -> None:
+    """All 9 visible inputs at their best bound -> 100."""
+    snap = _snap(
+        forward_pe=5.0,
+        trailing_peg_ratio=0.0,
+        beta=0.0,
+        rd_to_revenue=0.20,
+        operating_margins=0.30,
+        return_on_equity=0.30,
+        return_on_assets=0.15,
+        current_ratio=3.0,
+        sortino_ratio=3.0,
+    )
+    assert screener_score(snap) == 100.0
+
+
+def test_screener_score_clamps_at_zero() -> None:
+    """All 9 inputs at their worst bound -> 0."""
+    snap = _snap(
+        forward_pe=40.0,
+        trailing_peg_ratio=3.0,
+        beta=2.0,
+        rd_to_revenue=0.0,
+        operating_margins=0.0,
+        return_on_equity=0.0,
+        return_on_assets=0.0,
+        current_ratio=1.0,
+        sortino_ratio=0.0,
+    )
+    assert screener_score(snap) == 0.0
+
+
+def test_screener_score_midpoint() -> None:
+    """All 9 inputs at the midpoint of their range -> 50."""
+    snap = _snap(
+        forward_pe=22.5,
+        trailing_peg_ratio=1.5,
+        beta=1.0,
+        rd_to_revenue=0.10,
+        operating_margins=0.15,
+        return_on_equity=0.15,
+        return_on_assets=0.075,
+        current_ratio=2.0,
+        sortino_ratio=1.5,
+    )
+    assert screener_score(snap) == 50.0
+
+
+def test_screener_score_returns_none_when_all_missing() -> None:
+    """No visible inputs -> None (consistent with the existing composites)."""
+    assert screener_score(_snap()) is None
+
+
+def test_screener_score_partial_inputs_renormalized() -> None:
+    """Only ROE + ROA at HI -> mean of [100, 100] = 100. Missing terms drop."""
+    snap = _snap(return_on_equity=0.30, return_on_assets=0.15)
+    assert screener_score(snap) == 100.0
+
+
+def test_screener_score_drops_negative_forward_pe() -> None:
+    """Loss-making company: forward_pe < 0 drops the term (no spurious saturation).
+
+    With only ROE present at midpoint, the score is 50 — the negative
+    forward_pe is silently dropped rather than rewarded.
+    """
+    snap = _snap(forward_pe=-10.0, return_on_equity=0.15)
+    assert screener_score(snap) == 50.0
+
+
 def test_compute_scores_full_snapshot() -> None:
     snap = _snap(
         return_on_equity=0.30,
@@ -175,6 +245,11 @@ def test_compute_scores_full_snapshot() -> None:
         revenue_growth=0.50,
         earnings_growth=0.50,
         beta=0.0,
+        forward_pe=5.0,
+        trailing_peg_ratio=0.0,
+        rd_to_revenue=0.20,
+        current_ratio=3.0,
+        sortino_ratio=3.0,
     )
     scores = compute_scores(snap)
     assert scores.quality == 100.0
@@ -183,6 +258,7 @@ def test_compute_scores_full_snapshot() -> None:
     assert scores.big_call == 100.0
     assert scores.aaqs == 100.0
     assert scores.hgi == 100.0
+    assert scores.screener_score == 100.0
 
 
 def test_compute_scores_sparse_returns_all_none() -> None:

@@ -7,6 +7,8 @@
 
 **Drives:** [#18](https://github.com/qte77/analyze-stock-kpi/issues/18)
 
+**Amended by:** [ADR-0004](0004-price-history-composite-input.md) (composite inputs extended to include price-history-derived `sortino_ratio`)
+
 ## Context
 
 ADR-0000 specified that the v0.4.0 → v0.5.0 stack would replace

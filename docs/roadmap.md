@@ -48,6 +48,7 @@ The original v0.6.0 RS hedging scope was deferred per [ADR-0003](decisions/0003-
 - [x] Rewrite `fear-greed.yaml` to the same verified-commit pattern, fixing the cron broken by the `required_signatures` ruleset — PR #60 + #61
 - [ ] GitHub Pages deploy (`gh-pages.yml`) using modern `actions/upload-pages-artifact` + `actions/deploy-pages` of `docs/demo/*` — issue [#59](https://github.com/qte77/analyze-stock-kpi/issues/59)
 - [ ] Static dashboard (`docs/demo/{index.html,app.js,style.css}`) — F&G 2-year chart + universe table with date selector, fetching cross-origin from `raw.githubusercontent.com/.../data/results/...`
+- [x] **Dashboard KPI expansion** — 13-column main table (P/E (fwd) / PEG / Beta / R&D/Rev % / Op M % / ROE / ROA / Current / Sortino / Score), English tooltips, mobile-graceful CSS, off-by-one fix in composite-scores detail panel. New snapshot fields (`trailing_peg_ratio`, `roi`, `rd_to_revenue`, `sortino_ratio`) and 7th composite (`screener_score`) per [ADR-0004](decisions/0004-price-history-composite-input.md).
 
 ## Deferred
 

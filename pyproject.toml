@@ -1,6 +1,6 @@
 [project]
 name = "analyze-stock-kpi"
-version = "0.6.0"
+version = "0.5.1"
 description = "Analyze stock KPI: per-ticker fundamentals + CNN Fear & Greed sentiment via libraries, no API keys"
 readme = "README.md"
 license = "Apache-2.0"
@@ -83,7 +83,7 @@ exclude_lines = [
 # via `uv run bump-my-version bump [major|minor|patch]` or the
 # `bump-my-version.yaml` workflow_dispatch.
 [tool.bumpversion]
-current_version = "0.6.0"
+current_version = "0.5.1"
 parse = "(?P<major>\\d+)\\.(?P<minor>\\d+)\\.(?P<patch>\\d+)"
 serialize = ["{major}.{minor}.{patch}"]
 commit = true
