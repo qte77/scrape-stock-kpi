@@ -201,6 +201,12 @@ tbody td {
 tbody tr { cursor: pointer; }
 tbody tr:hover { background: var(--bg); }
 
+/* Score cells carry an inline `background-color` heatmap; let row-hover
+   leave the cell's own colour intact so the gradient stays visible. */
+tbody tr:hover td.score-cell {
+  background-color: inherit;
+}
+
 #row-detail {
   position: fixed;
   top: 0;

@@ -164,6 +164,12 @@ function renderTable() {
     }
     parts.push(`${coverage}/9 inputs`);
     tr.title = parts.join(" · ");
+    // Heatmap on the Score column only: 0 -> red (hue 0), 50 -> yellow (60),
+    // 100 -> green (120). Lightness 75% keeps the dark text WCAG-readable.
+    const scoreCell = td(fmtNum(score, 0), "num score-cell");
+    if (score != null) {
+      scoreCell.style.backgroundColor = `hsl(${Number(score) * 1.2}, 60%, 75%)`;
+    }
     tr.append(
       td(row.symbol ?? "—"),
       td(row.long_name ?? "—"),
@@ -177,7 +183,7 @@ function renderTable() {
       td(fmtPct(row.return_on_assets), "num"),
       td(fmtNum(row.current_ratio, 2), "num"),
       td(fmtNum(row.sortino_ratio, 2), "num"),
-      td(fmtNum(score, 0), "num"),
+      scoreCell,
     );
     tr.addEventListener("click", () => showDetail(row));
     tbody.appendChild(tr);
