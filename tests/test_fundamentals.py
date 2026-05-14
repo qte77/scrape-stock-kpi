@@ -284,6 +284,63 @@ def test_fetch_fundamentals_attaches_rd_to_revenue() -> None:
     assert snap.rd_to_revenue == 0.20
 
 
+def test_compute_sortino_positive_skew_series() -> None:
+    """Sortino > 0 for a mostly-up series with a single drawdown.
+
+    Construct 31 prices via cumulative product of 29 returns of +0.5%
+    plus one of -5%. Daily mean = 0.095/30 ≈ 0.003167; annualized
+    ≈ 0.798. Downside-deviation squared mean = 0.05^2 / 30 ≈ 8.33e-5;
+    annualized ≈ 0.1449. Sortino ≈ 5.51.
+    """
+    import pandas as pd
+
+    from src.fundamentals import _compute_sortino
+
+    returns = [0.005] * 29 + [-0.05]
+    prices = [100.0]
+    for r in returns:
+        prices.append(prices[-1] * (1 + r))
+    close = pd.Series(prices)
+    sortino = _compute_sortino(close)
+    assert sortino is not None
+    assert sortino == pytest.approx(5.51, rel=1e-2)
+
+
+def test_compute_sortino_too_few_datapoints_returns_none() -> None:
+    """Series shorter than 30 returns -> ``None`` (insufficient sample)."""
+    import pandas as pd
+
+    from src.fundamentals import _compute_sortino
+
+    close = pd.Series([100.0 + i for i in range(20)])
+    assert _compute_sortino(close) is None
+
+
+def test_compute_sortino_all_positive_returns_none() -> None:
+    """No losing days -> downside_dev is zero -> ``None`` (undefined)."""
+    import pandas as pd
+
+    from src.fundamentals import _compute_sortino
+
+    close = pd.Series([100.0 * (1.001 ** i) for i in range(50)])
+    assert _compute_sortino(close) is None
+
+
+def test_compute_sortino_empty_series_returns_none() -> None:
+    """Empty close-series -> ``None``."""
+    import pandas as pd
+
+    from src.fundamentals import _compute_sortino
+
+    assert _compute_sortino(pd.Series([], dtype=float)) is None
+
+
+def test_snapshot_sortino_ratio_defaults_to_none() -> None:
+    """``sortino_ratio`` defaults to ``None`` on direct snapshot construction."""
+    snap = FundamentalsSnapshot.model_validate({"symbol": "X"})
+    assert snap.sortino_ratio is None
+
+
 def test_snapshot_beta_defaults_to_none_when_missing() -> None:
     snap = FundamentalsSnapshot.model_validate({"symbol": "X"})
     assert snap.beta is None
