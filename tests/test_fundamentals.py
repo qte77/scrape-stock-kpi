@@ -339,7 +339,6 @@ def test_compute_sortino_with_target_annual_shifts_result() -> None:
     than our prior T=0-only behaviour.
     """
     import pandas as pd
-
     from src.fundamentals import _compute_sortino
 
     returns = [0.005] * 29 + [-0.05]

@@ -6,8 +6,14 @@
 // which commit verified API commits to a branch outside the
 // default-branch ruleset's scope.
 
-const DATA_BASE_URL =
-  "https://raw.githubusercontent.com/qte77/analyze-stock-kpi/data";
+// Default points at the verified-commit `data` branch served via GitHub's
+// raw host. Override at load via the `?base=<url>` query string so a local
+// `make preview-local` (or any other static-file host) can feed the same
+// dashboard fresh on-disk snapshots without editing this constant.
+const DATA_BASE_URL = (
+  new URLSearchParams(window.location.search).get("base") ??
+  "https://raw.githubusercontent.com/qte77/analyze-stock-kpi/data"
+).replace(/\/$/, "");
 const UNIVERSE = "qte77-watchlist";
 
 const RATING_CLASSES = {
