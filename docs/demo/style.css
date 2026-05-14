@@ -206,7 +206,7 @@ thead th:hover { color: var(--text); }
 thead th.sort-asc::after { content: " ↑"; color: var(--accent); }
 thead th.sort-desc::after { content: " ↓"; color: var(--accent); }
 
-.num { text-align: right; font-variant-numeric: tabular-nums; }
+.num { text-align: center; font-variant-numeric: tabular-nums; }
 
 tbody td {
   padding: 0.5rem 0.75rem;
