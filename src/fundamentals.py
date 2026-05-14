@@ -99,6 +99,7 @@ class FundamentalsSnapshot(BaseModel):
 
     # -- enrichment (attached post-fetch via ``model_copy``) --
     composite_scores: CompositeScores | None = None
+    roi: float | None = None
 
 
 def _normalize_yfinance_info(info: dict[str, Any]) -> dict[str, Any]:
@@ -124,11 +125,45 @@ def _normalize_yfinance_info(info: dict[str, Any]) -> dict[str, Any]:
     return out
 
 
+def _compute_roi(info: dict[str, Any]) -> float | None:
+    """Simplified ROIC = ``netIncomeToCommon / invested_capital``.
+
+    Invested capital is approximated as ``book_equity + totalDebt -
+    totalCash`` where ``book_equity = marketCap / priceToBook``. This
+    is the screener-style ROI used by finviz et al. — not the
+    company-filed ROIC (which would use NOPAT and adjusted invested
+    capital). Returns ``None`` whenever any of the five inputs is
+    missing, ``priceToBook`` is zero, or invested capital sums to
+    zero. Inputs are transient — only the ratio lands on the snapshot.
+    """
+    net_income = info.get("netIncomeToCommon")
+    market_cap = info.get("marketCap")
+    price_to_book = info.get("priceToBook")
+    total_debt = info.get("totalDebt")
+    total_cash = info.get("totalCash")
+    if (
+        net_income is None
+        or market_cap is None
+        or price_to_book is None
+        or total_debt is None
+        or total_cash is None
+    ):
+        return None
+    if price_to_book == 0:
+        return None
+    book_equity = market_cap / price_to_book
+    invested_capital = book_equity + total_debt - total_cash
+    if invested_capital == 0:
+        return None
+    return net_income / invested_capital
+
+
 def fetch_fundamentals(ticker: str) -> FundamentalsSnapshot:
     """Fetch fundamentals for one ticker. Sparse for non-equities."""
     info: dict[str, Any] = yf.Ticker(ticker).info
     normalized = _normalize_yfinance_info(info)
-    return FundamentalsSnapshot.model_validate({**normalized, "symbol": ticker})
+    snap = FundamentalsSnapshot.model_validate({**normalized, "symbol": ticker})
+    return snap.model_copy(update={"roi": _compute_roi(normalized)})
 
 
 def fetch_price_history(ticker: str, period: str = "5y") -> pd.DataFrame:
