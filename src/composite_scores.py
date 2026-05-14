@@ -33,6 +33,12 @@ _YIELD_LO, _YIELD_HI = 0.0, 0.07
 _GROWTH_LO, _GROWTH_HI = -0.20, 0.50
 _BETA_LO, _BETA_HI = 0.0, 2.0
 
+_FORWARD_PE_LO, _FORWARD_PE_HI = 5.0, 40.0
+_PEG_LO, _PEG_HI = 0.0, 3.0
+_RD_REV_LO, _RD_REV_HI = 0.0, 0.20
+_CURRENT_LO, _CURRENT_HI = 1.0, 3.0
+_SORTINO_LO, _SORTINO_HI = 0.0, 3.0
+
 _HGI_MARGIN_THRESHOLD = 0.10
 _HGI_MARGIN_BONUS = 10.0
 
@@ -51,11 +57,13 @@ def _mean(values: list[float]) -> float:
 
 
 class CompositeScores(BaseModel):
-    """Six 0-100 proxy scores derived from a single `FundamentalsSnapshot`.
+    """Seven 0-100 proxy scores derived from a single `FundamentalsSnapshot`.
 
     Any score is ``None`` when its required inputs were unavailable.
     ``big_call`` reweights proportionally over its non-``None`` components
     so a tech stock with no dividend still receives a robustness score.
+    ``screener_score`` aggregates the visible main-table KPIs (see
+    `docs/decisions/0004-price-history-composite-input.md`).
     """
 
     model_config = ConfigDict(extra="forbid", frozen=True)
@@ -66,6 +74,7 @@ class CompositeScores(BaseModel):
     big_call: float | None = None
     aaqs: float | None = None
     hgi: float | None = None
+    screener_score: float | None = None
 
 
 def quality(snap: FundamentalsSnapshot) -> float | None:
@@ -177,6 +186,56 @@ def hgi(snap: FundamentalsSnapshot) -> float | None:
     return score
 
 
+def _normalize_term(
+    value: float | None, lo: float, hi: float, *, invert: bool = False
+) -> float | None:
+    """Rescale ``value`` to ``[0, 100]`` clamped to ``[lo, hi]``.
+
+    Returns ``None`` when ``value`` is ``None``. When ``invert=True``
+    returns ``100 - rescaled`` so low input values produce high scores
+    (used for cheapness / risk metrics where lower is better).
+    """
+    if value is None:
+        return None
+    raw = _rescale(value, lo, hi)
+    return 100 - raw if invert else raw
+
+
+def screener_score(snap: FundamentalsSnapshot) -> float | None:
+    """Aggregated 0-100 composite of the 9 visible main-table KPIs.
+
+    Reads from the snapshot itself (including the post-fetch enrichments
+    ``rd_to_revenue`` and ``sortino_ratio``). ROI, Quick, Gross M, Net M
+    and the Trail/Fwd ratio are deliberately NOT included — those are
+    detail-panel KPIs and should not influence the at-a-glance ranking.
+
+    Negative ``forward_pe`` (loss-making companies) drops the term
+    rather than rewarding it via the inverted cheapness rescale.
+    """
+    forward_pe = (
+        snap.forward_pe
+        if snap.forward_pe is None or snap.forward_pe > 0
+        else None
+    )
+    terms_inputs = (
+        (forward_pe, _FORWARD_PE_LO, _FORWARD_PE_HI, True),
+        (snap.trailing_peg_ratio, _PEG_LO, _PEG_HI, True),
+        (snap.beta, _BETA_LO, _BETA_HI, True),
+        (snap.rd_to_revenue, _RD_REV_LO, _RD_REV_HI, False),
+        (snap.operating_margins, _OP_MARGIN_LO, _OP_MARGIN_HI, False),
+        (snap.return_on_equity, _ROE_LO, _ROE_HI, False),
+        (snap.return_on_assets, _ROA_LO, _ROA_HI, False),
+        (snap.current_ratio, _CURRENT_LO, _CURRENT_HI, False),
+        (snap.sortino_ratio, _SORTINO_LO, _SORTINO_HI, False),
+    )
+    terms: list[float] = []
+    for value, lo, hi, invert in terms_inputs:
+        norm = _normalize_term(value, lo, hi, invert=invert)
+        if norm is not None:
+            terms.append(norm)
+    return _mean(terms) if terms else None
+
+
 def compute_scores(snap: FundamentalsSnapshot) -> CompositeScores:
     """Compute every composite for a single snapshot."""
     q = quality(snap)
@@ -189,4 +248,5 @@ def compute_scores(snap: FundamentalsSnapshot) -> CompositeScores:
         big_call=big_call(q, d, g),
         aaqs=aaqs(q, snap.beta),
         hgi=hgi(snap),
+        screener_score=screener_score(snap),
     )
