@@ -37,6 +37,10 @@ Types of changes:
 
 - **Detail-panel off-by-one** — the `dl()` helper in `docs/demo/app.js` emitted a stray `<dd>` for section-header rows, shifting every following label/value pair right by one cell. The Composite Scores block now lines up correctly.
 
+### Removed
+
+- Four trivial `defaults_to_none` tests in `tests/test_fundamentals.py` (`test_snapshot_{roi,rd_to_revenue,sortino_ratio,beta}_defaults_to_none*`). All four asserted that a `float | None = None` field defaults to `None` — which is what the type annotation literally says. Regression coverage for "field stays optional" is provided by `test_snapshot_handles_sparse_info` (the GC=F fixture constructs successfully without any of these fields).
+
 ## [0.5.1] - 2026-05-11
 
 ### Added
