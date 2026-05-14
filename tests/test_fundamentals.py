@@ -402,6 +402,78 @@ def test_fetch_universe_continues_on_error(caplog: pytest.LogCaptureFixture) -> 
     assert any("BROKEN" in rec.message for rec in caplog.records)
 
 
+def test_fetch_universe_fundamentals_attaches_sortino_via_batch() -> None:
+    """Batched ``yf.download`` at universe level feeds per-ticker Sortino.
+
+    The orchestrator calls ``yf.download(tickers, period="1y", ...)``
+    once before the per-ticker loop. Each snapshot's ``sortino_ratio``
+    is attached via ``model_copy`` from the matching column of the
+    batched close-price DataFrame.
+    """
+    import pandas as pd
+
+    returns_mixed = [0.005] * 29 + [-0.05]
+    prices_mixed = [100.0]
+    for r in returns_mixed:
+        prices_mixed.append(prices_mixed[-1] * (1 + r))
+    prices_uptrend = [100.0 * (1.001**i) for i in range(31)]
+
+    close_df = pd.DataFrame(
+        {
+            ("Close", "AAPL"): prices_mixed,
+            ("Close", "MSFT"): prices_uptrend,
+        }
+    )
+    close_df.columns = pd.MultiIndex.from_tuples(close_df.columns)
+
+    class _FakeTicker:
+        def __init__(self, info: dict) -> None:
+            self.info = info
+
+    aapl_info = {"symbol": "AAPL", "shortName": "Apple", "quoteType": "EQUITY"}
+    msft_info = {"symbol": "MSFT", "shortName": "Microsoft", "quoteType": "EQUITY"}
+
+    def fake_ticker(symbol: str) -> _FakeTicker:
+        return _FakeTicker(aapl_info if symbol == "AAPL" else msft_info)
+
+    with (
+        patch("src.fundamentals.yf.Ticker", side_effect=fake_ticker),
+        patch("src.fundamentals.yf.download", return_value=close_df) as mock_dl,
+    ):
+        snapshots = fetch_universe_fundamentals(
+            ["AAPL", "MSFT"], show_progress=False
+        )
+
+    mock_dl.assert_called_once()
+    call_args = mock_dl.call_args
+    assert call_args.args[0] == ["AAPL", "MSFT"]
+    assert call_args.kwargs.get("period") == "1y"
+
+    by_symbol = {s.symbol: s for s in snapshots}
+    assert by_symbol["AAPL"].sortino_ratio == pytest.approx(5.51, rel=1e-2)
+    # MSFT had only positive returns -> downside_dev = 0 -> Sortino is None
+    assert by_symbol["MSFT"].sortino_ratio is None
+
+
+def test_fetch_universe_fundamentals_batch_failure_gives_none_sortino() -> None:
+    """``yf.download`` raising -> all snapshots get ``sortino_ratio=None``."""
+
+    class _FakeTicker:
+        info = {"symbol": "AAPL", "shortName": "Apple", "quoteType": "EQUITY"}
+
+    with (
+        patch("src.fundamentals.yf.Ticker", return_value=_FakeTicker()),
+        patch(
+            "src.fundamentals.yf.download",
+            side_effect=RuntimeError("simulated batch failure"),
+        ),
+    ):
+        snapshots = fetch_universe_fundamentals(["AAPL"], show_progress=False)
+
+    assert len(snapshots) == 1
+    assert snapshots[0].sortino_ratio is None
+
+
 @pytest.mark.network
 def test_live_fetch_aapl() -> None:
     snap = fetch_fundamentals("AAPL")
