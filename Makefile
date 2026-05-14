@@ -99,7 +99,7 @@ run:  ## run fundamentals (UNIVERSE=qte77-watchlist | TICKERS=AAPL,MSFT | TICKER
 
 preview:  ## serve docs/demo/ locally on PORT=8000 (data fetched cross-origin from data branch)
 	echo "--- preview"
-	echo "Serving http://localhost:$${PORT:-8000}/  (Ctrl+C to stop)"
+	echo "Dashboard: http://localhost:$${PORT:-8000}/  (Ctrl+C to stop)"
 	uv run python -m http.server $${PORT:-8000} --directory docs/demo
 
 preview_local:  ## like preview but serves the latest `make run` output (UNIVERSE=qte77-watchlist by default)
@@ -112,7 +112,10 @@ preview_local:  ## like preview but serves the latest `make run` output (UNIVERS
 	mkdir -p "results/demo/$$U"; \
 	cp "$$LATEST" "results/demo/$$U/$$(date -u +%Y-%m-%d).json"; \
 	uv run python scripts/build_demo_manifest.py "results/demo/$$U"
-	echo "Serving http://localhost:$${PORT:-8000}/docs/demo/?base=..  (Ctrl+C to stop)"
+	echo ""
+	echo "  Open in browser:  http://localhost:$${PORT:-8000}/docs/demo/?base=.."
+	echo "  (the http.server URL printed below is the repo root — do NOT use it)"
+	echo ""
 	uv run python -m http.server $${PORT:-8000} --directory .
 
 
