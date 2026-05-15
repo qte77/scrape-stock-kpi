@@ -16,6 +16,10 @@ Types of changes:
 
 ## [Unreleased]
 
+### Changed
+
+- `llms.txt` is now **auto-generated** at `docs/llms.txt` by the `llms-txt.yaml` workflow using the [qte77/gha-llms-txt-action](https://github.com/qte77/gha-llms-txt-action) composite action (Marketplace-listed; pinned to the v0.1.0 commit SHA per the repo's full-SHA rule). The hand-curated `llms.txt` at repo root is replaced by a template at `.github/templates/llms.txt.tpl` that uses `${BLOB}` / `${PROJECT_NAME}` / `${PROJECT_DESC}` envsubst variables. The action validates that every `${BLOB}/path` reference points to an existing file, preventing stale links over time.
+
 ## [0.6.0] - 2026-05-15
 
 ### Added
