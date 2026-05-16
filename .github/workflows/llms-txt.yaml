@@ -1,0 +1,42 @@
+---
+# Auto-generate docs/llms.txt from .github/templates/llms.txt.tpl via the
+# qte77/gha-llms-txt-action composite action. Triggers on changes to the
+# template, the README headline (which feeds ${PROJECT_NAME}), and on
+# manual workflow_dispatch. The action validates every ${BLOB}/path
+# link, substitutes ${BLOB} / ${PROJECT_NAME} / ${PROJECT_DESC} via
+# envsubst, writes docs/llms.txt, and opens an auto/llms-txt-update-*
+# PR when the rendered output drifts from on-disk content.
+#
+# Action pin: qte77/gha-llms-txt-action@v0.1.0 ->
+#   commit 7cb4f03bd69a23c0e561ce76e926cadc0d3d3b9f (resolved via
+#   `gh api repos/qte77/gha-llms-txt-action/git/ref/tags/v0.1.0`).
+
+name: llms-txt
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/templates/llms.txt.tpl"
+      - ".github/workflows/llms-txt.yaml"
+      - "README.md"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: llms-txt
+  cancel-in-progress: false
+
+jobs:
+  generate:
+    name: regenerate docs/llms.txt from template
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
+
+      - uses: qte77/gha-llms-txt-action@7cb4f03bd69a23c0e561ce76e926cadc0d3d3b9f  # v0.1.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
