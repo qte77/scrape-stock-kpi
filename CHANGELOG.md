@@ -16,6 +16,10 @@ Types of changes:
 
 ## [Unreleased]
 
+### Removed
+
+- `.github/dependabot.yaml` (the duplicate config that used the broken `pip` ecosystem — no-op for this uv-managed repo). The remaining `.github/dependabot.yml` now carries the `commit-message` prefix + labels that previously lived only on the deleted file. Dependabot only ever loaded one of the two configs anyway; this removes the ambiguity.
+
 ### Changed
 
 - `llms.txt` is now **auto-generated** at `docs/llms.txt` by the `llms-txt.yaml` workflow using the [qte77/gha-llms-txt-action](https://github.com/qte77/gha-llms-txt-action) composite action (Marketplace-listed; pinned to the v0.1.0 commit SHA per the repo's full-SHA rule). The hand-curated `llms.txt` at repo root is replaced by a template at `.github/templates/llms.txt.tpl` that uses `${BLOB}` / `${PROJECT_NAME}` / `${PROJECT_DESC}` envsubst variables. The action validates that every `${BLOB}/path` reference points to an existing file, preventing stale links over time.
