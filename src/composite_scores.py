@@ -1,18 +1,17 @@
 """Composite proxy scores derived from a `FundamentalsSnapshot`.
 
-Seven 0-100 proxies — six inspired by the Traderfox aggregate scores
-referenced in issue #18 (Quality / Dividend / Growth / Big Call /
-AAQS / HGI) plus the dashboard `screener_score` added in v0.6.0.
-Formulas are intentionally simplified: each composite uses only
-point-in-time fields on `FundamentalsSnapshot` plus ``beta`` from
-yfinance info, with `screener_score` also reading the price-history-
-derived `sortino_ratio` (see ADR-0004). Multi-year trend formulas
-(Piotroski, ROIC stability, 5y CAGR, FCF coverage) are deliberately
-deferred — see ``docs/decisions/0002-simplified-composites.md``.
+The proxy scores are inspired by the Traderfox aggregate scores
+referenced in issue #18. Formulas are intentionally simplified: each
+composite uses only point-in-time fields on `FundamentalsSnapshot`
+plus ``beta`` from yfinance info, with `screener_score` also reading
+the price-history-derived `sortino_ratio` (see ADR-0004). Multi-year
+trend formulas (Piotroski, ROIC stability, 5y CAGR, FCF coverage)
+are deliberately deferred — see
+``docs/decisions/0002-simplified-composites.md``.
 
 Public API:
     - :class:`CompositeScores` — frozen pydantic model holding the
-      seven proxy scores.
+      proxy scores.
     - :func:`compute_scores` — entry point that takes a
       `FundamentalsSnapshot` and returns a fully-populated
       :class:`CompositeScores`.
