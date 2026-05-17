@@ -41,5 +41,10 @@ jobs:
       - name: Markdownlint
         run: npx --yes markdownlint-cli --config .markdownlint.json '**/*.md' --ignore '.venv/**' --ignore 'results/**' --ignore 'node_modules/**'
 
+      - name: Lint JS (node --check + tsc JSDoc type check)
+        run: |
+          node --check docs/demo/app.js
+          npx --yes -p typescript@5 tsc --noEmit --project docs/demo
+
       - name: Pytest with coverage
         run: uv run pytest --cov=src --cov-fail-under=0
