@@ -1,0 +1,39 @@
+---
+# AI-powered issue triage via qte77/gha-issue-triage. Fires on every new,
+# edited, or reopened issue. Detects duplicates, scores relevance against
+# the repo's scope (README/AGENTS), analyzes feasibility + complexity,
+# auto-labels (bug / feature / enhancement / duplicate / good-first-issue
+# / needs-discussion / invalid), and posts a single sticky summary comment
+# that is edited in place on re-runs.
+#
+# Backend defaults to GitHub Models via the workflow's GITHUB_TOKEN —
+# `permissions: models: read` is the load-bearing line. No external API
+# key required.
+#
+# Per the repo's "Require actions to be pinned to a full-length commit
+# SHA" rule, the action is pinned to the commit behind tag v0.2.4.
+name: issue-triage
+
+on:
+  issues:
+    types: [opened, edited, reopened]
+
+permissions:
+  contents: read
+  issues: write
+  models: read
+
+concurrency:
+  # One in-flight triage per issue so a quick edit doesn't race with the
+  # initial open and stack two summary comments before the sticky-edit
+  # logic kicks in. `issue.number` is a numeric ID — safe to interpolate.
+  group: issue-triage-${{ github.event.issue.number }}
+  cancel-in-progress: true
+
+jobs:
+  triage:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: qte77/gha-issue-triage@cc8f0cf99014af906ea3ad1ee977d92852069579  # v0.2.4
+        with:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
