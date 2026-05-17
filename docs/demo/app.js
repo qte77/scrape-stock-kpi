@@ -233,6 +233,31 @@ function dl(pairs) {
   return frag;
 }
 
+function closeDetail() {
+  const aside = document.getElementById("row-detail");
+  if (aside) aside.hidden = true;
+}
+
+function bindDetailDismiss() {
+  const aside = document.getElementById("row-detail");
+  if (!aside) return;
+
+  document.addEventListener("click", (event) => {
+    const target = event.target;
+    if (aside.hidden || !(target instanceof Node)) return;
+    if (aside.contains(target)) return;
+    const targetElement = target instanceof Element ? target : target.parentElement;
+    if (targetElement?.closest("#universe-table tbody tr")) return;
+    aside.hidden = true;
+  });
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && !aside.hidden) {
+      aside.hidden = true;
+    }
+  });
+}
+
 function showDetail(row) {
   const cs = row.composite_scores ?? {};
   const mcap = row.market_cap
@@ -246,9 +271,7 @@ function showDetail(row) {
   closeBtn.id = "close-detail";
   closeBtn.setAttribute("aria-label", "Close");
   closeBtn.textContent = "×";
-  closeBtn.addEventListener("click", () => {
-    aside.hidden = true;
-  });
+  closeBtn.addEventListener("click", closeDetail);
   aside.append(closeBtn);
 
   const h3 = document.createElement("h3");
@@ -445,6 +468,7 @@ function bindTableSort() {
 }
 
 async function init() {
+  bindDetailDismiss();
   bindTableSort();
   const initialSortTh = document.querySelector(
     `#universe-table thead th[data-key="${state.sortKey}"]`,
