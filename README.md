@@ -16,6 +16,13 @@ daily CNN Fear & Greed sentiment snapshot. No API keys, no scraping.
 
 **Live demo**: [qte77.github.io/analyze-stock-kpi/](https://qte77.github.io/analyze-stock-kpi/) — weekly `qte77-watchlist` snapshot + 2-year F&G history.
 
+<details>
+<summary>Dashboard screenshot · click to expand</summary>
+
+![analyze-stock-kpi dashboard — CNN F&G banner with 2-year history, qte77-watchlist universe table with 13 KPI columns, factor-weighted Score heatmap](assets/images/analyze-stock-kpi-screenshot.png)
+
+</details>
+
 ## Quickstart
 
 ```bash
