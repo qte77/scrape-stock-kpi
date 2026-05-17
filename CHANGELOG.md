@@ -16,6 +16,8 @@ Types of changes:
 
 ## [Unreleased]
 
+## [1.0.0] - 2026-05-17
+
 ### Removed
 
 - `.github/dependabot.yaml` (the duplicate config that used the broken `pip` ecosystem — no-op for this uv-managed repo). The remaining `.github/dependabot.yml` now carries the `commit-message` prefix + labels that previously lived only on the deleted file. Dependabot only ever loaded one of the two configs anyway; this removes the ambiguity.
