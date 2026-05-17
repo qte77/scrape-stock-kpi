@@ -99,16 +99,17 @@ class FearGreedSnapshot(BaseModel):
 
 
 def _fetch_payload() -> dict[str, Any]:
-    # S310 noqa: ENDPOINT is a hardcoded HTTPS module constant; the explicit
-    # scheme check below is the defense-in-depth boundary if a future
-    # refactor ever lets external input flow into ENDPOINT.
-    request = urllib.request.Request(  # noqa: S310
+    # S310 / B310: ENDPOINT is a hardcoded HTTPS module constant; the explicit
+    # scheme check below is the defense-in-depth boundary if a future refactor
+    # ever lets external input flow into ENDPOINT. ruff and Bandit (via
+    # CodeFactor) each need their own suppression syntax on the call sites.
+    request = urllib.request.Request(  # noqa: S310  # nosec B310
         ENDPOINT,
         headers={"User-Agent": USER_AGENT, "Accept": ACCEPT, "Referer": REFERER},
     )
     if not request.full_url.startswith("https://"):
         raise ValueError(f"Refusing non-HTTPS URL: {request.full_url!r}")
-    with urllib.request.urlopen(  # noqa: S310
+    with urllib.request.urlopen(  # noqa: S310  # nosec B310
         request, timeout=REQUEST_TIMEOUT_SEC
     ) as response:
         return json.loads(response.read())
