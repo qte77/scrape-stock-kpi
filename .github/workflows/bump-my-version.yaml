@@ -8,10 +8,14 @@ name: bump-my-version
 # uses tag-pinned subactions that the repo's "Require actions to be
 # pinned to a full-length commit SHA" rule rejects.
 #
-# Behavior matches the previous flow: bumps pyproject.toml +
-# README badge + CHANGELOG per [tool.bumpversion] config, creates a
-# `v{new}` tag locally, pushes a `bump-<run>-<base>` branch + the new
-# tag, and opens a PR for review.
+# Behavior: bumps pyproject.toml + README badge + CHANGELOG per
+# [tool.bumpversion] config, pushes a `bump-<run>-<base>` branch, and
+# opens a PR for review. Tagging is intentionally deferred to
+# `tag-release.yaml`, which fires on push-to-main and tags the
+# squash-merge commit on `main` so the `v{new}` ref always points to
+# a commit that is reachable from `main` (the historical "tag drift"
+# from squash-merging the bump-branch commit is structurally
+# impossible under this split).
 
 on:
   workflow_dispatch:
@@ -66,20 +70,21 @@ jobs:
         run: |
           set -euo pipefail
           PREV_VERSION=$(uv run bump-my-version show current_version)
-          uv run bump-my-version bump "$BUMP_TYPE"
+          # --no-tag: tag-release.yaml creates the annotated tag against
+          # main's squash-merge commit, not this feature branch's commit,
+          # so the tag is always reachable from main.
+          uv run bump-my-version bump --no-tag "$BUMP_TYPE"
           NEW_VERSION=$(uv run bump-my-version show current_version)
           echo "prev_version=$PREV_VERSION" >> "$GITHUB_OUTPUT"
           echo "new_version=$NEW_VERSION" >> "$GITHUB_OUTPUT"
           echo "bumped=true" >> "$GITHUB_OUTPUT"
 
-      - name: Push branch + tag
+      - name: Push branch
         if: steps.bump.outputs.bumped == 'true'
         env:
           BRANCH: ${{ env.BRANCH_NEW }}
-          NEW_VERSION: ${{ steps.bump.outputs.new_version }}
         run: |
           git push origin "HEAD:refs/heads/$BRANCH"
-          git push origin "v$NEW_VERSION"
 
       - name: Open release PR
         if: steps.bump.outputs.bumped == 'true'
@@ -94,4 +99,4 @@ jobs:
             --base "$BASE_BRANCH" \
             --head "$HEAD_BRANCH" \
             --title "chore(release): bump $PREV_VERSION -> $NEW_VERSION" \
-            --body "Automated bump via bump-my-version.yaml workflow_dispatch. Updates pyproject.toml, README version badge, and CHANGELOG.md; tag v$NEW_VERSION already pushed."
+            --body "Automated bump via bump-my-version.yaml workflow_dispatch. Updates pyproject.toml, README version badge, and CHANGELOG.md. The \`v$NEW_VERSION\` tag is created automatically by \`tag-release.yaml\` after this PR is squash-merged to main, so the tag always points at the merge commit."
