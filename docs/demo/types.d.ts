@@ -6,6 +6,13 @@
 // `include` list in `tsconfig.json`. Never shipped to the browser:
 // GitHub Pages serves only `app.js`.
 
+// Vendored library globals (Chart.js + Fuse.js are loaded via plain
+// <script> tags in index.html, not module imports). `any` is the YAGNI
+// choice: we use a tiny subset of each library's API. Upgrade to proper
+// types if/when the surface grows.
+declare const Chart: any;
+declare const Fuse: any;
+
 interface CompositeScores {
   quality?: number | null;
   dividend?: number | null;
