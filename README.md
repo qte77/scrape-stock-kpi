@@ -49,10 +49,6 @@ CLI args double as env vars with the `SSK_` prefix
   array of CNN Fear & Greed snapshots (headline + 9 subindicators).
   Updated daily by a GitHub Actions cron at 21:30 UTC.
 
-Field shapes live in [`src/fundamentals.py`](src/fundamentals.py),
-[`src/composite_scores.py`](src/composite_scores.py), and
-[`src/sentiment.py`](src/sentiment.py).
-
 ## Sample output
 
 `make run TICKERS=AAPL SHOW_SCORES=1`:
