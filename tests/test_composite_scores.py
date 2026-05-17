@@ -275,6 +275,50 @@ def test_screener_score_drops_negative_forward_pe() -> None:
     assert screener_score(snap) == 50.0
 
 
+def test_screener_score_profit_drops_when_only_one_input_present() -> None:
+    """L1 within-factor: a sub-floor Profitability factor drops out.
+
+    Profitability has 1 of 4 inputs present (ROE), below its ``>= 2``
+    floor — the whole factor drops. Valuation / Risk / Momentum each
+    saturate to 100. Five total inputs (>= the global 5/9 gate) ->
+    composite = mean of the three present factor scores = 100.
+
+    Old input-equal math: ``(0 + 100 + 100 + 100 + 100) / 5 == 80``.
+    The new factor-weighted math returns 100 here; this test is the
+    load-bearing distinguisher between the two compositions.
+    """
+    snap = _snap(
+        return_on_equity=0.0,
+        trailing_peg_ratio=0.0,
+        beta=0.0,
+        current_ratio=3.0,
+        sortino_ratio=3.0,
+    )
+    assert screener_score(snap) == 100.0
+
+
+def test_screener_score_factor_renormalizes_when_factor_missing() -> None:
+    """L2 across factors: absent factors are dropped, not penalized.
+
+    Profitability saturates to 100 (4 of 4 inputs at HI). Valuation
+    saturates to 0 (forward_pe at the bad bound, 1 of 2 inputs meets
+    the >= 1 floor). Risk and Momentum have zero inputs each -> both
+    factors drop. Five total inputs meet the global >= 5/9 gate.
+
+    Old input-equal math: ``(0 + 100 + 100 + 100 + 100) / 5 == 80``.
+    New math averages only the two present factor scores:
+    ``(100 + 0) / 2 == 50``.
+    """
+    snap = _snap(
+        return_on_equity=0.30,
+        return_on_assets=0.15,
+        operating_margins=0.30,
+        rd_to_revenue=0.20,
+        forward_pe=40.0,
+    )
+    assert screener_score(snap) == 50.0
+
+
 def test_compute_scores_full_snapshot() -> None:
     snap = _snap(
         return_on_equity=0.30,
