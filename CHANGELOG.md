@@ -29,6 +29,9 @@ Types of changes:
 
 ### Fixed
 
+- Dashboard row-detail panel now dismisses on outside click or Escape, while
+  clicks inside the panel and row-to-row detail swaps keep the panel open.
+
 - **Dashboard `<thead>` actually sticks on vertical scroll now.** `docs/demo/style.css` `.table-wrap` previously set only `overflow-x: auto`, which per CSS spec makes the wrapper the containing block for nested `position: sticky` elements but provides no vertical scroll port — so `thead th { top: 0 }` had nowhere to stick and scrolled away with the page. Switched the wrapper to `overflow: auto` + `max-height: 75vh` so both sticky-top (thead) and sticky-left (Ticker + Name columns) anchor against the same scroll port. Delivers on the v0.6.0 "sticky `<thead>` so column headers stay visible on vertical scroll" CHANGELOG promise.
 
 ## [0.6.0] - 2026-05-15
