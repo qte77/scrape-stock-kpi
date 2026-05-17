@@ -53,9 +53,9 @@ check_types:  ## pyright type check
 	echo "--- check_types"
 	uv run pyright src $(PYRIGHT_QUIET)
 
-check_complexity:  ## complexipy cognitive complexity gate (max 15)
+check_complexity:  ## complexipy cognitive complexity gate (max 10)
 	echo "--- check_complexity"
-	uv run complexipy src --max-complexity-allowed 15
+	uv run complexipy src --max-complexity-allowed 10
 
 lint_md:  ## markdownlint *.md (uses .markdownlint.json)
 	echo "--- lint_md"
