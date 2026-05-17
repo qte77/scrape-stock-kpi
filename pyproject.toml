@@ -4,6 +4,7 @@ version = "0.6.0"
 description = "Analyze stock KPI: per-ticker fundamentals + CNN Fear & Greed sentiment via libraries, no API keys"
 readme = "README.md"
 license = "Apache-2.0"
+authors = [{ name = "qte77" }]
 requires-python = ">=3.12,<3.13"
 dependencies = [
     "pydantic>=2.10",

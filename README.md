@@ -8,13 +8,10 @@
 [![SBOM](https://github.com/qte77/analyze-stock-kpi/actions/workflows/sbom.yaml/badge.svg)](https://github.com/qte77/analyze-stock-kpi/actions/workflows/sbom.yaml)
 [![gh-pages](https://github.com/qte77/analyze-stock-kpi/actions/workflows/gh-pages.yaml/badge.svg)](https://qte77.github.io/analyze-stock-kpi/)
 
-[![vscode.dev](https://img.shields.io/static/v1?logo=visualstudiocode&label=&message=vscode.dev&labelColor=2c2c32&color=007acc&logoColor=007acc)](https://vscode.dev/github/qte77/analyze-stock-kpi)
-[![Codespace Dev](https://img.shields.io/static/v1?logo=visualstudiocode&label=&message=Codespace%20Dev&labelColor=2c2c32&color=007acc&logoColor=007acc)](https://github.com/codespaces/new?repo=qte77/analyze-stock-kpi)
-
 Library-based stock KPI CLI: per-ticker fundamentals via yfinance plus a
 daily CNN Fear & Greed sentiment snapshot. No API keys, no scraping.
 
-**Live demo**: [qte77.github.io/analyze-stock-kpi/](https://qte77.github.io/analyze-stock-kpi/) — weekly `qte77-watchlist` snapshot + 2-year F&G history.
+**Live demo**: [qte77.github.io/analyze-stock-kpi/](https://qte77.github.io/analyze-stock-kpi/) — weekly `qte77-watchlist` snapshot + rolling F&G history.
 
 <details>
 <summary>Dashboard screenshot · click to expand</summary>
@@ -48,10 +45,6 @@ CLI args double as env vars with the `SSK_` prefix
 * **Sentiment** — `results/cnn_fg/YYYY.json`: per-year date-sorted
   array of CNN Fear & Greed snapshots (headline + 9 subindicators).
   Updated daily by a GitHub Actions cron at 21:30 UTC.
-
-Field shapes live in [`src/fundamentals.py`](src/fundamentals.py),
-[`src/composite_scores.py`](src/composite_scores.py), and
-[`src/sentiment.py`](src/sentiment.py).
 
 ## Sample output
 
