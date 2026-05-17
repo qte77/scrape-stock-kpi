@@ -99,17 +99,18 @@ class FearGreedSnapshot(BaseModel):
 
 
 def _fetch_payload() -> dict[str, Any]:
-    request = urllib.request.Request(
+    # S310 noqa: ENDPOINT is a hardcoded HTTPS module constant; the explicit
+    # scheme check below is the defense-in-depth boundary if a future
+    # refactor ever lets external input flow into ENDPOINT.
+    request = urllib.request.Request(  # noqa: S310
         ENDPOINT,
         headers={"User-Agent": USER_AGENT, "Accept": ACCEPT, "Referer": REFERER},
     )
-    # Defense-in-depth against Bandit B310: refuse any URL whose scheme is
-    # not HTTPS (e.g. file:, custom), even though ENDPOINT is a hardcoded
-    # module-level constant. If a future refactor ever lets external input
-    # flow into ENDPOINT, this guard fails loudly at the boundary.
     if not request.full_url.startswith("https://"):
         raise ValueError(f"Refusing non-HTTPS URL: {request.full_url!r}")
-    with urllib.request.urlopen(request, timeout=REQUEST_TIMEOUT_SEC) as response:  # nosec B310
+    with urllib.request.urlopen(  # noqa: S310
+        request, timeout=REQUEST_TIMEOUT_SEC
+    ) as response:
         return json.loads(response.read())
 
 

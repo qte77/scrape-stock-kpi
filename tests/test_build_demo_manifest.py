@@ -11,7 +11,9 @@ _SCRIPT = Path(__file__).resolve().parents[1] / "scripts" / "build_demo_manifest
 
 
 def _run(directory: Path) -> subprocess.CompletedProcess[str]:
-    return subprocess.run(
+    # S603 noqa: subprocess invokes a hardcoded local script with the running
+    # interpreter; no external input flows into argv.
+    return subprocess.run(  # noqa: S603
         [sys.executable, str(_SCRIPT), str(directory)],
         capture_output=True,
         text=True,
