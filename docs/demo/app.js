@@ -1,3 +1,5 @@
+// @ts-check
+/* global Chart, Fuse */
 // Demo dashboard logic (#59).
 //
 // Fetches data files cross-origin from the `data` branch via
@@ -5,6 +7,9 @@
 // demo-snapshot.yml (weekly) and fear-greed.yaml (daily) workflows,
 // which commit verified API commits to a branch outside the
 // default-branch ruleset's scope.
+//
+// Type declarations for `Row` + `CompositeScores` live in `types.d.ts`
+// (declaration-only; never shipped to the browser).
 
 // Default points at the verified-commit `data` branch served via GitHub's
 // raw host. Override at load via the `?base=<url>` query string so a local
@@ -24,6 +29,7 @@ const RATING_CLASSES = {
   "extreme greed": "rating-extreme-greed",
 };
 
+/** @type {{snapshot: Row[], sortKey: string, sortDir: 1 | -1}} */
 const state = {
   snapshot: [],
   sortKey: "composite_scores.screener_score",
@@ -146,8 +152,13 @@ function td(text, cls) {
   return el;
 }
 
+/**
+ * Render the visible (filtered + sorted) universe into the table body.
+ * @returns {void}
+ */
 function renderTable() {
   const tbody = document.querySelector("#universe-table tbody");
+  if (!tbody) return;
   tbody.replaceChildren();
   const visible = filteredSnapshot();
   const sorted = [...visible].sort((a, b) =>
@@ -233,11 +244,20 @@ function dl(pairs) {
   return frag;
 }
 
+/**
+ * Hide the row-detail aside without removing its children.
+ * @returns {void}
+ */
 function closeDetail() {
   const aside = document.getElementById("row-detail");
   if (aside) aside.hidden = true;
 }
 
+/**
+ * Wire document-level listeners that dismiss `#row-detail` on outside
+ * click or Escape. Idempotent: safe to call once at init.
+ * @returns {void}
+ */
 function bindDetailDismiss() {
   const aside = document.getElementById("row-detail");
   if (!aside) return;
@@ -258,6 +278,11 @@ function bindDetailDismiss() {
   });
 }
 
+/**
+ * Populate and reveal the row-detail aside for one ticker row.
+ * @param {Row} row
+ * @returns {void}
+ */
 function showDetail(row) {
   const cs = row.composite_scores ?? {};
   const mcap = row.market_cap
@@ -265,6 +290,7 @@ function showDetail(row) {
     : "—";
 
   const aside = document.getElementById("row-detail");
+  if (!aside) return;
   aside.replaceChildren();
 
   const closeBtn = document.createElement("button");
@@ -448,25 +474,41 @@ function renderFearGreedChart(entries) {
   });
 }
 
+/**
+ * Wire click-to-sort on every `<th>` of the universe table.
+ * Toggling the same column flips direction; switching column resets to asc.
+ * @returns {void}
+ */
 function bindTableSort() {
-  document.querySelectorAll("#universe-table thead th").forEach((th) => {
-    th.addEventListener("click", () => {
-      const key = th.dataset.key;
-      if (state.sortKey === key) {
-        state.sortDir *= -1;
-      } else {
-        state.sortKey = key;
-        state.sortDir = 1;
-      }
-      document.querySelectorAll("#universe-table thead th").forEach((t) => {
-        t.classList.remove("sort-asc", "sort-desc");
+  document
+    .querySelectorAll("#universe-table thead th")
+    .forEach((/** @type {Element} */ th) => {
+      if (!(th instanceof HTMLElement)) return;
+      th.addEventListener("click", () => {
+        const key = th.dataset.key;
+        if (!key) return;
+        if (state.sortKey === key) {
+          state.sortDir = /** @type {1 | -1} */ (state.sortDir * -1);
+        } else {
+          state.sortKey = key;
+          state.sortDir = 1;
+        }
+        document.querySelectorAll("#universe-table thead th").forEach((t) => {
+          t.classList.remove("sort-asc", "sort-desc");
+        });
+        th.classList.add(state.sortDir > 0 ? "sort-asc" : "sort-desc");
+        renderTable();
       });
-      th.classList.add(state.sortDir > 0 ? "sort-asc" : "sort-desc");
-      renderTable();
     });
-  });
 }
 
+/**
+ * Bootstrap: wire dismissal + sort, load the latest snapshot, wire the
+ * date selector + filter input, and render the F&G banner + chart.
+ * Returns early if the manifest fetch fails (typical for a fresh repo
+ * before the first cron run).
+ * @returns {Promise<void>}
+ */
 async function init() {
   bindDetailDismiss();
   bindTableSort();
@@ -481,12 +523,18 @@ async function init() {
   try {
     manifest = await loadManifest();
   } catch {
-    document.getElementById("universe-name").textContent =
-      "qte77-watchlist (no data yet — first cron run pending)";
+    const universeName = document.getElementById("universe-name");
+    if (universeName) {
+      universeName.textContent =
+        "qte77-watchlist (no data yet — first cron run pending)";
+    }
     return;
   }
 
-  const selector = document.getElementById("date-selector");
+  const selector = /** @type {HTMLSelectElement | null} */ (
+    document.getElementById("date-selector")
+  );
+  if (!selector) return;
   for (const date of [...manifest.dates].reverse()) {
     const opt = document.createElement("option");
     opt.value = date;
@@ -500,20 +548,26 @@ async function init() {
     renderTable();
   });
 
-  document
-    .getElementById("universe-filter")
-    .addEventListener("input", (e) => {
-      filterQuery = e.target.value.trim();
+  const filterInput = document.getElementById("universe-filter");
+  filterInput?.addEventListener("input", (e) => {
+    const target = e.target;
+    if (target instanceof HTMLInputElement) {
+      filterQuery = target.value.trim();
       renderTable();
-    });
+    }
+  });
 
   state.snapshot = await loadSnapshot(manifest.latest);
   rebuildFuseIndex();
-  document.getElementById("universe-size").textContent =
-    `${state.snapshot.length} tickers`;
+  const sizeEl = document.getElementById("universe-size");
+  if (sizeEl) {
+    sizeEl.textContent = `${state.snapshot.length} tickers`;
+  }
   renderTable();
-  document.getElementById("updated").textContent =
-    `updated ${manifest.updated_at}`;
+  const updatedEl = document.getElementById("updated");
+  if (updatedEl) {
+    updatedEl.textContent = `updated ${manifest.updated_at}`;
+  }
 
   const fgEntries = await loadFearGreedYears();
   renderFearGreedHeader(fgEntries);

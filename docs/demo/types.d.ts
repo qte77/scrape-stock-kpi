@@ -1,0 +1,51 @@
+// Type declarations for the dashboard's snapshot shape.
+//
+// Mirrors `src/composite_scores.CompositeScores` and the subset of
+// `src/fundamentals.FundamentalsSnapshot` fields the dashboard actually
+// reads. Declaration-only — TypeScript auto-discovers these via the
+// `include` list in `tsconfig.json`. Never shipped to the browser:
+// GitHub Pages serves only `app.js`.
+
+interface CompositeScores {
+  quality?: number | null;
+  dividend?: number | null;
+  growth?: number | null;
+  big_call?: number | null;
+  aaqs?: number | null;
+  hgi?: number | null;
+  screener_score?: number | null;
+}
+
+interface Row {
+  symbol?: string;
+  long_name?: string | null;
+  sector?: string | null;
+  industry?: string | null;
+  exchange?: string | null;
+  currency?: string | null;
+  market_cap?: number | null;
+  trailing_pe?: number | null;
+  forward_pe?: number | null;
+  price_to_book?: number | null;
+  price_to_sales_ttm?: number | null;
+  trailing_peg_ratio?: number | null;
+  return_on_equity?: number | null;
+  return_on_assets?: number | null;
+  profit_margins?: number | null;
+  gross_margins?: number | null;
+  operating_margins?: number | null;
+  debt_to_equity?: number | null;
+  current_ratio?: number | null;
+  quick_ratio?: number | null;
+  revenue_growth?: number | null;
+  earnings_growth?: number | null;
+  dividend_yield?: number | null;
+  payout_ratio?: number | null;
+  fifty_two_week_high?: number | null;
+  fifty_two_week_low?: number | null;
+  beta?: number | null;
+  roi?: number | null;
+  rd_to_revenue?: number | null;
+  sortino_ratio?: number | null;
+  composite_scores?: CompositeScores;
+}
