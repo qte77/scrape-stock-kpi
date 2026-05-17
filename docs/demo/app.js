@@ -80,7 +80,7 @@ const KPI_GLOSSARY = {
   sortino_ratio:
     "Annualized Sortino over 1y (rf=0). Higher = better upside vs downside skew.",
   screener_score:
-    "Composite of the 9 visible main-table KPIs (0-100). Higher = better.",
+    "Mean of 4 thematic factor scores: Profitability (ROE, ROA, Op M, R&D/Rev) needs >= 2 of 4 inputs; Valuation (P/E fwd, PEG) needs >= 1 of 2; Risk (Beta, Current) needs >= 1 of 2; Momentum (Sortino) needs 1 of 1. Factors below their input minimum drop from the composite; remaining factors re-share the weight equally. Returns — when total inputs < 5 of 9. Higher = better.",
   quality:
     "Mean of normalized ROE, ROA, operating margin, and inverted D/E. Higher = stronger fundamentals.",
   dividend:
