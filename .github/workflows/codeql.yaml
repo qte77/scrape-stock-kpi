@@ -1,5 +1,7 @@
 ---
-# CodeQL Python static security analysis.
+# CodeQL static security analysis. Scans Python (`src/`) and JavaScript
+# (`docs/demo/app.js`). Vendored minified libs under `docs/demo/vendor/`
+# are excluded via `.github/codeql/codeql-config.yml`.
 # https://docs.github.com/en/code-security/code-scanning
 name: CodeQL
 
@@ -19,15 +21,20 @@ permissions:
 
 jobs:
   analyze:
-    name: Analyze (python)
+    name: Analyze (${{ matrix.language }})
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [python, javascript-typescript]
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
 
       - name: Initialize CodeQL
         uses: github/codeql-action/init@9e0d7b8d25671d64c341c19c0152d693099fb5ba  # v4
         with:
-          languages: python
+          languages: ${{ matrix.language }}
+          config-file: ./.github/codeql/codeql-config.yml
 
       - name: Autobuild
         uses: github/codeql-action/autobuild@9e0d7b8d25671d64c341c19c0152d693099fb5ba  # v4

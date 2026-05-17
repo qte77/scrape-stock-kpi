@@ -2,7 +2,7 @@
 .ONESHELL:
 .PHONY: \
 	setup_uv setup_dev setup_lychee setup_npm_tools \
-	lint autofix check_types check_complexity lint_md lint_links \
+	lint autofix check_types check_complexity lint_md lint_js lint_links \
 	test test_cov retest validate \
 	run preview preview_local \
 	clean help
@@ -34,9 +34,10 @@ setup_lychee:  ## Install lychee link checker (Rust binary; sudo)
 	curl -sL https://github.com/lycheeverse/lychee/releases/latest/download/lychee-x86_64-unknown-linux-gnu.tar.gz | sudo tar xz -C /usr/local/bin lychee
 	echo "lychee version: $$(lychee --version)"
 
-setup_npm_tools:  ## Install npm-based dev tools (markdownlint-cli)
-	npm install -gs markdownlint-cli
+setup_npm_tools:  ## Install npm-based dev tools (markdownlint-cli, typescript)
+	npm install -gs markdownlint-cli typescript
 	echo "markdownlint version: $$(markdownlint --version)"
+	echo "typescript version: $$(tsc --version)"
 
 
 # MARK: QUALITY
@@ -62,6 +63,11 @@ lint_md:  ## markdownlint *.md (uses .markdownlint.json)
 	markdownlint --config .markdownlint.json '**/*.md' \
 	  --ignore '.venv/**' --ignore 'results/**' --ignore 'node_modules/**'
 
+lint_js:  ## node syntax check + tsc JSDoc type check on docs/demo/
+	echo "--- lint_js"
+	node --check docs/demo/app.js
+	tsc --noEmit --project docs/demo
+
 lint_links:  ## lychee broken-link checker (network — slow; mandatory in CI)
 	echo "--- lint_links"
 	lychee --config .lychee.toml .
@@ -77,12 +83,13 @@ test_cov:  ## pytest with coverage (--cov-fail-under=0; raise once tests exist)
 retest:  ## rerun last failed tests only
 	uv run pytest --lf -x
 
-validate:  ## CI gate: lint + check_types + check_complexity + lint_md + test_cov
+validate:  ## CI gate: lint + check_types + check_complexity + lint_md + lint_js + test_cov
 	set -e
 	$(MAKE) -s lint
 	$(MAKE) -s check_types
 	$(MAKE) -s check_complexity
 	$(MAKE) -s lint_md
+	$(MAKE) -s lint_js
 	$(MAKE) -s test_cov
 
 
