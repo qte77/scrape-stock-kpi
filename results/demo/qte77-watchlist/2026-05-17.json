@@ -45,7 +45,7 @@
     },
     "roi": 0.0792374874024639,
     "rd_to_revenue": 0.06636888648258438,
-    "sortino_ratio": -2.1817746845287402
+    "sortino_ratio": -2.1817751821635225
   },
   {
     "symbol": "ACN",
@@ -189,7 +189,7 @@
     },
     "roi": 0.06165068558551017,
     "rd_to_revenue": null,
-    "sortino_ratio": -0.8370643603693615
+    "sortino_ratio": -0.837063799642234
   },
   {
     "symbol": "AMZN",
@@ -250,7 +250,7 @@
     "exchange": "NMS",
     "market_cap": 578824110080.0,
     "trailing_pe": 49.499344,
-    "forward_pe": 31.597147,
+    "forward_pe": 31.581705,
     "price_to_book": 1315.5376,
     "price_to_sales_ttm": 17.17951,
     "enterprise_value": 573126868992.0,
@@ -269,7 +269,7 @@
     "dividend_yield": 0.0059,
     "payout_ratio": 0.2582,
     "trailing_eps": 30.34,
-    "forward_eps": 47.529926,
+    "forward_eps": 47.553165,
     "book_value": 1.1415942,
     "fifty_two_week_high": 1603.49,
     "fifty_two_week_low": 683.48,
@@ -281,11 +281,11 @@
       "big_call": 63.87512142857143,
       "aaqs": 64.8631875,
       "hgi": 61.71428571428572,
-      "screener_score": 60.063040625344655
+      "screener_score": 60.06855562534466
     },
     "roi": -1.91390865644712,
     "rd_to_revenue": 0.14383802763007655,
-    "sortino_ratio": 3.161915838210192
+    "sortino_ratio": 3.1619143660303166
   },
   {
     "symbol": "BESIY",
@@ -377,11 +377,11 @@
       "big_call": 38.95000066666667,
       "aaqs": 40.637500833333334,
       "hgi": 62.714285714285715,
-      "screener_score": 40.880064031805006
+      "screener_score": 40.880064810457235
     },
     "roi": 0.004294931911057113,
     "rd_to_revenue": null,
-    "sortino_ratio": 1.8731774742927902
+    "sortino_ratio": 1.873177567731058
   },
   {
     "symbol": "BLK",
@@ -425,11 +425,11 @@
       "big_call": 67.80229775238095,
       "aaqs": 45.09322933333333,
       "hgi": 90.64285714285715,
-      "screener_score": 47.54650420346232
+      "screener_score": 47.54651707331277
     },
     "roi": 0.1069958346476561,
     "rd_to_revenue": null,
-    "sortino_ratio": 1.0224627291773833
+    "sortino_ratio": 1.0224642735594367
   },
   {
     "symbol": "BRK-B",
@@ -525,7 +525,7 @@
     },
     "roi": 0.03723765470546705,
     "rd_to_revenue": null,
-    "sortino_ratio": -0.27696052964526446
+    "sortino_ratio": -0.2769609693304002
   },
   {
     "symbol": "CHD",
@@ -573,7 +573,7 @@
     },
     "roi": 0.12093653913851221,
     "rd_to_revenue": null,
-    "sortino_ratio": -0.24901680581136074
+    "sortino_ratio": -0.24901924032170386
   },
   {
     "symbol": "CL",
@@ -621,7 +621,7 @@
     },
     "roi": 0.31599914486417,
     "rd_to_revenue": null,
-    "sortino_ratio": -0.024787593730004488
+    "sortino_ratio": -0.02479006084201353
   },
   {
     "symbol": "CLPBY",
@@ -761,11 +761,11 @@
       "big_call": 28.528645238095237,
       "aaqs": 57.17152083333333,
       "hgi": 15.92857142857143,
-      "screener_score": 53.714234424254
+      "screener_score": 53.714232399132456
     },
     "roi": 0.048900126072227754,
     "rd_to_revenue": null,
-    "sortino_ratio": 2.434801235672385
+    "sortino_ratio": 2.434800992657799
   },
   {
     "symbol": "CWEN",
@@ -809,11 +809,11 @@
       "big_call": 31.567397619047618,
       "aaqs": 33.45210416666667,
       "hgi": 55.42857142857144,
-      "screener_score": 32.6818847741347
+      "screener_score": 32.68189126885008
     },
     "roi": 0.0006863370455173372,
     "rd_to_revenue": null,
-    "sortino_ratio": 1.5001469538485457
+    "sortino_ratio": 1.5001477332143904
   },
   {
     "symbol": "DANOY",
@@ -957,7 +957,7 @@
     },
     "roi": 0.054902387162188954,
     "rd_to_revenue": 0.06504395962227287,
-    "sortino_ratio": -0.7831129608350367
+    "sortino_ratio": -0.7831118964561754
   },
   {
     "symbol": "DKILY",
@@ -971,7 +971,7 @@
     "market_cap": 46942511104.0,
     "trailing_pe": 26.716667,
     "forward_pe": null,
-    "price_to_book": 2.284322,
+    "price_to_book": 2.2893982,
     "price_to_sales_ttm": 0.009360353,
     "enterprise_value": 227670458368.0,
     "enterprise_to_ebitda": 0.329,
@@ -990,7 +990,7 @@
     "payout_ratio": 0.1675,
     "trailing_eps": 0.6,
     "forward_eps": null,
-    "book_value": 7.0174,
+    "book_value": 7.00184,
     "fifty_two_week_high": 16.43,
     "fifty_two_week_low": 10.66,
     "beta": 0.589,
@@ -1003,7 +1003,7 @@
       "hgi": 41.92857142857143,
       "screener_score": 40.12237151147726
     },
-    "roi": 1.5151534386300434,
+    "roi": 1.5155335880630982,
     "rd_to_revenue": null,
     "sortino_ratio": 2.1679679147106046
   },
@@ -1049,11 +1049,11 @@
       "big_call": 43.04768571428572,
       "aaqs": 41.29175,
       "hgi": 86.21428571428572,
-      "screener_score": 24.090725488784624
+      "screener_score": 24.090730473251707
     },
     "roi": 0.03326750562373771,
     "rd_to_revenue": null,
-    "sortino_ratio": 1.1843370586541548
+    "sortino_ratio": 1.1843376567902044
   },
   {
     "symbol": "DSDVY",
@@ -1245,7 +1245,7 @@
     },
     "roi": 0.1736297421384057,
     "rd_to_revenue": null,
-    "sortino_ratio": -2.161948768606753
+    "sortino_ratio": -2.1619482069887463
   },
   {
     "symbol": "FTNT",
@@ -1385,11 +1385,11 @@
       "big_call": 50.37228366666667,
       "aaqs": 68.40410458333334,
       "hgi": 54.5,
-      "screener_score": 48.129880095156295
+      "screener_score": 48.12986396166622
     },
     "roi": 0.13441121081495827,
     "rd_to_revenue": null,
-    "sortino_ratio": 1.7619049161806606
+    "sortino_ratio": 1.7619029801618504
   },
   {
     "symbol": "GOOGL",
@@ -1437,7 +1437,7 @@
     },
     "roi": 0.35779429008896707,
     "rd_to_revenue": 0.15164235569810047,
-    "sortino_ratio": 7.075600368571947
+    "sortino_ratio": 7.075601532867944
   },
   {
     "symbol": "HII",
@@ -1481,11 +1481,11 @@
       "big_call": 41.843985680952386,
       "aaqs": 62.99462495833333,
       "hgi": 38.14285714285715,
-      "screener_score": 51.37356537913195
+      "screener_score": 51.37357059213035
     },
     "roi": 0.07691895759150744,
     "rd_to_revenue": null,
-    "sortino_ratio": 1.8858042059720252
+    "sortino_ratio": 1.8858048315318325
   },
   {
     "symbol": "HOCPY",
@@ -1629,7 +1629,7 @@
     },
     "roi": 0.18432943551436376,
     "rd_to_revenue": 0.1556909749132101,
-    "sortino_ratio": 4.990133426967015
+    "sortino_ratio": 4.990130419546214
   },
   {
     "symbol": "KDP",
@@ -1677,7 +1677,7 @@
     },
     "roi": 0.03439996295114337,
     "rd_to_revenue": null,
-    "sortino_ratio": -0.5924663060527076
+    "sortino_ratio": -0.5924668054407428
   },
   {
     "symbol": "KLAC",
@@ -1725,7 +1725,7 @@
     },
     "roi": 0.7042763797788144,
     "rd_to_revenue": 0.11190489235006905,
-    "sortino_ratio": 3.2711422648481245
+    "sortino_ratio": 3.2711423148276113
   },
   {
     "symbol": "KMB",
@@ -1773,7 +1773,7 @@
     },
     "roi": 0.20585805978262198,
     "rd_to_revenue": null,
-    "sortino_ratio": -1.6457578051485957
+    "sortino_ratio": -1.6457585295146533
   },
   {
     "symbol": "KR",
@@ -1821,7 +1821,7 @@
     },
     "roi": 0.037284174489651385,
     "rd_to_revenue": null,
-    "sortino_ratio": -0.5952374620615243
+    "sortino_ratio": -0.5952347515617926
   },
   {
     "symbol": "LIN",
@@ -1865,11 +1865,11 @@
       "big_call": 55.144234000000004,
       "aaqs": 65.3865425,
       "hgi": 54.00000000000001,
-      "screener_score": 38.77020708241454
+      "screener_score": 38.770210983471415
     },
     "roi": 0.11707164639223745,
     "rd_to_revenue": 0.004325310421938445,
-    "sortino_ratio": 1.1959976000931896
+    "sortino_ratio": 1.1959980682200146
   },
   {
     "symbol": "LOW",
@@ -1917,7 +1917,7 @@
     },
     "roi": 0.19636175724422283,
     "rd_to_revenue": null,
-    "sortino_ratio": -0.02913225343162966
+    "sortino_ratio": -0.029132192724826218
   },
   {
     "symbol": "LRCX",
@@ -1965,7 +1965,7 @@
     },
     "roi": 0.7010805151561262,
     "rd_to_revenue": 0.1137141196070145,
-    "sortino_ratio": 4.372760250761705
+    "sortino_ratio": 4.372758899206122
   },
   {
     "symbol": "LSCC",
@@ -2201,11 +2201,11 @@
       "big_call": 76.54599999999999,
       "aaqs": 87.025,
       "hgi": 78.07142857142857,
-      "screener_score": 66.32795173073113
+      "screener_score": 66.32794684724568
     },
     "roi": 0.44973906117080986,
     "rd_to_revenue": null,
-    "sortino_ratio": 2.0370866219734505
+    "sortino_ratio": 2.037086035955196
   },
   {
     "symbol": "MRK",
@@ -2249,11 +2249,11 @@
       "big_call": 48.50434285714286,
       "aaqs": 81.8165,
       "hgi": 45.57142857142858,
-      "screener_score": 69.06974240013858
+      "screener_score": 69.06973877379932
     },
     "roi": 0.10006220064496121,
     "rd_to_revenue": 0.24286659180754025,
-    "sortino_ratio": 2.894848102302344
+    "sortino_ratio": 2.8948476671416326
   },
   {
     "symbol": "MSCI",
@@ -2297,11 +2297,11 @@
       "big_call": 78.00785714285715,
       "aaqs": 69.125,
       "hgi": 83.71428571428572,
-      "screener_score": 35.79111290259659
+      "screener_score": 35.791108192657035
     },
     "roi": 0.38547323252300514,
     "rd_to_revenue": 0.05665921934215761,
-    "sortino_ratio": 0.23801598017223125
+    "sortino_ratio": 0.23801541497948503
   },
   {
     "symbol": "MSFT",
@@ -2349,7 +2349,7 @@
     },
     "roi": 0.2713005192754088,
     "rd_to_revenue": 0.11531853871164686,
-    "sortino_ratio": -0.3169662637786756
+    "sortino_ratio": -0.3169655470097176
   },
   {
     "symbol": "NA.TO",
@@ -2362,7 +2362,7 @@
     "exchange": "TOR",
     "market_cap": 79864070144.0,
     "trailing_pe": 19.731918,
-    "forward_pe": 14.495607,
+    "forward_pe": 14.490875,
     "price_to_book": 2.5142534,
     "price_to_sales_ttm": 5.936084,
     "enterprise_value": -66720378880.0,
@@ -2381,7 +2381,7 @@
     "dividend_yield": 0.0242,
     "payout_ratio": 0.4571,
     "trailing_eps": 10.37,
-    "forward_eps": 14.116,
+    "forward_eps": 14.12061,
     "book_value": 81.384,
     "fifty_two_week_high": 209.89,
     "fifty_two_week_low": 127.5,
@@ -2393,11 +2393,11 @@
       "big_call": 55.45896825396826,
       "aaqs": 45.32888888888889,
       "hgi": 63.85714285714286,
-      "screener_score": 63.59565623015873
+      "screener_score": 63.59734623015873
     },
     "roi": -0.03543126589776307,
     "rd_to_revenue": null,
-    "sortino_ratio": 5.811889123773256
+    "sortino_ratio": 5.811887899774329
   },
   {
     "symbol": "NEE",
@@ -2441,11 +2441,11 @@
       "big_call": 56.101795238095235,
       "aaqs": 53.49420833333333,
       "hgi": 79.5,
-      "screener_score": 44.176741445130915
+      "screener_score": 44.17674599397737
     },
     "roi": 0.051920062035183755,
     "rd_to_revenue": null,
-    "sortino_ratio": 1.559970706749043
+    "sortino_ratio": 1.5599712526106178
   },
   {
     "symbol": "NET",
@@ -2537,11 +2537,11 @@
       "big_call": 69.92610714285715,
       "aaqs": 49.5465625,
       "hgi": 100.0,
-      "screener_score": 75.00147597528043
+      "screener_score": 75.0014744117145
     },
     "roi": 1.1368771171406613,
     "rd_to_revenue": 0.08565884652076058,
-    "sortino_ratio": 2.901078414009371
+    "sortino_ratio": 2.90107822638146
   },
   {
     "symbol": "NVO",
@@ -2633,11 +2633,11 @@
       "big_call": 45.16945952380952,
       "aaqs": 54.59039583333333,
       "hgi": 59.92857142857143,
-      "screener_score": 39.227327388778626
+      "screener_score": 39.22733550594006
     },
     "roi": 0.016175218357001118,
     "rd_to_revenue": null,
-    "sortino_ratio": 1.1823059342724827
+    "sortino_ratio": 1.1823069083318554
   },
   {
     "symbol": "ODFL",
@@ -2681,11 +2681,11 @@
       "big_call": 51.00531157142857,
       "aaqs": 65.27110375000001,
       "hgi": 33.5,
-      "screener_score": 43.293208088695124
+      "screener_score": 43.2932015788549
     },
     "roi": 0.2428432074498728,
     "rd_to_revenue": null,
-    "sortino_ratio": 1.189269556357701
+    "sortino_ratio": 1.1892687751768736
   },
   {
     "symbol": "ORLY",
@@ -2829,7 +2829,7 @@
     },
     "roi": 0.2080253713212837,
     "rd_to_revenue": null,
-    "sortino_ratio": -1.0186848522106309
+    "sortino_ratio": -1.018683363229348
   },
   {
     "symbol": "REGN",
@@ -2873,11 +2873,11 @@
       "big_call": 40.26787652380953,
       "aaqs": 74.33591708333333,
       "hgi": 47.0,
-      "screener_score": 62.874955122865344
+      "screener_score": 62.87495193151832
     },
     "roi": 0.17084369481070263,
     "rd_to_revenue": 0.4078812513508426,
-    "sortino_ratio": 0.9025851754581278
+    "sortino_ratio": 0.9025847924964846
   },
   {
     "symbol": "RHHBY",
@@ -2973,7 +2973,7 @@
     },
     "roi": -0.00604286422190426,
     "rd_to_revenue": null,
-    "sortino_ratio": -1.1952449379126342
+    "sortino_ratio": -1.195244944667014
   },
   {
     "symbol": "RY",
@@ -3257,11 +3257,11 @@
       "big_call": 28.894257142857143,
       "aaqs": 33.03925,
       "hgi": 13.571428571428573,
-      "screener_score": 38.83580297884993
+      "screener_score": 38.83580619243198
     },
     "roi": 0.06513925551055867,
     "rd_to_revenue": 0.1921994665883677,
-    "sortino_ratio": 0.1121232863270408
+    "sortino_ratio": 0.11212367195688754
   },
   {
     "symbol": "TMO",
@@ -3305,11 +3305,11 @@
       "big_call": 35.74042142857143,
       "aaqs": 52.4973125,
       "hgi": 51.07142857142857,
-      "screener_score": 38.827921330467106
+      "screener_score": 38.82792443876377
     },
     "roi": 0.07390547661781796,
     "rd_to_revenue": 0.03135309827860942,
-    "sortino_ratio": 0.512125512539839
+    "sortino_ratio": 0.5121258855354383
   },
   {
     "symbol": "TMRAY",
@@ -3453,7 +3453,7 @@
     },
     "roi": 0.13705712714000548,
     "rd_to_revenue": null,
-    "sortino_ratio": -1.0041911923293765
+    "sortino_ratio": -1.0041915827512513
   },
   {
     "symbol": "UNH",
@@ -3466,7 +3466,7 @@
     "exchange": "NYQ",
     "market_cap": 357672681472.0,
     "trailing_pe": 29.679728,
-    "forward_pe": 18.977367,
+    "forward_pe": 18.967167,
     "price_to_book": 3.7916129,
     "price_to_sales_ttm": 0.7953354,
     "enterprise_value": 411798667264.0,
@@ -3485,7 +3485,7 @@
     "dividend_yield": 0.022400000000000003,
     "payout_ratio": 0.6657,
     "trailing_eps": 13.27,
-    "forward_eps": 20.75367,
+    "forward_eps": 20.76483,
     "book_value": 103.874,
     "fifty_two_week_high": 404.15,
     "fifty_two_week_low": 234.6,
@@ -3497,10 +3497,10 @@
       "big_call": 39.54289973333334,
       "aaqs": 53.30487466666667,
       "hgi": 30.500000000000007,
-      "screener_score": 43.13304249661967
+      "screener_score": 43.13667844914843
     },
     "roi": 0.08540596474722928,
     "rd_to_revenue": null,
-    "sortino_ratio": 1.491545140546742
+    "sortino_ratio": 1.4915443119930496
   }
 ]
