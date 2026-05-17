@@ -48,56 +48,48 @@ CLI args double as env vars with the `SSK_` prefix
 
 ## Sample output
 
-`make run TICKERS=AAPL SHOW_SCORES=1`:
+`make run TICKERS=AAPL` prints a CNN Fear & Greed banner, then a
+13-column rich summary table:
 
-```text
-Fear & Greed 66.9 (greed) as of 2026-05-08 23:59 UTC
-analyze-stock-kpi resolving 1 tickers
-                         Fundamentals (equities & ETFs)
-┏━━━━━━━━┳━━━━━━━━┳━━━━━━━━━┳━━━━━━━┳━━━━━━━━┳━━━━━━━━━┳━━━━━━━━┳━━━━━┳━━━━━━━━┓
-┃ Symbol ┃ Sector ┃  Market ┃   P/E ┃    ROE ┃     Div ┃ Quali… ┃ Div ┃ Growth ┃
-┃        ┃        ┃     Cap ┃       ┃        ┃   Yield ┃        ┃     ┃        ┃
-┡━━━━━━━━╇━━━━━━━━╇━━━━━━━━━╇━━━━━━━╇━━━━━━━━╇━━━━━━━━━╇━━━━━━━━╇━━━━━╇━━━━━━━━┩
-│ AAPL   │ Techn… │   4.31T │ 35.47 │ 141.4… │   0.37% │     90 │  20 │     56 │
-└────────┴────────┴─────────┴───────┴────────┴─────────┴────────┴─────┴────────┘
-Wrote results/fundamentals_2026-05-11T00-00-00Z.json
-```
+> Ticker · Name · Sector · P/E (fwd) · PEG · Beta · R&D/Rev % ·
+> Op M % · ROE % · ROA % · Current · Sortino · Score
 
-The persisted JSON keeps every field plus the nested composite scores:
+With `--show-scores`, three legacy composite columns (Quality · Div ·
+Growth) are appended. The [live demo dashboard][demo] renders the same
+column set with row-click → KPI detail panel + sortable headers — see
+the screenshot near the top of this README.
+
+[demo]: https://qte77.github.io/analyze-stock-kpi/
+
+The persisted JSON `results/fundamentals_<UTC>.json` is one
+`FundamentalsSnapshot` per ticker with a nested `composite_scores`
+block. All numeric fields are `float | null` so sparse non-equities
+(FX, futures, crypto) are valid:
 
 ```json
 {
   "symbol": "AAPL",
+  "long_name": "Apple Inc.",
   "sector": "Technology",
-  "market_cap": 4308095467520.0,
-  "trailing_pe": 35.47,
-  "return_on_equity": 1.4147,
-  "operating_margins": 0.32275,
-  "debt_to_equity": 79.548,
-  "revenue_growth": 0.166,
-  "earnings_growth": 0.218,
-  "dividend_yield": 0.0037,
-  "beta": 1.065,
-  "trailing_peg_ratio": 1.4,
-  "roi": 0.7711,
-  "rd_to_revenue": 0.07,
-  "sortino_ratio": 1.85,
+  "market_cap": ...,
+  "trailing_pe": ..., "forward_pe": ..., "price_to_book": ..., "trailing_peg_ratio": ...,
+  "return_on_equity": ..., "return_on_assets": ..., "operating_margins": ...,
+  "debt_to_equity": ..., "current_ratio": ..., "quick_ratio": ...,
+  "revenue_growth": ..., "earnings_growth": ...,
+  "dividend_yield": ..., "payout_ratio": ...,
+  "beta": ..., "roi": ..., "rd_to_revenue": ..., "sortino_ratio": ...,
   "composite_scores": {
-    "quality": 90.06,
-    "dividend": 20.0,
-    "growth": 56.0,
-    "big_call": 65.8,
-    "aaqs": 68.4,
-    "hgi": 66.0,
-    "screener_score": 72.4
+    "quality": ..., "dividend": ..., "growth": ..., "big_call": ...,
+    "aaqs": ..., "hgi": ..., "screener_score": ...
   }
 }
 ```
 
-(Truncated for brevity — every `FundamentalsSnapshot` field is
-present.) `dividend_yield` is stored as a fraction; the
+`dividend_yield` is stored as a fraction; the
 `_normalize_yfinance_info` helper divides yfinance's current
-percentage-shaped value (`0.37`) at the fetch boundary.
+percentage-shaped value (e.g. `0.37`) at the fetch boundary. Full
+field list in [`src/fundamentals.py`](src/fundamentals.py); composite
+formulas in [`src/composite_scores.py`](src/composite_scores.py).
 
 ## Universe sources
 
