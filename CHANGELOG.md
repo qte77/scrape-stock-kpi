@@ -26,6 +26,10 @@ Types of changes:
 - **complexipy cognitive-complexity gate tightened from 15 to 10** in `make check_complexity` (and the validate CI path). The current codebase peaks at 9 (`_batch_close_prices`, `_index_subindicator_data_by_date`), so this is a no-op for existing code but prevents regressions. Brings the cognitive-complexity ceiling in line with the existing ruff mccabe `max-complexity = 10`, so both gates now enforce the same budget.
 - **ruff `S` rule set (flake8-bandit) enabled** in `tool.ruff.lint.select`. Replaces the legacy Bandit `# nosec B310` markers with ruff-native `# noqa: S310` on the two `urllib.request` call sites in `src/sentiment.py` (the explicit `https://` scheme check is the defense-in-depth boundary, kept inline). The single test-side `subprocess.run` in `tests/test_build_demo_manifest.py` gets `# noqa: S603` (hardcoded local script, no external argv). `tests/**` continues to ignore `S101` (pytest `assert` convention). Future security regressions are now caught by `make lint` instead of needing a separate Bandit invocation.
 
+### Fixed
+
+- **Dashboard `<thead>` actually sticks on vertical scroll now.** `docs/demo/style.css` `.table-wrap` previously set only `overflow-x: auto`, which per CSS spec makes the wrapper the containing block for nested `position: sticky` elements but provides no vertical scroll port — so `thead th { top: 0 }` had nowhere to stick and scrolled away with the page. Switched the wrapper to `overflow: auto` + `max-height: 75vh` so both sticky-top (thead) and sticky-left (Ticker + Name columns) anchor against the same scroll port. Delivers on the v0.6.0 "sticky `<thead>` so column headers stay visible on vertical scroll" CHANGELOG promise.
+
 ## [0.6.0] - 2026-05-15
 
 ### Added

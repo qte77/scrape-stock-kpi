@@ -147,7 +147,12 @@ h2 {
 }
 
 .table-wrap {
-  overflow-x: auto;
+  /* Scroll on both axes so position: sticky works for thead (top) AND
+     the first two columns (left). Without overflow-y here, the thead's
+     sticky containing block is this wrapper which has no vertical
+     scroll port, so the header scrolls away with the page. */
+  overflow: auto;
+  max-height: 75vh;
   -webkit-overflow-scrolling: touch;
 }
 
