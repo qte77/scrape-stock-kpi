@@ -39,6 +39,10 @@ _RD_REV_LO, _RD_REV_HI = 0.0, 0.20
 _CURRENT_LO, _CURRENT_HI = 1.0, 3.0
 _SORTINO_LO, _SORTINO_HI = 0.0, 3.0
 _SCREENER_MIN_TERMS = 5
+_PROFIT_MIN = 2  # of 4 profitability inputs
+_VALUE_MIN = 1  # of 2 valuation inputs
+_RISK_MIN = 1  # of 2 risk inputs
+_MOMENT_MIN = 1  # of 1 momentum input
 
 _HGI_MARGIN_THRESHOLD = 0.10
 _HGI_MARGIN_BONUS = 10.0
@@ -55,6 +59,14 @@ def _rescale(value: float, lo: float, hi: float) -> float:
 
 def _mean(values: list[float]) -> float:
     return sum(values) / len(values)
+
+
+def _factor_mean(
+    *norm_values: float | None, min_inputs: int
+) -> float | None:
+    """Mean of non-``None`` inputs; ``None`` if fewer than ``min_inputs`` present."""
+    present = [v for v in norm_values if v is not None]
+    return _mean(present) if len(present) >= min_inputs else None
 
 
 class CompositeScores(BaseModel):
@@ -203,43 +215,68 @@ def _normalize_term(
 
 
 def screener_score(snap: FundamentalsSnapshot) -> float | None:
-    """Aggregated 0-100 composite of the 9 visible main-table KPIs.
+    """Factor-weighted 0-100 composite of the 9 visible main-table KPIs.
 
-    Reads from the snapshot itself (including the post-fetch enrichments
-    ``rd_to_revenue`` and ``sortino_ratio``). ROI, Quick, Gross M, Net M
-    and the Trail/Fwd ratio are deliberately NOT included — those are
-    detail-panel KPIs and should not influence the at-a-glance ranking.
+    The 9 KPIs group into four thematic factors and the composite is
+    the mean of the factor scores — so every dimension has equal voice
+    when present:
+
+    - Profitability (ROE, ROA, Op margin, R&D/Rev) — needs >= 2 of 4
+    - Valuation (forward P/E, PEG) — needs >= 1 of 2
+    - Risk (Beta, Current ratio) — needs >= 1 of 2
+    - Momentum (Sortino) — needs 1 of 1
+
+    Missing inputs are handled at three layers. L1 within a factor:
+    factors below their input minimum drop. L2 across factors: dropped
+    factors are removed and the remaining factors weigh equally
+    (drop-and-renormalize). L3 global: total non-``None`` inputs across
+    all 9 KPIs must reach ``_SCREENER_MIN_TERMS`` (5) or the composite
+    returns ``None`` — guards informationally-thin tickers (FX /
+    futures / crypto / sparse ADRs) from ranking alongside fully-
+    populated equities.
 
     Negative ``forward_pe`` (loss-making companies) drops the term
     rather than rewarding it via the inverted cheapness rescale.
-
-    Returns ``None`` when fewer than ``_SCREENER_MIN_TERMS`` (5) of the
-    9 KPIs are present — averaging a smaller subset would produce a
-    score driven by which terms happened to be available rather than
-    by the underlying signal.
     """
     forward_pe = (
         snap.forward_pe
         if snap.forward_pe is None or snap.forward_pe > 0
         else None
     )
-    terms_inputs = (
-        (forward_pe, _FORWARD_PE_LO, _FORWARD_PE_HI, True),
-        (snap.trailing_peg_ratio, _PEG_LO, _PEG_HI, True),
-        (snap.beta, _BETA_LO, _BETA_HI, True),
-        (snap.rd_to_revenue, _RD_REV_LO, _RD_REV_HI, False),
-        (snap.operating_margins, _OP_MARGIN_LO, _OP_MARGIN_HI, False),
-        (snap.return_on_equity, _ROE_LO, _ROE_HI, False),
-        (snap.return_on_assets, _ROA_LO, _ROA_HI, False),
-        (snap.current_ratio, _CURRENT_LO, _CURRENT_HI, False),
-        (snap.sortino_ratio, _SORTINO_LO, _SORTINO_HI, False),
-    )
-    terms: list[float] = []
-    for value, lo, hi, invert in terms_inputs:
-        norm = _normalize_term(value, lo, hi, invert=invert)
-        if norm is not None:
-            terms.append(norm)
-    return _mean(terms) if len(terms) >= _SCREENER_MIN_TERMS else None
+    profitability = [
+        _normalize_term(snap.return_on_equity, _ROE_LO, _ROE_HI),
+        _normalize_term(snap.return_on_assets, _ROA_LO, _ROA_HI),
+        _normalize_term(
+            snap.operating_margins, _OP_MARGIN_LO, _OP_MARGIN_HI
+        ),
+        _normalize_term(snap.rd_to_revenue, _RD_REV_LO, _RD_REV_HI),
+    ]
+    valuation = [
+        _normalize_term(
+            forward_pe, _FORWARD_PE_LO, _FORWARD_PE_HI, invert=True
+        ),
+        _normalize_term(
+            snap.trailing_peg_ratio, _PEG_LO, _PEG_HI, invert=True
+        ),
+    ]
+    risk = [
+        _normalize_term(snap.beta, _BETA_LO, _BETA_HI, invert=True),
+        _normalize_term(snap.current_ratio, _CURRENT_LO, _CURRENT_HI),
+    ]
+    momentum = [
+        _normalize_term(snap.sortino_ratio, _SORTINO_LO, _SORTINO_HI),
+    ]
+    all_terms = profitability + valuation + risk + momentum
+    if sum(1 for t in all_terms if t is not None) < _SCREENER_MIN_TERMS:
+        return None
+    factor_scores = [
+        _factor_mean(*profitability, min_inputs=_PROFIT_MIN),
+        _factor_mean(*valuation, min_inputs=_VALUE_MIN),
+        _factor_mean(*risk, min_inputs=_RISK_MIN),
+        _factor_mean(*momentum, min_inputs=_MOMENT_MIN),
+    ]
+    present_factors = [s for s in factor_scores if s is not None]
+    return _mean(present_factors) if present_factors else None
 
 
 def compute_scores(snap: FundamentalsSnapshot) -> CompositeScores:
